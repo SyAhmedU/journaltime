@@ -204,6 +204,17 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
 /* keywords */
 .compass-kw-wrap{display:flex;flex-wrap:wrap;gap:6px}
 .compass-keyword{display:inline-block;background:#3b82f618;border:1px solid #3b82f640;border-radius:4px;padding:3px 9px;font-size:.72rem;color:#93c5fd}
+/* author cards */
+.compass-authors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:9px;margin-bottom:4px}
+.cauthor-card{background:#ffffff0d;border:1px solid #ffffff15;border-radius:9px;padding:12px 14px;position:relative}
+.cauthor-active-dot{position:absolute;top:11px;right:11px;width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e70}
+.cauthor-active-dot.inactive{background:#475569;box-shadow:none}
+.cauthor-name{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:1px;padding-right:16px}
+.cauthor-affil{font-size:.67rem;color:#64748b;margin-bottom:6px}
+.cauthor-focus{font-size:.7rem;color:#93c5fd;margin-bottom:5px;line-height:1.4}
+.cauthor-known{font-size:.68rem;color:#94a3b8;font-style:italic;line-height:1.45;margin-bottom:8px}
+.cauthor-link{display:inline-block;font-size:.67rem;color:#60a5fa;border:1px solid #3b82f630;border-radius:4px;padding:3px 9px;text-decoration:none;transition:.12s}
+.cauthor-link:hover{background:#1d4ed820;color:#93c5fd}
 
 /* D3 tooltip */
 .d3-tip{position:absolute;pointer-events:none;background:#1e293b;color:#fff;padding:7px 10px;border-radius:8px;font-size:.75rem;line-height:1.5;max-width:200px;z-index:999;box-shadow:0 4px 12px #0004}
@@ -293,6 +304,8 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
     <div id="compass-journals" class="compass-journals-row"></div>
     <div class="ctree-section-label">🔑 Search Keywords</div>
     <div id="compass-keywords" class="compass-kw-wrap"></div>
+    <div class="ctree-section-label">👥 Key Researchers to Follow</div>
+    <div id="compass-authors" class="compass-authors-grid"></div>
   </div>
   <div class="compass-error" id="compass-error" style="display:none"></div>
 </div>
@@ -629,6 +642,7 @@ document.getElementById('compass-btn').addEventListener('click', async () => {
     renderCompassTree(parsed.tree || {});
     renderCompassJournals(parsed.journals || []);
     renderCompassKeywords(parsed.keywords || []);
+    renderCompassAuthors(parsed.authors || []);
     resultsEl.classList.add('show');
     resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (e) {
@@ -730,7 +744,7 @@ function renderCompassTree(treeData) {
             html += `</div>`;
           });
           if (d.data.finding) html += `<div style="margin-top:7px;font-size:.7rem;color:#94a3b8;font-style:italic;border-top:1px solid #1e293b;padding-top:6px">"${d.data.finding}"</div>`;
-          if (d.data.papers?.length) html += `<div style="margin-top:6px;font-size:.67rem;color:#3b82f6">🔗 Click to search on Google Scholar</div>`;
+          if (d.data.papers?.length) html += `<div style="margin-top:6px;font-size:.67rem;color:#3b82f6">🔗 Click to open on Semantic Scholar</div>`;
         } else {
           if (d.data.rationale) html += `<div style="margin-top:5px;color:#cbd5e1;font-size:.71rem">${d.data.rationale}</div>`;
           if (d.data.method) html += `<div style="margin-top:7px;color:#fde68a;font-weight:700;font-size:.71rem">→ Suggested: ${d.data.method}</div>`;
@@ -750,7 +764,7 @@ function renderCompassTree(treeData) {
       if (!p) return;
       const url = p.doi
         ? `https://doi.org/${p.doi}`
-        : `https://scholar.google.com/scholar?q=${encodeURIComponent((p.title || '') + ' ' + (p.authors || ''))}`;
+        : `https://www.semanticscholar.org/search?q=${encodeURIComponent(p.title || '')}&sort=Relevance`;
       window.open(url, '_blank');
     });
 
@@ -812,6 +826,23 @@ function renderCompassKeywords(keywords) {
   const el = document.getElementById('compass-keywords');
   if (!keywords?.length) { el.innerHTML = ''; return; }
   el.innerHTML = keywords.map(k => `<span class="compass-keyword">${k}</span>`).join('');
+}
+
+function renderCompassAuthors(authors) {
+  const el = document.getElementById('compass-authors');
+  if (!authors?.length) { el.innerHTML = ''; return; }
+  el.innerHTML = authors.map(a => {
+    const ssUrl = `https://www.semanticscholar.org/search?q=${encodeURIComponent(a.name)}&sort=Relevance`;
+    const dotCls = a.active ? '' : ' inactive';
+    return `<div class="cauthor-card">
+      <div class="cauthor-active-dot${dotCls}" title="${a.active ? 'Currently active researcher' : 'Foundational / historical contributor'}"></div>
+      <div class="cauthor-name">${a.name}</div>
+      <div class="cauthor-affil">${a.affiliation || ''}</div>
+      <div class="cauthor-focus">${a.focus || ''}</div>
+      <div class="cauthor-known">${a.known_for || ''}</div>
+      <a href="${ssUrl}" target="_blank" rel="noopener" class="cauthor-link">Find on Semantic Scholar →</a>
+    </div>`;
+  }).join('');
 }
 
 // ── FINDER ───────────────────────────────────────────────────────────────────

@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     return `• ${j.name} (${j.field}, IF:${j.impact_factor}). Themes: ${themes}.`;
   }).join("\n");
 
-  const userPrompt = `You are a PhD supervisor briefing a doctoral student on the research landscape.
+  const userPrompt = `You are a PhD supervisor giving a doctoral student a comprehensive research landscape briefing.
 
 Topic: "${topic}"${field ? `\nField: ${field}` : ""}
 
@@ -42,30 +42,39 @@ Return ONLY raw JSON (no markdown, no code fences, no explanation). Structure:
             "name": "<4-5 word specific aspect>",
             "type": "studied",
             "papers": [
-              { "title": "<full paper title>", "authors": "<First Author et al.>", "year": 2019, "doi": "<DOI or null>" }
+              { "title": "<exact paper title>", "authors": "<First Author et al.>", "year": 2019, "doi": "<real DOI or null>" }
             ],
-            "finding": "<key finding, 1 sentence>"
+            "finding": "<key finding in 1 sentence>"
           },
           {
-            "name": "<4-5 word contested topic>",
+            "name": "<4-5 word contested area>",
             "type": "debate",
             "papers": [
-              { "title": "<paper arguing one side>", "authors": "<Author>", "year": 2020, "doi": null },
-              { "title": "<paper arguing other side>", "authors": "<Author>", "year": 2022, "doi": null }
+              { "title": "<paper on one side>", "authors": "<Author>", "year": 2020, "doi": null },
+              { "title": "<paper on other side>", "authors": "<Author>", "year": 2022, "doi": null }
             ],
-            "finding": "<what the debate is about, 1 sentence>"
+            "finding": "<what the disagreement is, 1 sentence>"
           },
           {
-            "name": "<4-5 word gap>",
+            "name": "<4-5 word understudied gap>",
             "type": "gap",
-            "method": "Survey|Experiment|Qualitative|Mixed Methods|Longitudinal|Meta-Analysis|Computational",
-            "rationale": "<why understudied, 1 sentence>",
+            "method": "Survey|Experiment|Qualitative|Mixed Methods|Longitudinal|Meta-Analysis|Computational|Case Study",
+            "rationale": "<why this is understudied, 1 sentence>",
             "feasibility": "High|Medium|Low"
           }
         ]
       }
     ]
   },
+  "authors": [
+    {
+      "name": "<Full Name>",
+      "affiliation": "<University or Institution>",
+      "focus": "<research specialisation, 8 words max>",
+      "known_for": "<their most influential work or contribution, 1 sentence>",
+      "active": true
+    }
+  ],
   "journals": [
     { "name": "<journal from list>", "reason": "<one sentence>", "competition": "High|Medium|Low", "acceptance_rate": "<% if known, else null>" }
   ],
@@ -73,11 +82,12 @@ Return ONLY raw JSON (no markdown, no code fences, no explanation). Structure:
 }
 
 Critical rules:
-- Exactly 5 theme branches. Cover: (1) Theoretical Foundations, (2) Empirical Findings, (3) Methodology Landscape, (4) Contextual & Population Gaps, (5) Emerging Directions
-- Each branch: 4-5 children mixing studied, debate, and gap. Gaps must outnumber studied. At least 1 debate per branch.
-- Papers: cite only REAL published papers you are highly confident about. 1-2 papers per studied/debate node. null DOI if unsure.
-- Name fields: 4-5 words MAX — these are visual tree labels
-- finding/rationale: 1 short sentence, no padding
+- Exactly 5 theme branches covering: (1) Theoretical Foundations, (2) Core Empirical Findings, (3) Methodology Landscape, (4) Contextual & Population Gaps, (5) Emerging & Future Directions
+- Each branch: 5 children. Composition per branch: 2 studied, 1 debate, 2 gap. This is mandatory.
+- Papers: only cite REAL published papers you are highly confident about. Include 1-2 papers per studied/debate node. Use null for DOI only if you are unsure of the exact DOI.
+- name fields: 4-5 words MAX (visual labels)
+- finding/rationale: 1 sentence only, no filler words
+- authors: 6 key researchers — 3 foundational (set active:false), 3 currently active (set active:true). Include researchers from different countries where possible.
 - Exactly 5 journals from the provided list
 - 8 keywords`;
 
@@ -88,11 +98,11 @@ Critical rules:
       messages: [
         {
           role: "system",
-          content: "You output ONLY raw JSON. No markdown, no code fences, no preamble. Start with { and end with }.",
+          content: "You output ONLY raw JSON. No markdown, no code fences, no preamble, no commentary. Start with { and end with }.",
         },
         { role: "user", content: userPrompt },
       ],
-      max_tokens: 2800,
+      max_tokens: 3200,
       temperature: 0.15,
     });
 
