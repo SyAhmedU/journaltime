@@ -582,7 +582,7 @@ FIELDS.forEach(f => {
 // Detect if we're on Vercel (has /api/compass) or GitHub Pages (no API)
 const API_BASE = window.location.hostname.includes('vercel.app') || window.location.hostname === 'localhost'
   ? '/api/compass'
-  : 'https://journaltime.vercel.app/api/compass';
+  : 'https://journaltime-khaki.vercel.app/api/compass';
 
 document.getElementById('compass-btn').addEventListener('click', async () => {
   const topic = document.getElementById('compass-input').value.trim();
