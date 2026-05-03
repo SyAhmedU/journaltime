@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Journal Wait Times — Scopus Indexed</title>
+<title>Journal Wait Times & Research Compass — Scopus Indexed</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -157,6 +157,47 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
 
+/* ── RESEARCH COMPASS ── */
+.compass{background:linear-gradient(135deg,#0c1a2e 0%,#1e3a5f 50%,#1e2d5a 100%);padding:28px 32px;border-bottom:3px solid #3b82f6}
+.compass-header{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.compass-icon{width:40px;height:40px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.compass-title{font-size:1.15rem;font-weight:800;color:#fff;letter-spacing:-.02em}
+.compass-subtitle{font-size:.8rem;color:#93c5fd;margin-top:1px}
+.compass-tagline{font-size:.82rem;color:#7dd3fc;margin-bottom:20px;padding-left:54px}
+.compass-form{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.compass-textarea-wrap{flex:1;min-width:300px}
+.compass-textarea{width:100%;padding:14px 16px;border:1.5px solid #3b82f6;border-radius:10px;background:#ffffff12;color:#fff;font-size:.88rem;line-height:1.6;resize:vertical;min-height:80px;outline:none;transition:.15s;font-family:inherit}
+.compass-textarea::placeholder{color:#64748b}
+.compass-textarea:focus{border-color:#60a5fa;background:#ffffff18}
+.compass-controls{display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.compass-field-select{padding:9px 12px;border:1.5px solid #3b82f6;border-radius:8px;background:#ffffff12;color:#fff;font-size:.8rem;outline:none;cursor:pointer;min-width:180px}
+.compass-field-select option{background:#1e3a5f;color:#fff}
+.compass-btn{padding:11px 24px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;transition:.15s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.compass-btn:hover{opacity:.9;transform:translateY(-1px)}
+.compass-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.compass-spinner{display:inline-block;width:14px;height:14px;border:2px solid #fff4;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.compass-results{margin-top:22px;display:none}
+.compass-results.show{display:block}
+.compass-results-header{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#7dd3fc;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #ffffff18}
+.compass-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.compass-card{background:#ffffff10;border:1px solid #ffffff18;border-radius:10px;padding:16px}
+.compass-card.full{grid-column:1/-1}
+.compass-card-title{font-size:.75rem;font-weight:700;color:#93c5fd;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.compass-card-body{font-size:.8rem;color:#e2e8f0;line-height:1.7}
+.compass-card-body strong{color:#fff}
+.compass-card-body ul{padding-left:16px;margin-top:4px}
+.compass-card-body ul li{margin-bottom:5px}
+.compass-card-body p{margin-bottom:8px}
+.compass-card-body h2,.compass-card-body h3{display:none}
+.compass-keyword{display:inline-block;background:#3b82f620;border:1px solid #3b82f640;border-radius:4px;padding:3px 8px;font-size:.72rem;color:#93c5fd;margin:2px}
+.compass-journal-rec{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid #ffffff10}
+.compass-journal-rec:last-child{border-bottom:none}
+.compass-rec-num{font-size:.65rem;font-weight:800;color:#7c3aed;width:18px;flex-shrink:0;padding-top:1px}
+.compass-rec-name{font-size:.8rem;font-weight:700;color:#fff}
+.compass-rec-why{font-size:.72rem;color:#94a3b8;margin-top:1px}
+.compass-error{background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:12px;font-size:.8rem;color:#991b1b;margin-top:12px}
+
 /* D3 tooltip */
 .d3-tip{position:absolute;pointer-events:none;background:#1e293b;color:#fff;padding:7px 10px;border-radius:8px;font-size:.75rem;line-height:1.5;max-width:200px;z-index:999;box-shadow:0 4px 12px #0004}
 
@@ -176,7 +217,7 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
     <div class="header-badge" id="journal-count-badge">Loading…</div>
   </div>
   <div class="stats-bar">
-    <div class="stat-item"><div class="stat-label">Journals Tracked</div><div class="stat-value" id="s-total">—</div><div class="stat-sub">across 15 fields</div></div>
+    <div class="stat-item"><div class="stat-label">Journals Tracked</div><div class="stat-value" id="s-total">—</div><div class="stat-sub">across 18 fields</div></div>
     <div class="stat-item"><div class="stat-label">Fastest Avg Field</div><div class="stat-value" id="s-fastest">—</div><div class="stat-sub" id="s-fastest-sub"></div></div>
     <div class="stat-item"><div class="stat-label">Slowest Avg Field</div><div class="stat-value" id="s-slowest">—</div><div class="stat-sub" id="s-slowest-sub"></div></div>
     <div class="stat-item"><div class="stat-label">Quickest Publisher</div><div class="stat-value" id="s-pub">—</div><div class="stat-sub" id="s-pub-sub"></div></div>
@@ -208,6 +249,36 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
     </div>
     <div id="pub-ranking"></div>
   </div>
+</div>
+
+<!-- RESEARCH COMPASS -->
+<div class="compass">
+  <div class="compass-header">
+    <div class="compass-icon">🧭</div>
+    <div>
+      <div class="compass-title">Research Compass — AI-Powered Gap Finder</div>
+      <div class="compass-subtitle">Powered by Claude AI · For Business, Psychology, Social &amp; Behavioral Sciences</div>
+    </div>
+  </div>
+  <p class="compass-tagline">Type your research idea or topic below. Claude will map what's already published, identify research gaps, recommend journals, and suggest fresh angles — in seconds.</p>
+  <div class="compass-form">
+    <div class="compass-textarea-wrap">
+      <textarea class="compass-textarea" id="compass-input" placeholder="e.g. &quot;How does algorithmic management affect employee wellbeing and autonomy in gig economy platforms?&quot;&#10;&#10;Or try: &quot;AI adoption barriers in SMEs&quot; / &quot;ESG reporting and investor behavior&quot; / &quot;Burnout in remote workers&quot;"></textarea>
+    </div>
+    <div class="compass-controls">
+      <select class="compass-field-select" id="compass-field">
+        <option value="">All fields (recommended)</option>
+      </select>
+      <button class="compass-btn" id="compass-btn">
+        <span id="compass-btn-text">Analyze Research Space →</span>
+      </button>
+    </div>
+  </div>
+  <div class="compass-results" id="compass-results">
+    <div class="compass-results-header" id="compass-results-header">Analysis results</div>
+    <div class="compass-grid" id="compass-grid"></div>
+  </div>
+  <div class="compass-error" id="compass-error" style="display:none"></div>
 </div>
 
 <!-- FIND MY JOURNAL WIZARD -->
@@ -387,7 +458,8 @@ const FCOLORS = {
   "Computer Science":"#2563eb","Social Sciences":"#d97706","Political Science":"#7c2d12",
   "Economics":"#0369a1","Psychology":"#db2777","Environmental Science":"#059669",
   "Physics & Chemistry":"#9333ea","Engineering":"#b45309","Education":"#0891b2",
-  "Mathematics":"#4338ca","Management":"#0f766e","Organizational Behaviour":"#be185d"
+  "Mathematics":"#4338ca","Management":"#0f766e","Organizational Behaviour":"#be185d",
+  "Accounting & Finance":"#c2410c","Information Systems":"#0284c7","Public Administration":"#4d7c0f"
 };
 
 // ── HELPERS ──────────────────────────────────────────────────────────────────
@@ -497,6 +569,147 @@ function drawPubRanking(){
 
 setTimeout(()=>{drawBar();drawScatter();drawPubRanking();},100);
 window.addEventListener('resize',()=>{drawBar();drawScatter();});
+
+// ── RESEARCH COMPASS ────────────────────────────────────────────────────────
+const meta = window.__JOURNAL_META__ || {};
+
+// Populate compass field dropdown
+const compassFieldSel = document.getElementById('compass-field');
+FIELDS.forEach(f => {
+  const o = document.createElement('option'); o.value = f; o.textContent = f; compassFieldSel.appendChild(o);
+});
+
+// Detect if we're on Vercel (has /api/compass) or GitHub Pages (no API)
+const API_BASE = window.location.hostname.includes('vercel.app') || window.location.hostname === 'localhost'
+  ? '/api/compass'
+  : 'https://journaltime.vercel.app/api/compass';
+
+document.getElementById('compass-btn').addEventListener('click', async () => {
+  const topic = document.getElementById('compass-input').value.trim();
+  const field = compassFieldSel.value;
+  const btn = document.getElementById('compass-btn');
+  const btnText = document.getElementById('compass-btn-text');
+  const errEl = document.getElementById('compass-error');
+  const resultsEl = document.getElementById('compass-results');
+
+  errEl.style.display = 'none';
+  if (!topic || topic.length < 8) {
+    errEl.textContent = 'Please enter a more detailed research topic (at least a sentence).';
+    errEl.style.display = 'block'; return;
+  }
+
+  btn.disabled = true;
+  btnText.innerHTML = '<span class="compass-spinner"></span> Analyzing…';
+  resultsEl.classList.remove('show');
+
+  try {
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic, field, journals: data, meta })
+    });
+    const json = await res.json();
+    if (!res.ok || json.error) throw new Error(json.error || 'Analysis failed');
+    renderCompassResults(topic, json.result);
+  } catch (e) {
+    errEl.textContent = e.message || 'Could not reach the AI. Please try again.';
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = 'Analyze Research Space →';
+  }
+});
+
+function renderCompassResults(topic, text) {
+  const header = document.getElementById('compass-results-header');
+  const grid = document.getElementById('compass-grid');
+  const resultsEl = document.getElementById('compass-results');
+
+  header.textContent = `Research landscape for: "${topic.length > 80 ? topic.slice(0,80)+'…' : topic}"`;
+
+  // Parse the 5 sections from Claude's markdown response
+  const sections = {
+    covered: extractSection(text, '📚 What\'s Already Well-Covered', '🔍'),
+    gaps: extractSection(text, '🔍 Research Gaps You Can Fill', '🎯'),
+    journals: extractSection(text, '🎯 Best Journals to Target', '💡'),
+    angles: extractSection(text, '💡 Fresh Research Angles', '🔑'),
+    keywords: extractSection(text, '🔑 Search Keywords for Literature Review', null)
+  };
+
+  grid.innerHTML = `
+    <div class="compass-card">
+      <div class="compass-card-title">📚 What's Already Well-Covered</div>
+      <div class="compass-card-body">${renderMd(sections.covered)}</div>
+    </div>
+    <div class="compass-card">
+      <div class="compass-card-title">🔍 Research Gaps You Can Fill</div>
+      <div class="compass-card-body">${renderMd(sections.gaps)}</div>
+    </div>
+    <div class="compass-card">
+      <div class="compass-card-title">🎯 Best Journals to Target</div>
+      <div class="compass-card-body">${renderJournals(sections.journals)}</div>
+    </div>
+    <div class="compass-card">
+      <div class="compass-card-title">💡 Fresh Research Angles</div>
+      <div class="compass-card-body">${renderMd(sections.angles)}</div>
+    </div>
+    <div class="compass-card full">
+      <div class="compass-card-title">🔑 Search Keywords</div>
+      <div class="compass-card-body">${renderKeywords(sections.keywords)}</div>
+    </div>`;
+
+  resultsEl.classList.add('show');
+  resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function extractSection(text, startMarker, endMarker) {
+  const si = text.indexOf(startMarker);
+  if (si === -1) return text;
+  const content = text.slice(si + startMarker.length);
+  if (!endMarker) return content.trim();
+  const ei = content.indexOf(endMarker);
+  return (ei === -1 ? content : content.slice(0, ei)).trim();
+}
+
+function renderMd(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^[\-\*]\s+(.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+    .replace(/\n\n+/g, '</p><p>')
+    .replace(/^(?!<[upl])/gm, '')
+    || text;
+}
+
+function renderJournals(text) {
+  const lines = text.split('\n').filter(l => l.trim());
+  let html = '';
+  let n = 1;
+  lines.forEach(line => {
+    const clean = line.replace(/^[\d\.\-\*]+\s*/, '').trim();
+    if (!clean) return;
+    const colonIdx = clean.indexOf(':');
+    if (colonIdx > 0 && colonIdx < 60) {
+      const jname = clean.slice(0, colonIdx).replace(/\*\*/g, '').trim();
+      const why = clean.slice(colonIdx + 1).replace(/\*\*/g, '').trim();
+      html += `<div class="compass-journal-rec"><span class="compass-rec-num">${n++}</span><div><div class="compass-rec-name">${jname}</div><div class="compass-rec-why">${why}</div></div></div>`;
+    } else {
+      const bold = clean.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      html += `<div class="compass-journal-rec"><span class="compass-rec-num">${n++}</span><div><div class="compass-rec-name">${bold}</div></div></div>`;
+    }
+  });
+  return html || renderMd(text);
+}
+
+function renderKeywords(text) {
+  const words = text.match(/["']([^"']+)["']|`([^`]+)`|\*\*([^*]+)\*\*|(?:^|\n)[\-\*\d\.]+\s+(.+)/gm) || [];
+  if (!words.length) {
+    return text.split(/[\n,;]+/).filter(w=>w.trim().length>2)
+      .map(w=>`<span class="compass-keyword">${w.replace(/^[\d\.\-\*\s]+/,'').trim()}</span>`).join('');
+  }
+  return words.map(w=>w.replace(/["'`\*\-\d\.\s]+/g,'').trim()).filter(Boolean)
+    .map(w=>`<span class="compass-keyword">${w}</span>`).join('');
+}
 
 // ── FINDER ───────────────────────────────────────────────────────────────────
 const finderFieldSel=document.getElementById('finder-field');

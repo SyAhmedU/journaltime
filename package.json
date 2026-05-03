@@ -1,0 +1,24 @@
+{
+  "name": "journaltime",
+  "version": "1.0.0",
+  "description": "",
+  "main": "data.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SyAhmedU/journaltime.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/SyAhmedU/journaltime/issues"
+  },
+  "homepage": "https://github.com/SyAhmedU/journaltime#readme",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.92.0"
+  }
+}
