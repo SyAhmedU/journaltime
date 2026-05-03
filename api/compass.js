@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -12,13 +12,11 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Please enter a more detailed research topic." });
   }
 
-  // Build journal context — pick relevant journals based on field filter
   const relevant = journals
     .filter(j => !field || j.field === field)
     .sort((a, b) => b.impact_factor - a.impact_factor)
     .slice(0, 60);
 
-  // Enrich with meta descriptions
   const journalContext = relevant.map(j => {
     const m = meta[j.id];
     const themes = m?.themes?.join(", ") || "general research";
@@ -56,14 +54,17 @@ Suggest 3–4 specific, novel research directions in this topic not yet fully ex
 Give 6–8 specific keywords/phrases the researcher should use when searching Google Scholar, Scopus, or Web of Science.`;
 
   try {
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-    const message = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1500,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userPrompt }],
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      systemInstruction: systemPrompt,
     });
-    return res.status(200).json({ result: message.content[0].text });
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+      generationConfig: { maxOutputTokens: 1500 },
+    });
+    const text = result.response.text();
+    return res.status(200).json({ result: text });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Analysis failed. Please try again.", detail: err.message });
