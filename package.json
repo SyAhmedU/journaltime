@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/SyAhmedU/journaltime#readme",
   "dependencies": {
-    "@google/generative-ai": "^0.21.0"
+    "groq-sdk": "^0.9.0"
   }
 }
