@@ -66,6 +66,6 @@ Give 6–8 specific keywords/phrases the researcher should use when searching Go
     return res.status(200).json({ result: message.content[0].text });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Analysis failed. Please try again." });
+    return res.status(500).json({ error: "Analysis failed. Please try again.", detail: err.message });
   }
 }
