@@ -185,6 +185,7 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
 .ctree-legend-item{display:flex;align-items:center;gap:5px;font-size:.72rem;color:#94a3b8}
 .ctree-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .ctree-dot.studied{background:#22c55e}
+.ctree-dot.debate{background:#8b5cf6}
 .ctree-dot.gap{background:#f97316}
 .ctree-legend-hint{font-size:.68rem;color:#475569;margin-left:auto}
 /* tree wrap */
@@ -282,9 +283,10 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
   </div>
   <div class="compass-results" id="compass-results">
     <div class="ctree-legend-bar">
-      <span class="ctree-legend-item"><span class="ctree-dot studied"></span>Already studied</span>
+      <span class="ctree-legend-item"><span class="ctree-dot studied"></span>Established finding</span>
+      <span class="ctree-legend-item"><span class="ctree-dot debate"></span>Contested / debated</span>
       <span class="ctree-legend-item"><span class="ctree-dot gap"></span>Research gap — do this!</span>
-      <span class="ctree-legend-hint">Hover any node for details &amp; citations</span>
+      <span class="ctree-legend-hint">Hover for details · Click green/purple nodes to open papers</span>
     </div>
     <div id="compass-tree-wrap" class="compass-tree-wrap"></div>
     <div class="ctree-section-label">🎯 Best Journals to Target</div>
@@ -643,14 +645,14 @@ function renderCompassTree(treeData) {
   wrap.innerHTML = '';
   if (!treeData.name) return;
 
-  const margin = { top: 20, right: 250, bottom: 20, left: 175 };
-  const fullW = wrap.parentElement.clientWidth || 820;
+  const margin = { top: 24, right: 265, bottom: 24, left: 190 };
+  const fullW = wrap.parentElement.clientWidth || 860;
   const W = fullW - margin.left - margin.right;
 
   const leafCount = (treeData.children || []).reduce(
     (acc, b) => acc + Math.max(1, b.children?.length || 1), 0
   );
-  const H = Math.max(380, leafCount * 40);
+  const H = Math.max(460, leafCount * 44);
 
   const svg = d3.select(wrap)
     .append('svg')
@@ -662,14 +664,22 @@ function renderCompassTree(treeData) {
   const root = d3.hierarchy(treeData);
   d3.tree().size([H, W])(root);
 
+  const nodeColor = d => {
+    if (d.depth === 0) return '#1e3a5f';
+    if (d.depth === 1) return '#1d4ed8';
+    const t = d.data.type;
+    return t === 'gap' ? '#f97316' : t === 'debate' ? '#8b5cf6' : '#22c55e';
+  };
+
   // Links
   g.selectAll('path.clink')
     .data(root.links())
     .join('path').attr('class', 'clink')
     .attr('fill', 'none')
     .attr('stroke', d => {
-      if (d.target.depth < 2) return '#3b82f630';
-      return d.target.data.type === 'gap' ? '#f9731650' : '#22c55e50';
+      if (d.target.depth < 2) return '#3b82f628';
+      const t = d.target.data.type;
+      return t === 'gap' ? '#f9731648' : t === 'debate' ? '#8b5cf648' : '#22c55e48';
     })
     .attr('stroke-width', d => d.target.depth === 1 ? 1.5 : 1)
     .attr('stroke-dasharray', d => d.target.data.type === 'gap' ? '5,3' : null)
@@ -680,7 +690,7 @@ function renderCompassTree(treeData) {
   if (!tip) {
     tip = document.createElement('div');
     tip.id = 'ctree-tip';
-    tip.style.cssText = 'position:fixed;display:none;background:#0f172a;color:#e2e8f0;padding:10px 14px;border-radius:9px;font-size:.75rem;max-width:270px;line-height:1.55;z-index:9999;pointer-events:none;border:1px solid #1e40af;box-shadow:0 6px 20px #0008';
+    tip.style.cssText = 'position:fixed;display:none;background:#0a0f1e;color:#e2e8f0;padding:12px 16px;border-radius:10px;font-size:.74rem;max-width:310px;line-height:1.6;z-index:9999;pointer-events:none;border:1px solid #1e3a8a;box-shadow:0 8px 28px #000b';
     document.body.appendChild(tip);
   }
 
@@ -691,55 +701,96 @@ function renderCompassTree(treeData) {
     .attr('transform', d => `translate(${d.y},${d.x})`);
 
   node.append('circle')
-    .attr('r', d => d.depth === 0 ? 11 : d.depth === 1 ? 8 : 6)
-    .attr('fill', d => {
-      if (d.depth === 0) return '#1e3a5f';
-      if (d.depth === 1) return '#2563eb';
-      return d.data.type === 'gap' ? '#f97316' : '#22c55e';
+    .attr('r', d => d.depth === 0 ? 12 : d.depth === 1 ? 9 : 7)
+    .attr('fill', nodeColor)
+    .attr('stroke', d => {
+      if (d.depth < 2) return '#fff';
+      return d.data.type === 'gap' ? '#fdba74' : d.data.type === 'debate' ? '#c4b5fd' : '#bbf7d0';
     })
-    .attr('stroke', d => d.depth === 2 && d.data.type === 'gap' ? '#fdba74' : '#fff')
-    .attr('stroke-width', 1.5)
-    .style('cursor', d => d.depth === 2 ? 'pointer' : 'default')
+    .attr('stroke-width', d => d.depth === 2 && d.data.type === 'debate' ? 2 : 1.5)
+    .attr('stroke-dasharray', d => d.depth === 2 && d.data.type === 'debate' ? '3,2' : null)
+    .style('cursor', d => d.depth === 2 && d.data.type !== 'gap' ? 'pointer' : d.depth === 2 ? 'help' : 'default')
     .on('mousemove', (evt, d) => {
-      if (d.depth !== 2) return;
-      let html = `<strong style="font-size:.8rem">${d.data.name}</strong><br>`;
-      if (d.data.type === 'studied') {
-        if (d.data.detail) html += `${d.data.detail}<br>`;
-        if (d.data.citation) html += `<span style="color:#7dd3fc;font-style:italic">${d.data.citation}</span>`;
-        else html += `<span style="color:#475569">No citation recorded</span>`;
+      if (d.depth === 0) return;
+      let html = '';
+      if (d.depth === 1) {
+        const cnt = (d.children || []).reduce((a, c) => a + (c.data.papers?.length || 0), 0);
+        html = `<strong style="color:#93c5fd;font-size:.8rem">${d.data.name}</strong>`;
+        if (cnt) html += `<br><span style="color:#64748b;font-size:.68rem">${cnt} paper${cnt > 1 ? 's' : ''} cited in this branch</span>`;
       } else {
-        html += `<span style="color:#fdba74">⚠ Research gap</span><br>`;
-        if (d.data.detail) html += `${d.data.detail}<br>`;
-        if (d.data.method) html += `<strong style="color:#fde68a">→ Suggested method: ${d.data.method}</strong>`;
+        const typeLabel = d.data.type === 'debate' ? '⚡ Contested Finding' : d.data.type === 'gap' ? '🔬 Research Gap' : '✅ Established';
+        const typeColor = d.data.type === 'debate' ? '#c4b5fd' : d.data.type === 'gap' ? '#fdba74' : '#86efac';
+        html = `<div style="color:${typeColor};font-weight:700;font-size:.68rem;letter-spacing:.04em;margin-bottom:4px">${typeLabel}</div>`;
+        html += `<strong style="font-size:.8rem">${d.data.name}</strong>`;
+        if (d.data.type !== 'gap') {
+          (d.data.papers || []).forEach(p => {
+            html += `<div style="margin-top:6px;padding:6px 8px;background:#ffffff08;border-radius:6px;border-left:2px solid ${typeColor}">`;
+            html += `<div style="color:#e2e8f0;font-size:.71rem;line-height:1.4">${p.title}</div>`;
+            html += `<div style="color:#7dd3fc;font-size:.67rem;margin-top:2px">${p.authors} (${p.year})</div>`;
+            html += `</div>`;
+          });
+          if (d.data.finding) html += `<div style="margin-top:7px;font-size:.7rem;color:#94a3b8;font-style:italic;border-top:1px solid #1e293b;padding-top:6px">"${d.data.finding}"</div>`;
+          if (d.data.papers?.length) html += `<div style="margin-top:6px;font-size:.67rem;color:#3b82f6">🔗 Click to search on Google Scholar</div>`;
+        } else {
+          if (d.data.rationale) html += `<div style="margin-top:5px;color:#cbd5e1;font-size:.71rem">${d.data.rationale}</div>`;
+          if (d.data.method) html += `<div style="margin-top:7px;color:#fde68a;font-weight:700;font-size:.71rem">→ Suggested: ${d.data.method}</div>`;
+          if (d.data.feasibility) html += `<div style="color:#64748b;font-size:.68rem;margin-top:2px">Feasibility: ${d.data.feasibility}</div>`;
+        }
       }
       tip.innerHTML = html;
       tip.style.display = 'block';
-      tip.style.left = (evt.clientX + 16) + 'px';
-      tip.style.top = (evt.clientY - 8) + 'px';
+      const tx = Math.min(evt.clientX + 18, window.innerWidth - 330);
+      tip.style.left = tx + 'px';
+      tip.style.top = Math.max(8, evt.clientY - 12) + 'px';
     })
-    .on('mouseleave', () => { tip.style.display = 'none'; });
+    .on('mouseleave', () => { tip.style.display = 'none'; })
+    .on('click', (evt, d) => {
+      if (d.depth !== 2 || d.data.type === 'gap') return;
+      const p = (d.data.papers || [])[0];
+      if (!p) return;
+      const url = p.doi
+        ? `https://doi.org/${p.doi}`
+        : `https://scholar.google.com/scholar?q=${encodeURIComponent((p.title || '') + ' ' + (p.authors || ''))}`;
+      window.open(url, '_blank');
+    });
 
-  // Labels
+  // Paper count badge on branch nodes
+  node.filter(d => d.depth === 1).each(function(d) {
+    const cnt = (d.children || []).reduce((a, c) => a + (c.data.papers?.length || 0), 0);
+    if (!cnt) return;
+    d3.select(this).append('rect')
+      .attr('x', -22).attr('y', 11).attr('width', 24).attr('height', 12)
+      .attr('rx', 3).attr('fill', '#1e3a8a80').attr('stroke', '#3b82f640');
+    d3.select(this).append('text')
+      .attr('x', -10).attr('y', 20).attr('text-anchor', 'middle')
+      .text(`${cnt}p`).attr('fill', '#93c5fd').attr('font-size', '7.5px')
+      .style('user-select', 'none');
+  });
+
+  // Node labels
   node.append('text')
     .attr('dy', '0.35em')
-    .attr('x', d => d.depth <= 1 ? (d.children ? -13 : 13) : 13)
+    .attr('x', d => d.depth <= 1 ? (d.children ? -15 : 15) : 14)
     .attr('text-anchor', d => d.depth <= 1 ? (d.children ? 'end' : 'start') : 'start')
     .text(d => d.data.name)
-    .attr('fill', d => d.depth === 2 && d.data.type === 'gap' ? '#fdba74' : '#e2e8f0')
+    .attr('fill', d => {
+      if (d.depth < 2) return '#e2e8f0';
+      const t = d.data.type;
+      return t === 'gap' ? '#fdba74' : t === 'debate' ? '#c4b5fd' : '#86efac';
+    })
     .attr('font-size', d => d.depth === 0 ? '13px' : d.depth === 1 ? '11.5px' : '10.5px')
     .attr('font-weight', d => d.depth <= 1 ? '700' : '400')
     .style('user-select', 'none');
 
   // Method pill on gap leaves
-  node.filter(d => d.depth === 2 && d.data.type === 'gap' && d.data.method)
-    .each(function(d) {
-      const el = d3.select(this);
-      const pw = d.data.method.length * 5.6 + 12;
-      el.append('rect').attr('x', 12).attr('y', 9).attr('width', pw).attr('height', 13)
-        .attr('rx', 3).attr('fill', '#f9731618').attr('stroke', '#f9731640');
-      el.append('text').attr('x', 17).attr('y', 19).text(d.data.method)
-        .attr('fill', '#fbd38d').attr('font-size', '8px').style('user-select', 'none');
-    });
+  node.filter(d => d.depth === 2 && d.data.type === 'gap' && d.data.method).each(function(d) {
+    const el = d3.select(this);
+    const pw = d.data.method.length * 5.6 + 12;
+    el.append('rect').attr('x', 13).attr('y', 10).attr('width', pw).attr('height', 13)
+      .attr('rx', 3).attr('fill', '#f9731615').attr('stroke', '#f9731438');
+    el.append('text').attr('x', 18).attr('y', 20).text(d.data.method)
+      .attr('fill', '#fbd38d').attr('font-size', '8px').style('user-select', 'none');
+  });
 }
 
 function renderCompassJournals(journals) {
