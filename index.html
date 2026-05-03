@@ -179,24 +179,30 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 .compass-results{margin-top:22px;display:none}
 .compass-results.show{display:block}
-.compass-results-header{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#7dd3fc;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #ffffff18}
-.compass-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.compass-card{background:#ffffff10;border:1px solid #ffffff18;border-radius:10px;padding:16px}
-.compass-card.full{grid-column:1/-1}
-.compass-card-title{font-size:.75rem;font-weight:700;color:#93c5fd;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.compass-card-body{font-size:.8rem;color:#e2e8f0;line-height:1.7}
-.compass-card-body strong{color:#fff}
-.compass-card-body ul{padding-left:16px;margin-top:4px}
-.compass-card-body ul li{margin-bottom:5px}
-.compass-card-body p{margin-bottom:8px}
-.compass-card-body h2,.compass-card-body h3{display:none}
-.compass-keyword{display:inline-block;background:#3b82f620;border:1px solid #3b82f640;border-radius:4px;padding:3px 8px;font-size:.72rem;color:#93c5fd;margin:2px}
-.compass-journal-rec{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid #ffffff10}
-.compass-journal-rec:last-child{border-bottom:none}
-.compass-rec-num{font-size:.65rem;font-weight:800;color:#7c3aed;width:18px;flex-shrink:0;padding-top:1px}
-.compass-rec-name{font-size:.8rem;font-weight:700;color:#fff}
-.compass-rec-why{font-size:.72rem;color:#94a3b8;margin-top:1px}
 .compass-error{background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:12px;font-size:.8rem;color:#991b1b;margin-top:12px}
+/* tree legend */
+.ctree-legend-bar{display:flex;align-items:center;gap:18px;margin-bottom:12px;flex-wrap:wrap}
+.ctree-legend-item{display:flex;align-items:center;gap:5px;font-size:.72rem;color:#94a3b8}
+.ctree-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.ctree-dot.studied{background:#22c55e}
+.ctree-dot.gap{background:#f97316}
+.ctree-legend-hint{font-size:.68rem;color:#475569;margin-left:auto}
+/* tree wrap */
+.compass-tree-wrap{overflow-x:auto;margin:0 -4px 4px;padding:4px}
+/* section labels */
+.ctree-section-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#7dd3fc;margin:18px 0 8px;padding-top:14px;border-top:1px solid #ffffff12}
+/* journal cards */
+.compass-journals-row{display:flex;gap:8px;flex-wrap:wrap}
+.cjournal-card{background:#ffffff0d;border:1px solid #ffffff18;border-radius:9px;padding:10px 13px;flex:1;min-width:150px;max-width:210px}
+.cjournal-name{font-size:.77rem;font-weight:700;color:#fff;margin-bottom:3px;line-height:1.3}
+.cjournal-reason{font-size:.69rem;color:#94a3b8;line-height:1.45}
+.cjournal-comp{display:inline-block;margin-top:6px;padding:2px 7px;border-radius:4px;font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.cjournal-comp.high{background:#dc262618;color:#fca5a5}
+.cjournal-comp.medium{background:#d9770618;color:#fcd34d}
+.cjournal-comp.low{background:#16a34a18;color:#86efac}
+/* keywords */
+.compass-kw-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.compass-keyword{display:inline-block;background:#3b82f618;border:1px solid #3b82f640;border-radius:4px;padding:3px 9px;font-size:.72rem;color:#93c5fd}
 
 /* D3 tooltip */
 .d3-tip{position:absolute;pointer-events:none;background:#1e293b;color:#fff;padding:7px 10px;border-radius:8px;font-size:.75rem;line-height:1.5;max-width:200px;z-index:999;box-shadow:0 4px 12px #0004}
@@ -257,7 +263,7 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
     <div class="compass-icon">🧭</div>
     <div>
       <div class="compass-title">Research Compass — AI-Powered Gap Finder</div>
-      <div class="compass-subtitle">Powered by Claude AI · For Business, Psychology, Social &amp; Behavioral Sciences</div>
+      <div class="compass-subtitle">Powered by AI · For Business, Psychology, Social &amp; Behavioral Sciences</div>
     </div>
   </div>
   <p class="compass-tagline">Type your research idea or topic below. Claude will map what's already published, identify research gaps, recommend journals, and suggest fresh angles — in seconds.</p>
@@ -275,8 +281,16 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
     </div>
   </div>
   <div class="compass-results" id="compass-results">
-    <div class="compass-results-header" id="compass-results-header">Analysis results</div>
-    <div class="compass-grid" id="compass-grid"></div>
+    <div class="ctree-legend-bar">
+      <span class="ctree-legend-item"><span class="ctree-dot studied"></span>Already studied</span>
+      <span class="ctree-legend-item"><span class="ctree-dot gap"></span>Research gap — do this!</span>
+      <span class="ctree-legend-hint">Hover any node for details &amp; citations</span>
+    </div>
+    <div id="compass-tree-wrap" class="compass-tree-wrap"></div>
+    <div class="ctree-section-label">🎯 Best Journals to Target</div>
+    <div id="compass-journals" class="compass-journals-row"></div>
+    <div class="ctree-section-label">🔑 Search Keywords</div>
+    <div id="compass-keywords" class="compass-kw-wrap"></div>
   </div>
   <div class="compass-error" id="compass-error" style="display:none"></div>
 </div>
@@ -573,13 +587,11 @@ window.addEventListener('resize',()=>{drawBar();drawScatter();});
 // ── RESEARCH COMPASS ────────────────────────────────────────────────────────
 const meta = window.__JOURNAL_META__ || {};
 
-// Populate compass field dropdown
 const compassFieldSel = document.getElementById('compass-field');
 FIELDS.forEach(f => {
   const o = document.createElement('option'); o.value = f; o.textContent = f; compassFieldSel.appendChild(o);
 });
 
-// Detect if we're on Vercel (has /api/compass) or GitHub Pages (no API)
 const API_BASE = window.location.hostname.includes('vercel.app') || window.location.hostname === 'localhost'
   ? '/api/compass'
   : 'https://journaltime-khaki.vercel.app/api/compass';
@@ -599,7 +611,7 @@ document.getElementById('compass-btn').addEventListener('click', async () => {
   }
 
   btn.disabled = true;
-  btnText.innerHTML = '<span class="compass-spinner"></span> Analyzing…';
+  btnText.innerHTML = '<span class="compass-spinner"></span> Mapping research landscape…';
   resultsEl.classList.remove('show');
 
   try {
@@ -610,7 +622,13 @@ document.getElementById('compass-btn').addEventListener('click', async () => {
     });
     const json = await res.json();
     if (!res.ok || json.error) throw new Error(json.error || 'Analysis failed');
-    renderCompassResults(topic, json.result);
+    let parsed;
+    try { parsed = JSON.parse(json.result); } catch(e) { throw new Error('Unexpected response format. Please try again.'); }
+    renderCompassTree(parsed.tree || {});
+    renderCompassJournals(parsed.journals || []);
+    renderCompassKeywords(parsed.keywords || []);
+    resultsEl.classList.add('show');
+    resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (e) {
     errEl.textContent = e.message || 'Could not reach the AI. Please try again.';
     errEl.style.display = 'block';
@@ -620,95 +638,129 @@ document.getElementById('compass-btn').addEventListener('click', async () => {
   }
 });
 
-function renderCompassResults(topic, text) {
-  const header = document.getElementById('compass-results-header');
-  const grid = document.getElementById('compass-grid');
-  const resultsEl = document.getElementById('compass-results');
+function renderCompassTree(treeData) {
+  const wrap = document.getElementById('compass-tree-wrap');
+  wrap.innerHTML = '';
+  if (!treeData.name) return;
 
-  header.textContent = `Research landscape for: "${topic.length > 80 ? topic.slice(0,80)+'…' : topic}"`;
+  const margin = { top: 20, right: 250, bottom: 20, left: 175 };
+  const fullW = wrap.parentElement.clientWidth || 820;
+  const W = fullW - margin.left - margin.right;
 
-  // Parse the 5 sections from Claude's markdown response
-  const sections = {
-    covered: extractSection(text, '📚 What\'s Already Well-Covered', '🔍'),
-    gaps: extractSection(text, '🔍 Research Gaps You Can Fill', '🎯'),
-    journals: extractSection(text, '🎯 Best Journals to Target', '💡'),
-    angles: extractSection(text, '💡 Fresh Research Angles', '🔑'),
-    keywords: extractSection(text, '🔑 Search Keywords for Literature Review', null)
-  };
+  const leafCount = (treeData.children || []).reduce(
+    (acc, b) => acc + Math.max(1, b.children?.length || 1), 0
+  );
+  const H = Math.max(380, leafCount * 40);
 
-  grid.innerHTML = `
-    <div class="compass-card">
-      <div class="compass-card-title">📚 What's Already Well-Covered</div>
-      <div class="compass-card-body">${renderMd(sections.covered)}</div>
-    </div>
-    <div class="compass-card">
-      <div class="compass-card-title">🔍 Research Gaps You Can Fill</div>
-      <div class="compass-card-body">${renderMd(sections.gaps)}</div>
-    </div>
-    <div class="compass-card">
-      <div class="compass-card-title">🎯 Best Journals to Target</div>
-      <div class="compass-card-body">${renderJournals(sections.journals)}</div>
-    </div>
-    <div class="compass-card">
-      <div class="compass-card-title">💡 Fresh Research Angles</div>
-      <div class="compass-card-body">${renderMd(sections.angles)}</div>
-    </div>
-    <div class="compass-card full">
-      <div class="compass-card-title">🔑 Search Keywords</div>
-      <div class="compass-card-body">${renderKeywords(sections.keywords)}</div>
-    </div>`;
+  const svg = d3.select(wrap)
+    .append('svg')
+    .attr('viewBox', `0 0 ${fullW} ${H + margin.top + margin.bottom}`)
+    .attr('width', '100%')
+    .style('overflow', 'visible');
 
-  resultsEl.classList.add('show');
-  resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+  const root = d3.hierarchy(treeData);
+  d3.tree().size([H, W])(root);
 
-function extractSection(text, startMarker, endMarker) {
-  const si = text.indexOf(startMarker);
-  if (si === -1) return text;
-  const content = text.slice(si + startMarker.length);
-  if (!endMarker) return content.trim();
-  const ei = content.indexOf(endMarker);
-  return (ei === -1 ? content : content.slice(0, ei)).trim();
-}
+  // Links
+  g.selectAll('path.clink')
+    .data(root.links())
+    .join('path').attr('class', 'clink')
+    .attr('fill', 'none')
+    .attr('stroke', d => {
+      if (d.target.depth < 2) return '#3b82f630';
+      return d.target.data.type === 'gap' ? '#f9731650' : '#22c55e50';
+    })
+    .attr('stroke-width', d => d.target.depth === 1 ? 1.5 : 1)
+    .attr('stroke-dasharray', d => d.target.data.type === 'gap' ? '5,3' : null)
+    .attr('d', d3.linkHorizontal().x(d => d.y).y(d => d.x));
 
-function renderMd(text) {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^[\-\*]\s+(.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
-    .replace(/\n\n+/g, '</p><p>')
-    .replace(/^(?!<[upl])/gm, '')
-    || text;
-}
-
-function renderJournals(text) {
-  const lines = text.split('\n').filter(l => l.trim());
-  let html = '';
-  let n = 1;
-  lines.forEach(line => {
-    const clean = line.replace(/^[\d\.\-\*]+\s*/, '').trim();
-    if (!clean) return;
-    const colonIdx = clean.indexOf(':');
-    if (colonIdx > 0 && colonIdx < 60) {
-      const jname = clean.slice(0, colonIdx).replace(/\*\*/g, '').trim();
-      const why = clean.slice(colonIdx + 1).replace(/\*\*/g, '').trim();
-      html += `<div class="compass-journal-rec"><span class="compass-rec-num">${n++}</span><div><div class="compass-rec-name">${jname}</div><div class="compass-rec-why">${why}</div></div></div>`;
-    } else {
-      const bold = clean.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      html += `<div class="compass-journal-rec"><span class="compass-rec-num">${n++}</span><div><div class="compass-rec-name">${bold}</div></div></div>`;
-    }
-  });
-  return html || renderMd(text);
-}
-
-function renderKeywords(text) {
-  const words = text.match(/["']([^"']+)["']|`([^`]+)`|\*\*([^*]+)\*\*|(?:^|\n)[\-\*\d\.]+\s+(.+)/gm) || [];
-  if (!words.length) {
-    return text.split(/[\n,;]+/).filter(w=>w.trim().length>2)
-      .map(w=>`<span class="compass-keyword">${w.replace(/^[\d\.\-\*\s]+/,'').trim()}</span>`).join('');
+  // Tooltip
+  let tip = document.getElementById('ctree-tip');
+  if (!tip) {
+    tip = document.createElement('div');
+    tip.id = 'ctree-tip';
+    tip.style.cssText = 'position:fixed;display:none;background:#0f172a;color:#e2e8f0;padding:10px 14px;border-radius:9px;font-size:.75rem;max-width:270px;line-height:1.55;z-index:9999;pointer-events:none;border:1px solid #1e40af;box-shadow:0 6px 20px #0008';
+    document.body.appendChild(tip);
   }
-  return words.map(w=>w.replace(/["'`\*\-\d\.\s]+/g,'').trim()).filter(Boolean)
-    .map(w=>`<span class="compass-keyword">${w}</span>`).join('');
+
+  // Nodes
+  const node = g.selectAll('g.cnode')
+    .data(root.descendants())
+    .join('g').attr('class', 'cnode')
+    .attr('transform', d => `translate(${d.y},${d.x})`);
+
+  node.append('circle')
+    .attr('r', d => d.depth === 0 ? 11 : d.depth === 1 ? 8 : 6)
+    .attr('fill', d => {
+      if (d.depth === 0) return '#1e3a5f';
+      if (d.depth === 1) return '#2563eb';
+      return d.data.type === 'gap' ? '#f97316' : '#22c55e';
+    })
+    .attr('stroke', d => d.depth === 2 && d.data.type === 'gap' ? '#fdba74' : '#fff')
+    .attr('stroke-width', 1.5)
+    .style('cursor', d => d.depth === 2 ? 'pointer' : 'default')
+    .on('mousemove', (evt, d) => {
+      if (d.depth !== 2) return;
+      let html = `<strong style="font-size:.8rem">${d.data.name}</strong><br>`;
+      if (d.data.type === 'studied') {
+        if (d.data.detail) html += `${d.data.detail}<br>`;
+        if (d.data.citation) html += `<span style="color:#7dd3fc;font-style:italic">${d.data.citation}</span>`;
+        else html += `<span style="color:#475569">No citation recorded</span>`;
+      } else {
+        html += `<span style="color:#fdba74">⚠ Research gap</span><br>`;
+        if (d.data.detail) html += `${d.data.detail}<br>`;
+        if (d.data.method) html += `<strong style="color:#fde68a">→ Suggested method: ${d.data.method}</strong>`;
+      }
+      tip.innerHTML = html;
+      tip.style.display = 'block';
+      tip.style.left = (evt.clientX + 16) + 'px';
+      tip.style.top = (evt.clientY - 8) + 'px';
+    })
+    .on('mouseleave', () => { tip.style.display = 'none'; });
+
+  // Labels
+  node.append('text')
+    .attr('dy', '0.35em')
+    .attr('x', d => d.depth <= 1 ? (d.children ? -13 : 13) : 13)
+    .attr('text-anchor', d => d.depth <= 1 ? (d.children ? 'end' : 'start') : 'start')
+    .text(d => d.data.name)
+    .attr('fill', d => d.depth === 2 && d.data.type === 'gap' ? '#fdba74' : '#e2e8f0')
+    .attr('font-size', d => d.depth === 0 ? '13px' : d.depth === 1 ? '11.5px' : '10.5px')
+    .attr('font-weight', d => d.depth <= 1 ? '700' : '400')
+    .style('user-select', 'none');
+
+  // Method pill on gap leaves
+  node.filter(d => d.depth === 2 && d.data.type === 'gap' && d.data.method)
+    .each(function(d) {
+      const el = d3.select(this);
+      const pw = d.data.method.length * 5.6 + 12;
+      el.append('rect').attr('x', 12).attr('y', 9).attr('width', pw).attr('height', 13)
+        .attr('rx', 3).attr('fill', '#f9731618').attr('stroke', '#f9731640');
+      el.append('text').attr('x', 17).attr('y', 19).text(d.data.method)
+        .attr('fill', '#fbd38d').attr('font-size', '8px').style('user-select', 'none');
+    });
+}
+
+function renderCompassJournals(journals) {
+  const el = document.getElementById('compass-journals');
+  if (!journals?.length) { el.innerHTML = ''; return; }
+  el.innerHTML = journals.map(j => {
+    const c = (j.competition || '').toLowerCase();
+    const badge = c === 'high' ? 'High competition' : c === 'low' ? 'Accessible' : 'Moderate';
+    const cls = c === 'high' ? 'high' : c === 'low' ? 'low' : 'medium';
+    return `<div class="cjournal-card">
+      <div class="cjournal-name">${j.name}</div>
+      <div class="cjournal-reason">${j.reason || ''}</div>
+      <span class="cjournal-comp ${cls}">${badge}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderCompassKeywords(keywords) {
+  const el = document.getElementById('compass-keywords');
+  if (!keywords?.length) { el.innerHTML = ''; return; }
+  el.innerHTML = keywords.map(k => `<span class="compass-keyword">${k}</span>`).join('');
 }
 
 // ── FINDER ───────────────────────────────────────────────────────────────────
