@@ -1,4 +1,55 @@
-import Groq from "groq-sdk";
+import Anthropic from "@anthropic-ai/sdk";
+
+function normalizeStr(v) {
+  if (v == null) return '';
+  if (typeof v === 'string') return v;
+  if (Array.isArray(v)) return v.map(normalizeStr).join('\n\n');
+  if (typeof v === 'object') return Object.values(v).filter(Boolean).map(normalizeStr).join('\n\n');
+  return String(v);
+}
+
+function normalizeArr(v, itemFn) {
+  if (!v) return [];
+  const fn = itemFn || normalizeStr;
+  if (!Array.isArray(v)) return [fn(v)];
+  return v.map(fn);
+}
+
+function normalizePaper(p) {
+  if (!p || typeof p !== 'object') return {};
+  return {
+    title: normalizeStr(p.title),
+    contribution_statement: normalizeStr(p.contribution_statement),
+    abstract: normalizeStr(p.abstract),
+    research_questions: normalizeArr(p.research_questions),
+    hypotheses: normalizeArr(p.hypotheses),
+    intro_paragraphs: normalizeArr(p.intro_paragraphs),
+    theoretical_framework: p.theoretical_framework && typeof p.theoretical_framework === 'object' ? {
+      heading: normalizeStr(p.theoretical_framework.heading),
+      primary_theory_para: normalizeStr(p.theoretical_framework.primary_theory_para),
+      secondary_theory_para: normalizeStr(p.theoretical_framework.secondary_theory_para),
+      integration_para: normalizeStr(p.theoretical_framework.integration_para),
+      propositions: normalizeArr(p.theoretical_framework.propositions)
+    } : null,
+    lit_review_sections: normalizeArr(p.lit_review_sections, s => {
+      if (!s || typeof s !== 'object') return { heading: '', para1: normalizeStr(s), para2: '', synthesis: '', content: '' };
+      return {
+        heading: normalizeStr(s.heading),
+        para1: normalizeStr(s.para1),
+        para2: normalizeStr(s.para2),
+        synthesis: normalizeStr(s.synthesis),
+        content: normalizeStr(s.content)
+      };
+    }),
+    methodology_paragraphs: normalizeArr(p.methodology_paragraphs),
+    results_placeholders: normalizeArr(p.results_placeholders),
+    results_guidance: normalizeStr(p.results_guidance),
+    discussion_paragraphs: normalizeArr(p.discussion_paragraphs),
+    conclusion_paragraphs: normalizeArr(p.conclusion_paragraphs),
+    future_directions: normalizeArr(p.future_directions),
+    references: normalizeArr(p.references)
+  };
+}
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -134,24 +185,21 @@ Return ONLY raw JSON — no markdown, no code fences. Start with { end with }.
 }`;
 
   try {
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        { role: "system", content: "You are a senior academic editor. Output ONLY raw JSON — no markdown, no code fences, no preamble. Start with { end with }. Every factual claim must cite a specific study." },
-        { role: "user", content: prompt },
-      ],
-      max_tokens: 5000,
-      temperature: 0.1,
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const message = await client.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 8000,
+      system: "You are a senior academic editor. Output ONLY raw JSON — no markdown, no code fences, no preamble. Start with { end with }. Every factual claim must cite a specific study.",
+      messages: [{ role: "user", content: prompt }],
     });
 
-    let text = completion.choices[0].message.content.trim();
+    let text = message.content[0].text.trim();
     text = text.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "");
     const f = text.indexOf("{"), l = text.lastIndexOf("}");
     if (f > 0) text = text.slice(f);
     if (l < text.length - 1) text = text.slice(0, l + 1);
-    JSON.parse(text);
-    return res.status(200).json({ result: text });
+    const normalized = normalizePaper(JSON.parse(text));
+    return res.status(200).json({ result: JSON.stringify(normalized) });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Draft generation failed. Please try again.", detail: err.message });

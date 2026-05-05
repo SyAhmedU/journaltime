@@ -1208,7 +1208,10 @@ function buildWordDoc(paper, gap, targetJournal) {
   const PH = 'color:#C05621;font-weight:bold;font-style:italic';
 
   function esc(t) {
-    return (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    if (t == null) return '';
+    if (Array.isArray(t)) t = t.join(' ');
+    else if (typeof t !== 'string') t = String(t);
+    return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   function fmt(text) {
@@ -1301,7 +1304,9 @@ function buildWordDoc(paper, gap, targetJournal) {
   if (Array.isArray(paper.results_placeholders)) {
     paper.results_placeholders.forEach(p => parts.push(para(p)));
   } else {
-    (paper.results_guidance || '').split('\n').filter(Boolean).forEach(p => parts.push(para(p)));
+    const rg = paper.results_guidance;
+    const rgStr = Array.isArray(rg) ? rg.join('\n') : (typeof rg === 'string' ? rg : String(rg || ''));
+    rgStr.split('\n').filter(Boolean).forEach(p => parts.push(para(p)));
   }
 
   // Discussion
