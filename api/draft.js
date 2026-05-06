@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import Groq from "groq-sdk";
 
 function normalizeStr(v) {
   if (v == null) return '';
@@ -185,15 +185,18 @@ Return ONLY raw JSON — no markdown, no code fences. Start with { end with }.
 }`;
 
   try {
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-    const message = await client.messages.create({
-      model: "claude-3-5-haiku-20241022",
-      max_tokens: 7000,
-      system: "You are a senior academic editor. Output ONLY raw JSON — no markdown, no code fences, no preamble. Start with { end with }. Every factual claim must cite a specific study.",
-      messages: [{ role: "user", content: prompt }],
+    const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const completion = await client.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      max_tokens: 6000,
+      temperature: 0.7,
+      messages: [
+        { role: "system", content: "You are a senior academic editor. Output ONLY raw JSON — no markdown, no code fences, no preamble. Start with { end with }. Every factual claim must cite a specific study." },
+        { role: "user", content: prompt }
+      ],
     });
 
-    let text = message.content[0].text.trim();
+    let text = completion.choices[0].message.content.trim();
     text = text.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "");
     const f = text.indexOf("{"), l = text.lastIndexOf("}");
     if (f > 0) text = text.slice(f);
