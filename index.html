@@ -477,7 +477,8 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
         </div>
         <div class="adf-field">
           <label>Target Journal <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-          <input type="text" id="adf-journal" placeholder="e.g. Journal of Management"/>
+          <input type="text" id="adf-journal" placeholder="e.g. Journal of Management" list="adf-journal-list" autocomplete="off"/>
+          <datalist id="adf-journal-list"></datalist>
         </div>
         <div class="adf-field">
           <label>Keywords <span style="font-weight:400;text-transform:none;letter-spacing:0">(comma-separated)</span></label>
@@ -1585,6 +1586,81 @@ const ADF_API_BASE = window.location.hostname.includes('vercel.app') || window.l
   o.value = f; o.textContent = f;
   document.getElementById('adf-field-sel').appendChild(o);
 });
+
+// Method options: value → display label
+const AD_ALL_METHODS = [
+  { v:'Survey / Questionnaire',                  l:'Survey / Questionnaire' },
+  { v:'PLS-SEM / Structural Equation Modelling', l:'PLS-SEM / SEM' },
+  { v:'Hierarchical Regression Analysis',        l:'Hierarchical Regression' },
+  { v:'In-depth Interviews (Qualitative)',        l:'In-depth Interviews' },
+  { v:'Focus Groups (Qualitative)',               l:'Focus Groups' },
+  { v:'Case Study (Qualitative)',                 l:'Case Study' },
+  { v:'Mixed Methods',                            l:'Mixed Methods' },
+  { v:'Longitudinal Panel Study',                 l:'Longitudinal Study' },
+  { v:'Experiment / Randomised Controlled Trial', l:'Experiment / RCT' },
+  { v:'Systematic Review / Meta-Analysis',        l:'Systematic Review' },
+];
+
+// Preferred method order per field (index 0 = auto-selected)
+const AD_FIELD_METHOD_ORDER = {
+  'Medicine':                ['Systematic Review / Meta-Analysis','Experiment / Randomised Controlled Trial','Longitudinal Panel Study','Survey / Questionnaire','Case Study (Qualitative)','Mixed Methods','Hierarchical Regression Analysis','In-depth Interviews (Qualitative)','Focus Groups (Qualitative)','PLS-SEM / Structural Equation Modelling'],
+  'Biology':                 ['Experiment / Randomised Controlled Trial','Systematic Review / Meta-Analysis','Longitudinal Panel Study','Survey / Questionnaire','Mixed Methods','Case Study (Qualitative)','Hierarchical Regression Analysis','In-depth Interviews (Qualitative)','Focus Groups (Qualitative)','PLS-SEM / Structural Equation Modelling'],
+  'Public Health':           ['Survey / Questionnaire','Systematic Review / Meta-Analysis','Longitudinal Panel Study','Experiment / Randomised Controlled Trial','Mixed Methods','In-depth Interviews (Qualitative)','Focus Groups (Qualitative)','Case Study (Qualitative)','Hierarchical Regression Analysis','PLS-SEM / Structural Equation Modelling'],
+  'Nursing':                 ['Survey / Questionnaire','Systematic Review / Meta-Analysis','Mixed Methods','In-depth Interviews (Qualitative)','Focus Groups (Qualitative)','Experiment / Randomised Controlled Trial','Case Study (Qualitative)','Longitudinal Panel Study','Hierarchical Regression Analysis','PLS-SEM / Structural Equation Modelling'],
+  'Psychology':              ['Survey / Questionnaire','Experiment / Randomised Controlled Trial','PLS-SEM / Structural Equation Modelling','Hierarchical Regression Analysis','Longitudinal Panel Study','Systematic Review / Meta-Analysis','Mixed Methods','In-depth Interviews (Qualitative)','Case Study (Qualitative)','Focus Groups (Qualitative)'],
+  'Management':              ['Survey / Questionnaire','PLS-SEM / Structural Equation Modelling','In-depth Interviews (Qualitative)','Case Study (Qualitative)','Mixed Methods','Hierarchical Regression Analysis','Focus Groups (Qualitative)','Systematic Review / Meta-Analysis','Longitudinal Panel Study','Experiment / Randomised Controlled Trial'],
+  'Organizational Behaviour':['Survey / Questionnaire','PLS-SEM / Structural Equation Modelling','Hierarchical Regression Analysis','In-depth Interviews (Qualitative)','Longitudinal Panel Study','Mixed Methods','Case Study (Qualitative)','Focus Groups (Qualitative)','Systematic Review / Meta-Analysis','Experiment / Randomised Controlled Trial'],
+  'Economics':               ['Hierarchical Regression Analysis','Longitudinal Panel Study','Systematic Review / Meta-Analysis','Survey / Questionnaire','Experiment / Randomised Controlled Trial','Mixed Methods','Case Study (Qualitative)','PLS-SEM / Structural Equation Modelling','In-depth Interviews (Qualitative)','Focus Groups (Qualitative)'],
+  'Accounting & Finance':    ['Hierarchical Regression Analysis','Longitudinal Panel Study','Survey / Questionnaire','Systematic Review / Meta-Analysis','Mixed Methods','Case Study (Qualitative)','PLS-SEM / Structural Equation Modelling','In-depth Interviews (Qualitative)','Focus Groups (Qualitative)','Experiment / Randomised Controlled Trial'],
+  'Computer Science':        ['Experiment / Randomised Controlled Trial','Survey / Questionnaire','Case Study (Qualitative)','Systematic Review / Meta-Analysis','Mixed Methods','Longitudinal Panel Study','PLS-SEM / Structural Equation Modelling','Hierarchical Regression Analysis','In-depth Interviews (Qualitative)','Focus Groups (Qualitative)'],
+  'Information Systems':     ['Survey / Questionnaire','PLS-SEM / Structural Equation Modelling','Case Study (Qualitative)','Mixed Methods','Experiment / Randomised Controlled Trial','Systematic Review / Meta-Analysis','In-depth Interviews (Qualitative)','Hierarchical Regression Analysis','Longitudinal Panel Study','Focus Groups (Qualitative)'],
+  'Social Sciences':         ['Survey / Questionnaire','In-depth Interviews (Qualitative)','Mixed Methods','Case Study (Qualitative)','Systematic Review / Meta-Analysis','Focus Groups (Qualitative)','Longitudinal Panel Study','Hierarchical Regression Analysis','PLS-SEM / Structural Equation Modelling','Experiment / Randomised Controlled Trial'],
+  'Political Science':       ['Survey / Questionnaire','In-depth Interviews (Qualitative)','Case Study (Qualitative)','Mixed Methods','Systematic Review / Meta-Analysis','Focus Groups (Qualitative)','Longitudinal Panel Study','Hierarchical Regression Analysis','PLS-SEM / Structural Equation Modelling','Experiment / Randomised Controlled Trial'],
+  'Communication':           ['Survey / Questionnaire','In-depth Interviews (Qualitative)','Focus Groups (Qualitative)','Case Study (Qualitative)','Mixed Methods','Systematic Review / Meta-Analysis','Longitudinal Panel Study','Experiment / Randomised Controlled Trial','Hierarchical Regression Analysis','PLS-SEM / Structural Equation Modelling'],
+  'Education':               ['Survey / Questionnaire','Mixed Methods','In-depth Interviews (Qualitative)','Case Study (Qualitative)','Experiment / Randomised Controlled Trial','Systematic Review / Meta-Analysis','Focus Groups (Qualitative)','Longitudinal Panel Study','Hierarchical Regression Analysis','PLS-SEM / Structural Equation Modelling'],
+  'Environmental Science':   ['Survey / Questionnaire','Systematic Review / Meta-Analysis','Longitudinal Panel Study','Experiment / Randomised Controlled Trial','Mixed Methods','Case Study (Qualitative)','In-depth Interviews (Qualitative)','Hierarchical Regression Analysis','Focus Groups (Qualitative)','PLS-SEM / Structural Equation Modelling'],
+  'Physics & Chemistry':     ['Experiment / Randomised Controlled Trial','Systematic Review / Meta-Analysis','Longitudinal Panel Study','Mixed Methods','Survey / Questionnaire','Case Study (Qualitative)','Hierarchical Regression Analysis','In-depth Interviews (Qualitative)','Focus Groups (Qualitative)','PLS-SEM / Structural Equation Modelling'],
+  'Engineering':             ['Experiment / Randomised Controlled Trial','Survey / Questionnaire','Case Study (Qualitative)','Systematic Review / Meta-Analysis','Mixed Methods','Longitudinal Panel Study','Hierarchical Regression Analysis','In-depth Interviews (Qualitative)','Focus Groups (Qualitative)','PLS-SEM / Structural Equation Modelling'],
+  'Mathematics':             ['Systematic Review / Meta-Analysis','Experiment / Randomised Controlled Trial','Longitudinal Panel Study','Mixed Methods','Survey / Questionnaire','Case Study (Qualitative)','Hierarchical Regression Analysis','In-depth Interviews (Qualitative)','Focus Groups (Qualitative)','PLS-SEM / Structural Equation Modelling'],
+  'Public Administration':   ['Survey / Questionnaire','Case Study (Qualitative)','In-depth Interviews (Qualitative)','Mixed Methods','Systematic Review / Meta-Analysis','Focus Groups (Qualitative)','Hierarchical Regression Analysis','Longitudinal Panel Study','PLS-SEM / Structural Equation Modelling','Experiment / Randomised Controlled Trial'],
+  'Multidisciplinary':       ['Survey / Questionnaire','Systematic Review / Meta-Analysis','Mixed Methods','In-depth Interviews (Qualitative)','Case Study (Qualitative)','Experiment / Randomised Controlled Trial','Longitudinal Panel Study','PLS-SEM / Structural Equation Modelling','Hierarchical Regression Analysis','Focus Groups (Qualitative)'],
+};
+
+function adFieldChanged() {
+  const field     = document.getElementById('adf-field-sel').value;
+  const methodSel = document.getElementById('adf-method');
+  const prevMethod = methodSel.value;
+
+  // Rebuild method options in field-appropriate order
+  const order = AD_FIELD_METHOD_ORDER[field] || AD_ALL_METHODS.map(m => m.v);
+  const methodMap = Object.fromEntries(AD_ALL_METHODS.map(m => [m.v, m.l]));
+  methodSel.innerHTML = '';
+  order.forEach((v, i) => {
+    const o = document.createElement('option');
+    o.value = v;
+    o.textContent = methodMap[v] || v;
+    if (i === 0) o.selected = true;
+    methodSel.appendChild(o);
+  });
+  if (prevMethod && order.includes(prevMethod)) methodSel.value = prevMethod;
+
+  // Populate journal datalist with top journals for this field
+  const list = document.getElementById('adf-journal-list');
+  list.innerHTML = '';
+  if (field && window.__JOURNAL_DATA__) {
+    window.__JOURNAL_DATA__
+      .filter(j => j.field === field)
+      .sort((a, b) => (b.impact_factor || 0) - (a.impact_factor || 0))
+      .slice(0, 30)
+      .forEach(j => {
+        const opt = document.createElement('option');
+        opt.value = j.name;
+        list.appendChild(opt);
+      });
+  }
+}
+
+document.getElementById('adf-field-sel').addEventListener('change', adFieldChanged);
 
 let _artdevPaper = null;
 
