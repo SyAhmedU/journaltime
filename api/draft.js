@@ -187,8 +187,8 @@ Return ONLY raw JSON — no markdown, no code fences. Start with { end with }.
   try {
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const message = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 8000,
+      model: "claude-3-5-haiku-20241022",
+      max_tokens: 7000,
       system: "You are a senior academic editor. Output ONLY raw JSON — no markdown, no code fences, no preamble. Start with { end with }. Every factual claim must cite a specific study.",
       messages: [{ role: "user", content: prompt }],
     });

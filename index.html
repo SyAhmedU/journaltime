@@ -1371,7 +1371,7 @@ async function generateDraft() {
 
     clearInterval(ticker);
     const json = await res.json();
-    if (!res.ok || json.error) throw new Error(json.error || 'Draft generation failed');
+    if (!res.ok || json.error) throw new Error((json.error || 'Draft generation failed') + (json.detail ? ` — ${json.detail}` : ''));
 
     const paper = JSON.parse(json.result);
     _compassGeneratedPaper = paper;
