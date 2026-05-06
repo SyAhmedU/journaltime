@@ -1642,7 +1642,6 @@ function adFieldChanged() {
     if (i === 0) o.selected = true;
     methodSel.appendChild(o);
   });
-  if (prevMethod && order.includes(prevMethod)) methodSel.value = prevMethod;
 
   // Populate journal datalist with top journals for this field
   const list = document.getElementById('adf-journal-list');
