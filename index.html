@@ -153,6 +153,9 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
 .dp-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
 .dp-disclaimer{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:9px 11px;font-size:.7rem;color:#92400e;line-height:1.5;margin-top:10px}
 
+.dp-website-btn{display:block;text-align:center;padding:8px 12px;background:var(--blue);color:#fff;border-radius:8px;font-size:.79rem;font-weight:700;text-decoration:none;transition:.15s;margin-top:12px}
+.dp-website-btn:hover{background:#1d4ed8}
+
 /* scrollbar */
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
@@ -671,6 +674,8 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
         <div class="dp-metric"><span class="dp-metric-label">Acceptance Rate</span><span class="dp-metric-value" id="dp-ar">—</span></div>
         <div class="dp-metric"><span class="dp-metric-label">Open Access</span><span class="dp-metric-value" id="dp-oa-val">—</span></div>
         <div class="dp-metric"><span class="dp-metric-label">Data Source</span><span class="dp-metric-value" id="dp-src">—</span></div>
+        <div class="dp-metric" id="dp-issn-row" style="display:none"><span class="dp-metric-label">ISSN</span><span class="dp-metric-value" id="dp-issn">—</span></div>
+        <div class="dp-metric" id="dp-apc-row" style="display:none"><span class="dp-metric-label">APC Cost</span><span class="dp-metric-value" id="dp-apc">—</span></div>
       </div>
       <div class="dp-section">
         <div class="dp-section-title">Timeline Breakdown</div>
@@ -679,6 +684,7 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
         <div class="dp-metric"><span class="dp-metric-label">Review + Revision Est.</span><span class="dp-metric-value" id="dp-rev">—</span></div>
       </div>
       <div class="dp-tags" id="dp-tags"></div>
+      <a class="dp-website-btn" id="dp-website-link" href="#" target="_blank" rel="noopener" style="display:none">Visit Journal Website →</a>
       <div class="dp-disclaimer">⚠ Data from publisher editorial statistics, researcher community reports, and field-level estimates. Always verify on the journal's official website.</div>
     </div>
   </div>
@@ -697,7 +703,8 @@ const FCOLORS = {
   "Economics":"#0369a1","Psychology":"#db2777","Environmental Science":"#059669",
   "Physics & Chemistry":"#9333ea","Engineering":"#b45309","Education":"#0891b2",
   "Mathematics":"#4338ca","Management":"#0f766e","Organizational Behaviour":"#be185d",
-  "Accounting & Finance":"#c2410c","Information Systems":"#0284c7","Public Administration":"#4d7c0f"
+  "Accounting & Finance":"#c2410c","Information Systems":"#0284c7","Public Administration":"#4d7c0f",
+  "Library & Information Science":"#1e40af","Food Science & Nutrition":"#65a30d","Social Work":"#c026d3"
 };
 
 // ── HELPERS ──────────────────────────────────────────────────────────────────
@@ -1227,6 +1234,23 @@ function openDetail(j){
   document.getElementById('dp-ar').innerHTML=`<span class="ar-val ${arClass(j.acceptance_rate)}">${j.acceptance_rate}%</span>`;
   document.getElementById('dp-oa-val').textContent=j.open_access?'✓ Open Access':'Subscription';
   document.getElementById('dp-src').innerHTML=`<span class="src-badge ${srcClass(j.source)}">${srcLabel(j.source)}</span>`;
+  // ISSN
+  const issnRow=document.getElementById('dp-issn-row');
+  if(j.issn){issnRow.style.display='';document.getElementById('dp-issn').textContent=j.issn;}
+  else{issnRow.style.display='none';}
+  // APC
+  const apcRow=document.getElementById('dp-apc-row');
+  if(j.apc_usd!==undefined){
+    apcRow.style.display='';
+    const apcEl=document.getElementById('dp-apc');
+    if(j.apc_usd===0)apcEl.textContent='Free (Diamond OA)';
+    else if(j.apc_usd===null)apcEl.textContent='N/A (Subscription)';
+    else apcEl.textContent='$'+j.apc_usd.toLocaleString();
+  }else{apcRow.style.display='none';}
+  // Website
+  const webLink=document.getElementById('dp-website-link');
+  if(j.website){webLink.href=j.website;webLink.style.display='block';}
+  else{webLink.style.display='none';}
   document.getElementById('dp-fd2').textContent=`${j.first_decision} days (${speedLabel(j.first_decision)})`;
   document.getElementById('dp-acc2').textContent=`${j.time_to_acceptance} days`;
   document.getElementById('dp-rev').textContent=`~${j.time_to_acceptance-j.first_decision} days`;
