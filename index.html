@@ -160,6 +160,27 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
 
+/* ── HERO ── */
+.hero{background:linear-gradient(145deg,#0d1b2a 0%,#1a2d4a 40%,#1e1b4b 100%);min-height:94vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 30%,#3b82f615 0%,transparent 70%);pointer-events:none}
+.hero-eyebrow{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:#3b82f680;margin-bottom:20px;position:relative}
+.hero-title{font-size:clamp(2.6rem,6vw,4.4rem);font-weight:900;color:#f0f6ff;letter-spacing:-.04em;line-height:1.05;margin-bottom:18px;position:relative}
+.hero-title span{background:linear-gradient(90deg,#60a5fa,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.02rem;color:#475569;max-width:540px;line-height:1.7;margin-bottom:40px;position:relative}
+.hero-input-wrap{display:flex;gap:10px;width:100%;max-width:700px;margin-bottom:32px;position:relative;flex-wrap:wrap;justify-content:center}
+.hero-input{flex:1;min-width:280px;padding:17px 22px;border:1.5px solid #1e3a8a;border-radius:14px;background:#ffffff08;color:#e2e8f0;font-size:.95rem;outline:none;font-family:inherit;transition:.2s}
+.hero-input:focus{border-color:#3b82f6;background:#ffffff0f;box-shadow:0 0 0 3px #3b82f618}
+.hero-input::placeholder{color:#334155}
+.hero-btn{padding:17px 36px;background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s;letter-spacing:-.01em;box-shadow:0 4px 20px #1d4ed840}
+.hero-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px #1d4ed860;opacity:.95}
+.hero-features{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:48px;position:relative}
+.hero-feat{display:flex;align-items:center;gap:5px;font-size:.78rem;color:#334155;cursor:pointer;padding:7px 16px;border:1px solid #1e293b;border-radius:20px;transition:.15s;background:#ffffff04}
+.hero-feat:hover{background:#1e3a8a30;color:#93c5fd;border-color:#1e3a8a;transform:translateY(-1px)}
+.hero-scroll{font-size:.72rem;color:#1e293b;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;position:absolute;bottom:28px;left:50%;transform:translateX(-50%);transition:.15s;user-select:none}
+.hero-scroll:hover{color:#60a5fa}
+.hero-scroll-arrow{font-size:1.1rem;animation:bounce 2s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
 /* ── RESEARCH COMPASS ── */
 .compass{background:linear-gradient(135deg,#0c1a2e 0%,#1e3a5f 50%,#1e2d5a 100%);padding:28px 32px;border-bottom:3px solid #3b82f6}
 .compass-header{display:flex;align-items:center;gap:14px;margin-bottom:6px}
@@ -342,31 +363,42 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="header">
-  <div class="header-top">
-    <div>
-      <h1>Journal <span>Wait Times</span></h1>
-      <p class="header-sub">Submission-to-acceptance timelines for Scopus-indexed journals. Find the fastest path to publication in your field.</p>
-    </div>
-    <div class="header-badge" id="journal-count-badge">Loading…</div>
+<!-- HERO -->
+<header class="hero" id="hero">
+  <div class="hero-eyebrow">Research Writing Workspace &middot; <span id="hero-count">2,000+</span> Scopus Journals</div>
+  <h1 class="hero-title">Write. Publish. <span>Impact.</span></h1>
+  <p class="hero-sub">From research idea to complete manuscript — AI-powered tools for academics in social, behavioural &amp; management sciences.</p>
+  <div class="hero-input-wrap">
+    <input class="hero-input" id="hero-input" placeholder="What's your research idea? e.g. AI and employee wellbeing, ESG reporting, burnout in remote workers…" onkeydown="if(event.key==='Enter')heroStart()"/>
+    <button class="hero-btn" onclick="heroStart()">Start Writing →</button>
   </div>
-  <div class="stats-bar">
-    <div class="stat-item"><div class="stat-label">Journals Tracked</div><div class="stat-value" id="s-total">—</div><div class="stat-sub">across 18 fields</div></div>
-    <div class="stat-item"><div class="stat-label">Fastest Avg Field</div><div class="stat-value" id="s-fastest">—</div><div class="stat-sub" id="s-fastest-sub"></div></div>
-    <div class="stat-item"><div class="stat-label">Slowest Avg Field</div><div class="stat-value" id="s-slowest">—</div><div class="stat-sub" id="s-slowest-sub"></div></div>
-    <div class="stat-item"><div class="stat-label">Quickest Publisher</div><div class="stat-value" id="s-pub">—</div><div class="stat-sub" id="s-pub-sub"></div></div>
-    <div class="stat-item"><div class="stat-label">Open Access</div><div class="stat-value" id="s-oa">—</div><div class="stat-sub">journals in dataset</div></div>
+  <div class="hero-features">
+    <span class="hero-feat" onclick="navScrollTo('artdev-section',null)">✍️ Article Developer</span>
+    <span class="hero-feat" onclick="navScrollTo('compass-section',null)">🧭 Research Compass</span>
+    <span class="hero-feat" onclick="navScrollTo('finder-section',null)">🎯 Find My Journal</span>
+    <span class="hero-feat" onclick="navScrollTo('browser-section',null)">📚 Journal Library</span>
+    <span class="hero-feat" onclick="navScrollTo('dashboard-section',null)">📊 Analytics</span>
+  </div>
+  <div class="hero-scroll" onclick="navScrollTo('artdev-section',null)">
+    <span>Start writing below</span>
+    <span class="hero-scroll-arrow">↓</span>
   </div>
 </header>
+<!-- hidden stat holders so JS doesn't break -->
+<div aria-hidden="true" style="display:none">
+  <span id="journal-count-badge"></span><span id="s-total"></span>
+  <span id="s-fastest"></span><span id="s-fastest-sub"></span>
+  <span id="s-slowest"></span><span id="s-slowest-sub"></span>
+  <span id="s-pub"></span><span id="s-pub-sub"></span><span id="s-oa"></span>
+</div>
 
 <!-- SITE NAV -->
 <nav class="site-nav" id="site-nav">
-  <a class="nav-tab" onclick="navScrollTo('dashboard-section',this)">📊 Analytics</a>
-  <a class="nav-tab" onclick="navScrollTo('compass-section',this)">🧭 Research Compass</a>
   <a class="nav-tab" onclick="navScrollTo('artdev-section',this)">✍️ Article Developer</a>
+  <a class="nav-tab" onclick="navScrollTo('compass-section',this)">🧭 Research Compass</a>
   <a class="nav-tab" onclick="navScrollTo('finder-section',this)">🎯 Find My Journal</a>
-  <a class="nav-tab" onclick="navScrollTo('browser-section',this)">📋 Journal Browser</a>
+  <a class="nav-tab" onclick="navScrollTo('browser-section',this)">📚 Journal Reference</a>
+  <a class="nav-tab" onclick="navScrollTo('dashboard-section',this)">📊 Analytics</a>
 </nav>
 
 <!-- VISUAL DASHBOARD -->
@@ -724,6 +756,7 @@ function computeStats(){
   const fp=pa[0];
   document.getElementById('s-total').textContent=data.length;
   document.getElementById('journal-count-badge').textContent=`${data.length} journals tracked`;
+  const hc=document.getElementById('hero-count');if(hc)hc.textContent=data.length.toLocaleString();
   document.getElementById('s-fastest').textContent=fastest.f;
   document.getElementById('s-fastest-sub').textContent=`avg ${fastest.avg}d first decision`;
   document.getElementById('s-slowest').textContent=slowest.f;
@@ -1266,6 +1299,16 @@ function closeDetail(){selectedId=null;document.getElementById('detail-panel').c
 document.getElementById('dp-close').addEventListener('click',closeDetail);
 
 render();
+// Redesign: Article Developer first, Analytics last
+(function(){
+  const nav=document.getElementById('site-nav');
+  const artdev=document.getElementById('artdev-section');
+  const dashboard=document.getElementById('dashboard-section');
+  const browser=document.getElementById('browser-section');
+  if(nav&&artdev)nav.insertAdjacentElement('afterend',artdev);
+  if(browser&&dashboard)browser.insertAdjacentElement('afterend',dashboard);
+})();
+
 })();
 </script>
 
@@ -1559,8 +1602,15 @@ function navScrollTo(id, el) {
   if (el) el.classList.add('active');
 }
 
+function heroStart() {
+  const val = document.getElementById('hero-input').value.trim();
+  if (val) { const t = document.getElementById('adf-topic'); if (t) t.value = val; }
+  document.getElementById('artdev-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => { const t = document.getElementById('adf-topic'); if (t) t.focus(); }, 600);
+}
+
 // Highlight active nav tab on scroll
-const _navSections = ['dashboard-section','compass-section','artdev-section','finder-section','browser-section'];
+const _navSections = ['artdev-section','compass-section','finder-section','browser-section','dashboard-section'];
 window.addEventListener('scroll', () => {
   let current = '';
   _navSections.forEach(id => {
