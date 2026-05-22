@@ -570,6 +570,18 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
       </div>
     </div>
     <div class="artdev-right">
+      <!-- Resume banner — shown when a saved draft exists -->
+      <div id="artdev-resume-banner" style="display:none;align-items:center;gap:10px;padding:10px 16px;background:#f0f7ff;border:1px solid #bfdbfe;border-radius:10px;margin:12px 16px 0;flex-wrap:wrap;">
+        <span style="font-size:.8rem;flex:1;min-width:0;">
+          <strong style="color:#1e40af;">💾 Resume last draft</strong>
+          <span id="resume-banner-meta" style="color:#64748b;display:block;font-size:.71rem;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+        </span>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button onclick="resumeLastDraft()" style="padding:5px 14px;background:#2563eb;color:#fff;border:none;border-radius:7px;font-size:.75rem;font-weight:700;cursor:pointer;">Resume →</button>
+          <button onclick="discardDraft()" style="padding:5px 10px;background:none;border:1px solid #cbd5e1;border-radius:7px;font-size:.75rem;color:#64748b;cursor:pointer;">Discard</button>
+        </div>
+      </div>
+
       <div class="artdev-welcome" id="artdev-welcome">
         <div class="artdev-welcome-icon">✍️</div>
         <h3>Build Your Full Academic Paper</h3>
@@ -1775,6 +1787,37 @@ function adFieldChanged() {
 document.getElementById('adf-field-sel').addEventListener('change', adFieldChanged);
 
 let _artdevPaper = null;
+const JT_DRAFT_KEY = 'jt_artdev_draft';
+
+function saveDraftToStorage(paper, gap, topic, journal) {
+  try {
+    localStorage.setItem(JT_DRAFT_KEY, JSON.stringify({
+      paper, gap, topic, journal, savedAt: new Date().toISOString()
+    }));
+  } catch (e) { /* storage full — ignore */ }
+}
+
+function loadDraftFromStorage() {
+  try {
+    const raw = localStorage.getItem(JT_DRAFT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function clearDraftStorage() {
+  localStorage.removeItem(JT_DRAFT_KEY);
+}
+
+function showResumeBanner() {
+  const saved = loadDraftFromStorage();
+  if (!saved) return;
+  const banner = document.getElementById('artdev-resume-banner');
+  if (!banner) return;
+  const date = new Date(saved.savedAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+  document.getElementById('resume-banner-meta').textContent =
+    `"${(saved.topic || '').slice(0, 55)}${(saved.topic||'').length > 55 ? '…' : ''}" · Saved ${date}`;
+  banner.style.display = 'flex';
+}
 
 async function generateArticleDraft(prefill) {
   const topic          = (prefill?.topic   || document.getElementById('adf-topic').value).trim();
@@ -1828,6 +1871,7 @@ async function generateArticleDraft(prefill) {
 
     const paper = JSON.parse(json.result);
     _artdevPaper = paper;
+    saveDraftToStorage(paper, gap, topic, targetJournal);
 
     document.getElementById('artdev-loading').style.display = 'none';
     renderArticlePaper(paper, gap, targetJournal, topic);
@@ -2044,6 +2088,31 @@ function downloadDoc(html, filename) {
   document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
+
+function resumeLastDraft() {
+  const saved = loadDraftFromStorage();
+  if (!saved) return;
+  // Prefill the form fields
+  if (saved.topic)   document.getElementById('adf-topic').value   = saved.topic;
+  if (saved.gap)     document.getElementById('adf-gap').value     = saved.gap.name || '';
+  if (saved.journal) document.getElementById('adf-journal').value = saved.journal;
+  // Render the saved paper
+  if (saved.paper) {
+    _artdevPaper = saved.paper;
+    document.getElementById('artdev-resume-banner').style.display = 'none';
+    document.getElementById('artdev-welcome').style.display = 'none';
+    document.getElementById('artdev-loading').style.display = 'none';
+    renderArticlePaper(saved.paper, saved.gap || {}, saved.journal || '', saved.topic || '');
+  }
+}
+
+function discardDraft() {
+  clearDraftStorage();
+  document.getElementById('artdev-resume-banner').style.display = 'none';
+}
+
+// Init
+showResumeBanner();
 </script>
 </body>
 </html>
