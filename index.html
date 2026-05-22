@@ -699,6 +699,7 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
   <main class="main">
     <div class="results-header">
       <div class="results-count"><strong id="result-count">0</strong> journals shown</div>
+      <button id="compare-btn" onclick="openCompare()" style="display:none;padding:6px 14px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;transition:.12s" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='var(--blue)'">⚖ Compare (<span id="compare-count">0</span>)</button>
       <div class="legend">
         <div class="leg-item"><div class="leg-dot" style="background:var(--fast1)"></div>≤14d</div>
         <div class="leg-item"><div class="leg-dot" style="background:var(--fast2)"></div>15–30d</div>
@@ -712,6 +713,7 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
       <table>
         <thead>
           <tr>
+            <th style="width:32px;text-align:center" title="Shortlist for comparison">★</th>
             <th data-col="name">Journal <span class="sa">↕</span></th>
             <th data-col="field">Field <span class="sa">↕</span></th>
             <th data-col="quartile">Q <span class="sa">↕</span></th>
@@ -1183,6 +1185,65 @@ document.getElementById('finder-btn').addEventListener('click',()=>{
 // ── FILTER STATE ─────────────────────────────────────────────────────────────
 let activeFields=new Set(FIELDS),activeQuartiles=new Set(['Q1','Q2','Q3','Q4']);
 let oaOnly=false,maxSpeed=120,sortKey='first_decision_asc',searchQ='',selectedId=null;
+let shortlist=new Set(JSON.parse(localStorage.getItem('jt_shortlist')||'[]'));
+
+function toggleShortlist(id,e){
+  if(e){e.stopPropagation();}
+  if(shortlist.has(id))shortlist.delete(id);else shortlist.add(id);
+  localStorage.setItem('jt_shortlist',JSON.stringify([...shortlist]));
+  updateCompareBtn();
+  render();
+}
+function updateCompareBtn(){
+  const btn=document.getElementById('compare-btn');
+  const cc=document.getElementById('compare-count');
+  if(shortlist.size>0){btn.style.display='';cc.textContent=shortlist.size;}
+  else{btn.style.display='none';}
+}
+function openCompare(){
+  const journals=data.filter(j=>shortlist.has(j.id));
+  if(!journals.length)return;
+  const metrics=[
+    {label:'First Decision',key:'first_decision',unit:'d',better:'lower'},
+    {label:'To Acceptance',key:'time_to_acceptance',unit:'d',better:'lower'},
+    {label:'Accept Rate',key:'acceptance_rate',unit:'%',better:'higher'},
+    {label:'Impact Factor',key:'impact_factor',unit:'',better:'higher'},
+    {label:'Open Access',key:'open_access',unit:'',better:null},
+    {label:'Field',key:'field',unit:'',better:null},
+    {label:'Quartile',key:'quartile',unit:'',better:null},
+  ];
+  const cols=journals.map(j=>`<th style="padding:10px 14px;font-size:.75rem;font-weight:700;color:var(--navy);text-align:center;background:#f8fafc;border-bottom:2px solid var(--blue)">${j.name}<br><small style="font-weight:400;color:var(--muted)">${j.publisher}</small></th>`).join('');
+  const rows=metrics.map(m=>{
+    const vals=journals.map(j=>j[m.key]);
+    const best=m.better==='lower'?Math.min(...vals.filter(v=>typeof v==='number')):m.better==='higher'?Math.max(...vals.filter(v=>typeof v==='number')):null;
+    const cells=journals.map(j=>{
+      const v=j[m.key];
+      const isBest=best!==null&&v===best;
+      let disp=v===true?'✓ OA':v===false?'No':v+(m.unit||'');
+      return `<td style="padding:10px 14px;text-align:center;font-size:.8rem;font-weight:${isBest?700:400};color:${isBest?'#15803d':'var(--text)'}${isBest?';background:#f0fdf4':''}">${disp}</td>`;
+    }).join('');
+    return `<tr><td style="padding:10px 14px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);white-space:nowrap;background:#fafafa;border-right:1px solid var(--border)">${m.label}</td>${cells}</tr>`;
+  }).join('');
+  const html=`<div onclick="this.remove()" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px">
+    <div onclick="event.stopPropagation()" style="background:#fff;border-radius:16px;overflow:hidden;max-width:900px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <span style="font-weight:700;font-size:.9rem">Journal Comparison</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:.72rem;color:var(--muted)">🟢 = best value</span>
+          <button onclick="document.getElementById('compare-modal').remove()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:.75rem;color:var(--muted)">✕ Close</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse">
+          <thead><tr><th style="background:#fafafa;padding:10px 14px;border-right:1px solid var(--border);border-bottom:2px solid var(--blue)"></th>${cols}</tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+  const div=document.createElement('div');div.id='compare-modal';div.innerHTML=html;
+  document.body.appendChild(div);
+}
 
 // field pills
 const fpContainer=document.getElementById('field-pills');
@@ -1282,7 +1343,9 @@ function render(){
     const tr=document.createElement('tr');
     if(j.id===selectedId)tr.classList.add('selected');
     const col=speedColor(j.first_decision),pct=speedPct(j.first_decision);
+    const isStarred = shortlist.has(j.id);
     tr.innerHTML=`
+      <td style="text-align:center;width:32px;padding:4px"><button class="star-btn${isStarred?' starred':''}" data-id="${j.id}" title="Add to comparison shortlist" onclick="toggleShortlist(${j.id},event)" style="background:none;border:none;cursor:pointer;font-size:14px;color:${isStarred?'#f59e0b':'#cbd5e1'};transition:.15s">${isStarred?'★':'☆'}</button></td>
       <td class="td-name">${j.name}${j.open_access?` <span class="oa-badge">◈ OA</span>`:''}<small>${j.publisher}</small></td>
       <td style="font-size:.75rem;color:var(--muted)"><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:${FCOLORS[j.field]||'#888'};flex-shrink:0"></span>${j.field}</span></td>
       <td><span class="q-badge q-${j.quartile}">${j.quartile}</span></td>
@@ -1344,6 +1407,7 @@ function closeDetail(){selectedId=null;document.getElementById('detail-panel').c
 document.getElementById('dp-close').addEventListener('click',closeDetail);
 
 render();
+updateCompareBtn();
 // Redesign: Article Developer first, Analytics last
 (function(){
   const nav=document.getElementById('site-nav');
