@@ -1263,7 +1263,12 @@ const slider=document.getElementById('speed-slider');
 const sliderVal=document.getElementById('slider-val');
 slider.addEventListener('input',()=>{maxSpeed=parseInt(slider.value);sliderVal.textContent=maxSpeed>=120?'Any':`≤${maxSpeed}d`;updateHash();render();});
 document.getElementById('sort-select').addEventListener('change',e=>{sortKey=e.target.value;updateHash();render();});
-document.getElementById('search-input').addEventListener('input',e=>{searchQ=e.target.value.toLowerCase().trim();updateHash();render();});
+let _searchTimer=null;
+document.getElementById('search-input').addEventListener('input',e=>{
+  clearTimeout(_searchTimer);
+  const v=e.target.value.toLowerCase().trim();
+  _searchTimer=setTimeout(()=>{searchQ=v;updateHash();render();},180);
+});
 document.getElementById('clear-btn').addEventListener('click',()=>{
   activeFields=new Set(FIELDS);activeQuartiles=new Set(['Q1','Q2','Q3','Q4']);
   oaOnly=false;maxSpeed=120;sortKey='first_decision_asc';searchQ='';
