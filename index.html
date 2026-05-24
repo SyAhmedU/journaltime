@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Journal Wait Times — Syed</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232563eb'/><text x='16' y='23' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='800' font-size='19' fill='white'>S</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script>(function(){try{var t=localStorage.getItem('syed-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <style>
 /* ── SYED BRAND BAR — Fire ── */
@@ -21,14 +25,26 @@
 .syed-link:hover{color:var(--ink,var(--text,#0E0E18));background:rgba(14,14,24,.05)}
 .syed-link-all{font-weight:700;color:#fff !important;background:linear-gradient(135deg,#FF9656 0%,#F14575 55%,#9270F4 100%);padding:5px 13px;border-radius:999px;box-shadow:0 6px 16px -6px rgba(241,69,117,.55)}
 .syed-link-all:hover{opacity:.92}
+.theme-toggle{width:34px;height:34px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:1rem;transition:background .15s,color .15s,transform .2s;margin-left:4px;flex-shrink:0}
+.theme-toggle:hover{color:var(--ink);transform:rotate(15deg)}
+.theme-toggle .sun,.theme-toggle .moon{display:none}
+[data-theme="light"] .theme-toggle .moon{display:inline}
+[data-theme="dark"] .theme-toggle .sun{display:inline}
 @media(max-width:640px){.syed-links{display:none}}
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
+:root, [data-theme="light"]{
   --navy:#1e3a5f;--blue:#F14575;--blue-light:rgba(241,69,117,.10);--blue-mid:#F47FBE;
   --bg:#FBF7EF;--card:#ffffff;--border:rgba(14,14,24,.08);--text:#0E0E18;--muted:#3C3C48;--faint:#6F6F7E;--ink:#0E0E18;
   --fast1:#22C58D;--fast2:#34D399;--mid:#F17F3C;--slow1:#F14575;--slow2:#C73762;
   --oa:#9270F4;--sidebar:256px;
+  --grad-warm:linear-gradient(135deg,#FF9656 0%,#F14575 55%,#9270F4 100%);
+}
+[data-theme="dark"]{
+  --navy:#1e3a5f;--blue:#F47FBE;--blue-light:rgba(244,127,190,.15);--blue-mid:#F892C6;
+  --bg:#0A0A12;--card:#15151F;--border:rgba(255,255,255,.08);--text:#F4F2EC;--muted:#C9C7C0;--faint:#8B8A93;--ink:#F4F2EC;
+  --fast1:#34D399;--fast2:#5EE7B0;--mid:#FFB75E;--slow1:#F47FBE;--slow2:#E26FAE;
+  --oa:#A78BFA;--sidebar:256px;
   --grad-warm:linear-gradient(135deg,#FF9656 0%,#F14575 55%,#9270F4 100%);
 }
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
@@ -401,6 +417,9 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
     <a class="syed-link" href="https://task-manager-production-5683.up.railway.app" target="_blank" rel="noopener">TaskFlow</a>
     <a class="syed-link syed-link-all" href="https://syahmedu.github.io/nexus/" target="_blank" rel="noopener">All Projects →</a>
   </nav>
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark">
+    <span class="sun">☀️</span><span class="moon">🌙</span>
+  </button>
 </div>
 
 <!-- HERO -->
@@ -2194,6 +2213,18 @@ function discardDraft() {
 
 // Init
 showResumeBanner();
+
+// Theme toggle
+(function(){
+  var t = document.getElementById('themeToggle');
+  if(!t) return;
+  t.addEventListener('click', function(){
+    var cur = document.documentElement.getAttribute('data-theme') || 'light';
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('syed-theme', next); } catch(e) {}
+  });
+})();
 </script>
 </body>
 </html>
