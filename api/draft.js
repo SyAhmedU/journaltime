@@ -1,4 +1,9 @@
-import Groq from "groq-sdk";
+import { generateText } from "ai";
+
+// Large generative prompt — use a top-tier model. Override via
+// JOURNALTIME_DRAFT_MODEL env var.
+const DRAFT_MODEL = process.env.JOURNALTIME_DRAFT_MODEL || "anthropic/claude-opus-4.6";
+const DRAFT_FALLBACK = ["anthropic/claude-sonnet-4.6", "openai/gpt-5.4"];
 
 function normalizeStr(v) {
   if (v == null) return '';
@@ -185,18 +190,21 @@ Return ONLY raw JSON — no markdown, no code fences. Start with { end with }.
 }`;
 
   try {
-    const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
-    const completion = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      max_tokens: 6000,
+    const { text: raw } = await generateText({
+      model: DRAFT_MODEL,
+      system: "You are a senior academic editor. Output ONLY raw JSON — no markdown, no code fences, no preamble. Start with { end with }. Every factual claim must cite a specific study.",
+      prompt,
+      maxOutputTokens: 6000,
       temperature: 0.7,
-      messages: [
-        { role: "system", content: "You are a senior academic editor. Output ONLY raw JSON — no markdown, no code fences, no preamble. Start with { end with }. Every factual claim must cite a specific study." },
-        { role: "user", content: prompt }
-      ],
+      providerOptions: {
+        gateway: {
+          models: DRAFT_FALLBACK,
+          tags: ["project:journaltime", "feature:draft"],
+        },
+      },
     });
 
-    let text = completion.choices[0].message.content.trim();
+    let text = raw.trim();
     text = text.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "");
     const f = text.indexOf("{"), l = text.lastIndexOf("}");
     if (f > 0) text = text.slice(f);

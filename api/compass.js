@@ -1,4 +1,9 @@
-import Groq from "groq-sdk";
+import { generateText } from "ai";
+
+// AI Gateway: large analytical prompt — needs a strong reasoning model.
+// Override via JOURNALTIME_COMPASS_MODEL.
+const COMPASS_MODEL = process.env.JOURNALTIME_COMPASS_MODEL || "anthropic/claude-sonnet-4.6";
+const COMPASS_FALLBACK = ["anthropic/claude-opus-4.6", "openai/gpt-5.4"];
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -92,21 +97,21 @@ Critical rules:
 - 8 keywords`;
 
   try {
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "system",
-          content: "You output ONLY raw JSON. No markdown, no code fences, no preamble, no commentary. Start with { and end with }.",
-        },
-        { role: "user", content: userPrompt },
-      ],
-      max_tokens: 3200,
+    const { text: raw } = await generateText({
+      model: COMPASS_MODEL,
+      system: "You output ONLY raw JSON. No markdown, no code fences, no preamble, no commentary. Start with { and end with }.",
+      prompt: userPrompt,
+      maxOutputTokens: 3200,
       temperature: 0.15,
+      providerOptions: {
+        gateway: {
+          models: COMPASS_FALLBACK,
+          tags: ["project:journaltime", "feature:compass"],
+        },
+      },
     });
 
-    let text = completion.choices[0].message.content.trim();
+    let text = raw.trim();
     text = text.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "");
     const firstBrace = text.indexOf("{");
     const lastBrace = text.lastIndexOf("}");
