@@ -200,6 +200,11 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
 
 /* ── RESEARCH COMPASS ── */
 .compass{background:linear-gradient(135deg,#0c1a2e 0%,#1e3a5f 50%,#1e2d5a 100%);padding:28px 32px;border-bottom:3px solid #3b82f6}
+.compass-flagship{position:relative;padding:40px 32px 36px;margin-bottom:0;background:linear-gradient(135deg,#0b1024 0%,#1e3a5f 45%,#3b1e5f 100%);border-bottom:4px solid #60a5fa;box-shadow:inset 0 1px 0 rgba(96,165,250,.25),0 12px 40px -16px rgba(59,130,246,.45)}
+.compass-flagship .compass-title{font-size:1.45rem}
+.compass-flagship .compass-tagline{font-size:.92rem;color:#bae6fd;max-width:780px}
+.compass-flagship-badge{position:absolute;top:14px;right:18px;font-size:.66rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#fbbf24,#f97316);color:#1a0b00;box-shadow:0 6px 18px -4px rgba(251,191,36,.55);z-index:2}
+@media(max-width:640px){.compass-flagship{padding:32px 18px 28px}.compass-flagship-badge{top:10px;right:10px;font-size:.6rem;padding:4px 9px}}
 .compass-header{display:flex;align-items:center;gap:14px;margin-bottom:6px}
 .compass-icon{width:40px;height:40px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
 .compass-title{font-size:1.15rem;font-weight:800;color:#fff;letter-spacing:-.02em}
@@ -398,22 +403,22 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
 
 <!-- HERO -->
 <header class="hero" id="hero">
-  <div class="hero-eyebrow">Research Writing Workspace &middot; <span id="hero-count">2,000+</span> Scopus Journals</div>
-  <h1 class="hero-title">Write. Publish. <span>Impact.</span></h1>
-  <p class="hero-sub">From research idea to complete manuscript — AI-powered tools for academics in social, behavioural &amp; management sciences.</p>
+  <div class="hero-eyebrow">🧭 Research Compass &middot; AI-Powered Gap Finder &middot; <span id="hero-count">2,000+</span> Scopus Journals</div>
+  <h1 class="hero-title">Find the <span>Gap.</span></h1>
+  <p class="hero-sub">Type a topic. Map what's published, surface the open gaps, find the target journals and key authors — in seconds. The rest of the writing workspace is here when you need it.</p>
   <div class="hero-input-wrap">
-    <input class="hero-input" id="hero-input" placeholder="What's your research idea? e.g. AI and employee wellbeing, ESG reporting, burnout in remote workers…" onkeydown="if(event.key==='Enter')heroStart()"/>
-    <button class="hero-btn" onclick="heroStart()">Start Writing →</button>
+    <input class="hero-input" id="hero-input" placeholder="Your research idea — e.g. algorithmic management and gig-worker autonomy, ESG &amp; investor behavior, AI adoption in SMEs…" onkeydown="if(event.key==='Enter')heroStart()"/>
+    <button class="hero-btn" onclick="heroStart()">🧭 Find My Research Gap →</button>
   </div>
   <div class="hero-features">
-    <span class="hero-feat" onclick="navScrollTo('artdev-section',null)">✍️ Article Developer</span>
     <span class="hero-feat" onclick="navScrollTo('compass-section',null)">🧭 Research Compass</span>
+    <span class="hero-feat" onclick="navScrollTo('artdev-section',null)">✍️ Article Developer</span>
     <span class="hero-feat" onclick="navScrollTo('finder-section',null)">🎯 Find My Journal</span>
     <span class="hero-feat" onclick="navScrollTo('browser-section',null)">📚 Journal Library</span>
     <span class="hero-feat" onclick="navScrollTo('dashboard-section',null)">📊 Analytics</span>
   </div>
-  <div class="hero-scroll" onclick="navScrollTo('artdev-section',null)">
-    <span>Start writing below</span>
+  <div class="hero-scroll" onclick="navScrollTo('compass-section',null)">
+    <span>Start with the Compass below</span>
     <span class="hero-scroll-arrow">↓</span>
   </div>
 </header>
@@ -427,41 +432,16 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
 
 <!-- SITE NAV -->
 <nav class="site-nav" id="site-nav">
+  <a class="nav-tab active" onclick="navScrollTo('compass-section',this)">🧭 Research Compass</a>
   <a class="nav-tab" onclick="navScrollTo('artdev-section',this)">✍️ Article Developer</a>
-  <a class="nav-tab" onclick="navScrollTo('compass-section',this)">🧭 Research Compass</a>
   <a class="nav-tab" onclick="navScrollTo('finder-section',this)">🎯 Find My Journal</a>
   <a class="nav-tab" onclick="navScrollTo('browser-section',this)">📚 Journal Reference</a>
   <a class="nav-tab" onclick="navScrollTo('dashboard-section',this)">📊 Analytics</a>
 </nav>
 
-<!-- VISUAL DASHBOARD -->
-<div class="dashboard" id="dashboard-section">
-  <div class="dash-card">
-    <div class="dash-title">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-      Avg First Decision by Field
-    </div>
-    <svg id="bar-chart"></svg>
-  </div>
-  <div class="dash-card">
-    <div class="dash-title">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-      Impact Factor vs. Wait Time
-      <span style="margin-left:auto;font-size:.65rem;color:var(--faint);font-weight:400;text-transform:none;letter-spacing:0">bubble = acceptance rate</span>
-    </div>
-    <svg id="scatter-chart"></svg>
-  </div>
-  <div class="dash-card">
-    <div class="dash-title">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      Fastest Publishers (≥3 journals)
-    </div>
-    <div id="pub-ranking"></div>
-  </div>
-</div>
-
-<!-- RESEARCH COMPASS -->
-<div class="compass" id="compass-section">
+<!-- RESEARCH COMPASS — FLAGSHIP, CENTER STAGE -->
+<div class="compass compass-flagship" id="compass-section">
+  <div class="compass-flagship-badge">★ Flagship Tool</div>
   <div class="compass-header">
     <div class="compass-icon">🧭</div>
     <div>
@@ -499,6 +479,32 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
     <div id="compass-authors" class="compass-authors-grid"></div>
   </div>
   <div class="compass-error" id="compass-error" style="display:none"></div>
+</div>
+
+<!-- VISUAL DASHBOARD -->
+<div class="dashboard" id="dashboard-section">
+  <div class="dash-card">
+    <div class="dash-title">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Avg First Decision by Field
+    </div>
+    <svg id="bar-chart"></svg>
+  </div>
+  <div class="dash-card">
+    <div class="dash-title">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      Impact Factor vs. Wait Time
+      <span style="margin-left:auto;font-size:.65rem;color:var(--faint);font-weight:400;text-transform:none;letter-spacing:0">bubble = acceptance rate</span>
+    </div>
+    <svg id="scatter-chart"></svg>
+  </div>
+  <div class="dash-card">
+    <div class="dash-title">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Fastest Publishers (≥3 journals)
+    </div>
+    <div id="pub-ranking"></div>
+  </div>
 </div>
 
 <!-- ARTICLE DEVELOPER -->
@@ -1718,13 +1724,17 @@ function navScrollTo(id, el) {
 
 function heroStart() {
   const val = document.getElementById('hero-input').value.trim();
-  if (val) { const t = document.getElementById('adf-topic'); if (t) t.value = val; }
-  document.getElementById('artdev-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  setTimeout(() => { const t = document.getElementById('adf-topic'); if (t) t.focus(); }, 600);
+  const c = document.getElementById('compass-input');
+  if (val && c) c.value = val;
+  document.getElementById('compass-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => {
+    if (c) c.focus();
+    if (val) { const btn = document.getElementById('compass-btn'); if (btn) btn.click(); }
+  }, 600);
 }
 
 // Highlight active nav tab on scroll
-const _navSections = ['artdev-section','compass-section','finder-section','browser-section','dashboard-section'];
+const _navSections = ['compass-section','artdev-section','finder-section','browser-section','dashboard-section'];
 window.addEventListener('scroll', () => {
   let current = '';
   _navSections.forEach(id => {
