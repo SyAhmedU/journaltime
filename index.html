@@ -40,6 +40,10 @@
 .syed-link:hover{color:var(--ink,var(--text,#0E0E18));background:rgba(14,14,24,.05)}
 .syed-link-all{font-weight:700;color:#fff !important;background:linear-gradient(135deg,#FF9656 0%,#F14575 55%,#9270F4 100%);padding:5px 13px;border-radius:999px;box-shadow:0 6px 16px -6px rgba(241,69,117,.55)}
 .syed-link-all:hover{opacity:.92}
+.syed-suite-label{font-size:.66rem;color:var(--faint,var(--muted,#6F6F7E));text-transform:uppercase;letter-spacing:.08em;margin-right:6px;white-space:nowrap}
+.syed-link-active{color:#fff !important;font-weight:700;background:linear-gradient(135deg,#FF9656 0%,#F14575 55%,#9270F4 100%);box-shadow:0 4px 12px -4px rgba(241,69,117,.45)}
+.syed-caret{opacity:.4;padding:5px 4px;font-size:.8rem;color:var(--faint,var(--muted,#6F6F7E))}
+.syed-suite-step{display:inline-flex;align-items:center}
 .theme-toggle{width:34px;height:34px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:1rem;transition:background .15s,color .15s,transform .2s;margin-left:4px;flex-shrink:0}
 .theme-toggle:hover{color:var(--ink);transform:rotate(15deg)}
 .theme-toggle .sun,.theme-toggle .moon{display:none}
@@ -425,12 +429,13 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
     <span class="syed-name">Syed</span>
   </a>
   <span class="syed-divider"></span>
-  <span class="syed-project">Journal Wait Times</span>
-  <nav class="syed-links">
-    <a class="syed-link" href="https://syahmedu.github.io/cadence/" target="_blank" rel="noopener">Cadence</a>
-    <a class="syed-link" href="https://scalescope.vercel.app" target="_blank" rel="noopener">ScaleScope</a>
-    <a class="syed-link" href="https://task-manager-production-5683.up.railway.app" target="_blank" rel="noopener">TaskFlow</a>
-    <a class="syed-link syed-link-all" href="https://syahmedu.github.io/nexus/" target="_blank" rel="noopener">All Projects →</a>
+  <span class="syed-project">JournalTime</span>
+  <nav class="syed-links" aria-label="Research Suite">
+    <span class="syed-suite-label">Research Suite</span>
+    <span class="syed-suite-step"><a class="syed-link" href="https://researchflow-syahmedus-projects.vercel.app" target="_blank" rel="noopener">ResearchFlow</a></span>
+    <span class="syed-suite-step"><span class="syed-caret" aria-hidden="true">›</span><a class="syed-link" href="https://theoryscope.vercel.app" target="_blank" rel="noopener">TheoryScope</a></span>
+    <span class="syed-suite-step"><span class="syed-caret" aria-hidden="true">›</span><a class="syed-link" href="https://scalescope.vercel.app" target="_blank" rel="noopener">ScaleScope</a></span>
+    <span class="syed-suite-step"><span class="syed-caret" aria-hidden="true">›</span><a class="syed-link syed-link-active" href="#" aria-current="page">JournalTime</a></span>
   </nav>
   <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark">
     <span class="sun">☀️</span><span class="moon">🌙</span>
