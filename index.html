@@ -387,6 +387,25 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
 .paper-action-btn:hover{border-color:var(--blue);color:var(--blue);background:#f0f7ff}
 .paper-action-btn.primary{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border-color:transparent}
 .paper-action-btn.primary:hover{opacity:.9}
+/* Revision modal — JournalTime → ResearchFlow handoff */
+.rev-backdrop{position:fixed;inset:0;background:rgba(14,14,24,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:10000;padding:16px}
+.rev-backdrop.open{display:flex}
+.rev-modal{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 20px 50px rgba(14,14,24,.25);width:100%;max-width:520px;max-height:calc(100vh - 40px);overflow-y:auto;font-family:'Inter',system-ui,sans-serif}
+.rev-modal-head{padding:18px 22px 12px;border-bottom:1px solid var(--border)}
+.rev-modal-title{font-size:1.05rem;font-weight:800;color:var(--text);letter-spacing:-.01em;margin:0}
+.rev-modal-sub{font-size:.78rem;color:var(--muted);margin-top:4px}
+.rev-modal-body{padding:18px 22px}
+.rev-modal-label{display:block;font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.rev-modal-select,.rev-modal-textarea{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:8px;font-size:.86rem;color:var(--text);background:var(--bg);font-family:inherit;outline:none;transition:border-color .12s}
+.rev-modal-select:focus,.rev-modal-textarea:focus{border-color:#7c3aed}
+.rev-modal-textarea{resize:vertical;min-height:96px;line-height:1.5}
+.rev-modal-row{margin-bottom:14px}
+.rev-modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 22px 18px;border-top:1px solid var(--border)}
+.rev-modal-btn{padding:8px 14px;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--text);transition:.12s}
+.rev-modal-btn:hover{background:var(--bg)}
+.rev-modal-btn.primary{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border-color:transparent}
+.rev-modal-btn.primary:hover{opacity:.92}
+.rev-modal-btn.primary:disabled{opacity:.45;cursor:not-allowed}
 .paper-title-block{text-align:center;margin-bottom:24px;padding-bottom:18px;border-bottom:2px solid #e2e8f0}
 .paper-main-title{font-size:1.35rem;font-weight:800;color:var(--text);line-height:1.35;margin-bottom:8px;font-family:'Times New Roman',serif}
 .paper-meta{font-size:.75rem;color:var(--muted)}
@@ -2416,41 +2435,9 @@ function _toBase64Url(s) {
   for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
   return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
-function openRevisionDialog() {
-  const stages = [
-    { id: 'question',   label: 'Research question — too broad / not answerable' },
-    { id: 'literature', label: 'Literature & gaps — gap unconvincing' },
-    { id: 'theory',     label: 'Theoretical framework — theory doesn\'t fit' },
-    { id: 'hypothesis', label: 'Hypotheses — not testable or not aligned' },
-    { id: 'design',     label: 'Research design — design can\'t test the question' },
-    { id: 'sampling',   label: 'Sampling — sample wrong / too small' },
-    { id: 'instruments',label: 'Instruments — scales don\'t cover the construct' },
-    { id: 'analysis',   label: 'Analysis plan — wrong test for the data' },
-  ];
-  const list = stages.map((s, i) => `${i + 1}. ${s.label}`).join('\n');
-  const which = prompt(`Where does the issue live? Type the number:\n\n${list}`);
-  const idx = parseInt(which || '', 10) - 1;
-  if (!(idx >= 0 && idx < stages.length)) return;
-  const stage = stages[idx];
-  const note = prompt(`Note for the reviewer (what specifically needs to change at the "${stage.id}" stage)?`, '');
-  if (note === null) return;
-  // Pull the topic from the current draft as the "idea" carry-over.
-  const topic = (document.getElementById('adf-topic')?.value || '').trim()
-    || (_artdevPaper?.title || '').trim();
-  const payload = {
-    source: 'journaltime',
-    v: 1,
-    idea: topic,
-    stage: stage.id,
-    note: note.trim(),
-    sentAt: new Date().toISOString(),
-  };
-  const b64 = _toBase64Url(JSON.stringify(payload));
-  // ResearchFlow is on Vercel; we don't hard-code the project URL because the
-  // domain may change. The user can override via localStorage.
-  const base = localStorage.getItem('jt_researchflow_url') || 'https://researchflow.vercel.app/';
-  window.open(`${base}#revise=${b64}`, '_blank', 'noopener,noreferrer');
-}
+// openRevisionDialog / closeRevisionDialog / submitRevisionDialog live in the
+// modal script block below the modal HTML (after </script>). _toBase64Url is
+// shared with the ToolsScope handoff and stays here.
 
 // Theme toggle
 (function(){
@@ -2463,6 +2450,87 @@ function openRevisionDialog() {
     try { localStorage.setItem('syed-theme', next); } catch(e) {}
   });
 })();
+</script>
+
+<!-- Revision modal: JournalTime → ResearchFlow handoff -->
+<div class="rev-backdrop" id="rev-backdrop" role="dialog" aria-modal="true" aria-labelledby="rev-modal-title" onclick="if(event.target===this)closeRevisionDialog()">
+  <div class="rev-modal">
+    <div class="rev-modal-head">
+      <h2 class="rev-modal-title" id="rev-modal-title">Send back to ResearchFlow</h2>
+      <div class="rev-modal-sub">Jump to a specific stage and leave a note about what to revisit.</div>
+    </div>
+    <div class="rev-modal-body">
+      <div class="rev-modal-row">
+        <label class="rev-modal-label" for="rev-stage">Stage to revise</label>
+        <select class="rev-modal-select" id="rev-stage">
+          <option value="question">Research question — too broad / not answerable</option>
+          <option value="literature">Literature &amp; gaps — gap unconvincing</option>
+          <option value="theory">Theoretical framework — theory doesn't fit</option>
+          <option value="hypothesis">Hypotheses — not testable or not aligned</option>
+          <option value="design">Research design — design can't test the question</option>
+          <option value="sampling">Sampling — sample wrong / too small</option>
+          <option value="instruments">Instruments — scales don't cover the construct</option>
+          <option value="analysis">Analysis plan — wrong test for the data</option>
+        </select>
+      </div>
+      <div class="rev-modal-row">
+        <label class="rev-modal-label" for="rev-note">What specifically needs to change?</label>
+        <textarea class="rev-modal-textarea" id="rev-note" placeholder="e.g. The mediator we proposed isn't supported by the literature — narrow it to UWES-Vigor only."></textarea>
+      </div>
+    </div>
+    <div class="rev-modal-foot">
+      <button type="button" class="rev-modal-btn" onclick="closeRevisionDialog()">Cancel</button>
+      <button type="button" class="rev-modal-btn primary" id="rev-submit" onclick="submitRevisionDialog()">Send to ResearchFlow</button>
+    </div>
+  </div>
+</div>
+<script>
+function openRevisionDialog() {
+  const bd = document.getElementById('rev-backdrop');
+  if (!bd) return;
+  // Reset state each open so the previous note doesn't leak across sessions.
+  const note = document.getElementById('rev-note');
+  if (note) note.value = '';
+  bd.classList.add('open');
+  setTimeout(() => { const s = document.getElementById('rev-stage'); if (s) s.focus(); }, 30);
+  document.addEventListener('keydown', _revKeyHandler);
+}
+function closeRevisionDialog() {
+  const bd = document.getElementById('rev-backdrop');
+  if (bd) bd.classList.remove('open');
+  document.removeEventListener('keydown', _revKeyHandler);
+}
+function _revKeyHandler(e) {
+  if (e.key === 'Escape') { e.preventDefault(); closeRevisionDialog(); }
+  else if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); submitRevisionDialog(); }
+}
+function submitRevisionDialog() {
+  const stage = document.getElementById('rev-stage').value;
+  const note = (document.getElementById('rev-note').value || '').trim();
+  if (!note) {
+    // Empty note isn't useful to the reviewer — nudge instead of silently sending.
+    const ta = document.getElementById('rev-note');
+    if (ta) { ta.focus(); ta.style.borderColor = '#dc2626'; setTimeout(() => ta.style.borderColor = '', 1200); }
+    return;
+  }
+  // _artdevPaper is a `let` at module scope of the main script — accessible
+  // by bare name from this script too, but guard in case it hasn't been set.
+  let paperTitle = '';
+  try { paperTitle = (typeof _artdevPaper !== 'undefined' && _artdevPaper?.title) || ''; } catch (_) {}
+  const topic = (document.getElementById('adf-topic')?.value || '').trim() || paperTitle.trim();
+  const payload = {
+    source: 'journaltime',
+    v: 1,
+    idea: topic,
+    stage,
+    note,
+    sentAt: new Date().toISOString(),
+  };
+  const b64 = _toBase64Url(JSON.stringify(payload));
+  const base = localStorage.getItem('jt_researchflow_url') || 'https://researchflow.vercel.app/';
+  window.open(`${base}#revise=${b64}`, '_blank', 'noopener,noreferrer');
+  closeRevisionDialog();
+}
 </script>
 </body>
 </html>
