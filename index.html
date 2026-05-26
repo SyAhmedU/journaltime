@@ -2424,6 +2424,95 @@ function _checkToolsScopeHash() {
 }
 _checkToolsScopeHash();
 
+// ── RESEARCHFLOW → JOURNALTIME RESEARCHPACK HANDOFF ─────────────────────────
+// When a writer wants to draft before collecting data (or after collecting via
+// a non-ToolsScope path), ResearchFlow can hand its session straight here. The
+// pack carries the framing — topic, theory, hypotheses, gap, keywords — which
+// the Article Developer needs to produce a useful first draft. A pack on its
+// own (without analyses) still pre-fills topic/gap/field/keywords plus a
+// context block summarising theory + hypotheses.
+function applyResearchPack(pack) {
+  if (pack.title) document.getElementById('adf-topic').value = pack.title;
+  else if (pack.question) document.getElementById('adf-topic').value = pack.question;
+  if (pack.gap) document.getElementById('adf-gap').value = pack.gap;
+  if (pack.field) {
+    const sel = document.getElementById('adf-field-sel');
+    if (sel) {
+      // Match by case-insensitive option text/value — researchflow's `field`
+      // is free-form so we accept either.
+      const target = String(pack.field).toLowerCase();
+      let matched = false;
+      for (const o of sel.options) {
+        if (o.value.toLowerCase() === target || (o.text || '').toLowerCase().includes(target)) {
+          sel.value = o.value;
+          sel.dispatchEvent(new Event('change'));
+          matched = true;
+          break;
+        }
+      }
+      // No-op if no match — leave whatever the user picks manually.
+      void matched;
+    }
+  }
+  if (Array.isArray(pack.keywords) && pack.keywords.length) {
+    document.getElementById('adf-keywords').value = pack.keywords.join(', ');
+  }
+  // Context block: theory + hypotheses give the AI the scaffolding for the
+  // introduction + hypothesis development sections.
+  const ctxParts = [];
+  if (pack.idea) ctxParts.push('RESEARCH IDEA:\n' + pack.idea);
+  if (pack.theory?.name) {
+    const t = 'THEORETICAL FRAMEWORK:\n' + pack.theory.name +
+      (pack.theory.justification ? '\nJustification: ' + pack.theory.justification : '');
+    ctxParts.push(t);
+  }
+  if (Array.isArray(pack.hypotheses) && pack.hypotheses.length) {
+    const hyps = pack.hypotheses.map(h => `${h.id}: ${h.statement}` +
+      (h.iv && h.dv ? ` (IV: ${h.iv} → DV: ${h.dv}${h.moderator ? '; moderator: ' + h.moderator : ''})` : '')
+    ).join('\n');
+    ctxParts.push('HYPOTHESES:\n' + hyps);
+  }
+  if (pack.nullHypothesis) ctxParts.push('NULL HYPOTHESIS:\n' + pack.nullHypothesis);
+  if (pack.design?.design) {
+    const d = 'DESIGN:\n' + pack.design.design +
+      (pack.design.approach ? ' (' + pack.design.approach + ')' : '') +
+      (pack.design.waves ? ', ' + pack.design.waves + ' wave(s)' : '');
+    ctxParts.push(d);
+  }
+  if (pack.sampling) {
+    const s = 'SAMPLING:\n' + [pack.sampling.targetPopulation, pack.sampling.samplingMethod, pack.sampling.targetN ? 'N ≈ ' + pack.sampling.targetN : null].filter(Boolean).join(' · ');
+    if (s.length > 'SAMPLING:\n'.length) ctxParts.push(s);
+  }
+  // Don't clobber any context the ToolsScope handoff has already written — it
+  // contains the actual Methods + Results, which we want to preserve.
+  const existing = (document.getElementById('adf-context').value || '').trim();
+  const merged = ctxParts.join('\n\n');
+  document.getElementById('adf-context').value = existing
+    ? merged + (merged ? '\n\n' : '') + existing
+    : merged;
+  // Banner: tell the user where the plan came from.
+  const banner = document.getElementById('artdev-resume-banner');
+  if (banner) {
+    const meta = document.getElementById('resume-banner-meta');
+    if (meta) meta.textContent = `📦 Carried from ResearchFlow — "${(pack.title || pack.question || 'study').slice(0, 60)}" · ${new Date(pack.exportedAt || Date.now()).toLocaleDateString()}`;
+    banner.style.display = 'flex';
+  }
+  document.getElementById('artdev-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function _checkResearchPackHash() {
+  try {
+    const m = location.hash.match(/[#&]pack=([^&]+)/);
+    if (!m) return;
+    const json = _fromBase64Url(m[1]);
+    const pack = JSON.parse(json);
+    if (pack && pack.source === 'researchflow' && pack.v === 1) {
+      applyResearchPack(pack);
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  } catch (e) { console.warn('ResearchPack handoff failed:', e); }
+}
+_checkResearchPackHash();
+
 // ── JOURNALTIME → RESEARCHFLOW REVISION LOOP ────────────────────────────────
 // While drafting, you often discover that the *upstream* framing is broken —
 // the question is fuzzy, the theory doesn't load-bear, the design can't test
