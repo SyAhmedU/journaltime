@@ -2157,6 +2157,7 @@ function renderArticlePaper(paper, gap, targetJournal, topic) {
     <div class="paper-toolbar">
       <span class="paper-toolbar-title">✍️ ${adEsc(paper.title || 'Untitled Draft')}</span>
       <button class="paper-action-btn" onclick="adDownloadDoc()">⬇ Download .doc</button>
+      <button class="paper-action-btn" onclick="openRevisionDialog()" title="Send this draft back to ResearchFlow for revision at a specific stage">↺ Needs revision</button>
       <button class="paper-action-btn primary" onclick="window.print()">🖨 Print / PDF</button>
     </div>`;
 
@@ -2345,6 +2346,111 @@ function discardDraft() {
 
 // Init
 showResumeBanner();
+
+// ── TOOLSSCOPE → JOURNALTIME HANDOFF ────────────────────────────────────────
+// ToolsScope opens us with #tools=<base64-JSON>. We unpack the payload
+// (Methods + Results paragraphs, references, title, keywords) into the
+// Article Developer so the user can immediately generate a draft that
+// already incorporates their analyses.
+function _fromBase64Url(b64) {
+  const pad = '='.repeat((4 - (b64.length % 4)) % 4);
+  const norm = b64.replace(/-/g, '+').replace(/_/g, '/') + pad;
+  const bin = atob(norm);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+function applyToolsScopePayload(payload) {
+  // Pre-fill what we have. Methods + Results + references all go into the
+  // free-form context box — the AI draft prompt picks them up directly.
+  if (payload.topic) document.getElementById('adf-topic').value = payload.topic;
+  if (payload.gap) document.getElementById('adf-gap').value = payload.gap;
+  if (payload.field) {
+    const sel = document.getElementById('adf-field-sel');
+    for (const o of sel.options) {
+      if (o.value.toLowerCase() === String(payload.field).toLowerCase()) { sel.value = o.value; sel.dispatchEvent(new Event('change')); break; }
+    }
+  }
+  if (Array.isArray(payload.keywords) && payload.keywords.length) {
+    document.getElementById('adf-keywords').value = payload.keywords.join(', ');
+  }
+  const ctxParts = [];
+  if (payload.methodSummary) ctxParts.push('METHODS (from ToolsScope):\n' + payload.methodSummary);
+  if (payload.resultsSummary) ctxParts.push('RESULTS (from ToolsScope):\n' + payload.resultsSummary);
+  if (Array.isArray(payload.references) && payload.references.length) {
+    ctxParts.push('REFERENCES (to include):\n' + payload.references.map(r => '• ' + r).join('\n'));
+  }
+  if (ctxParts.length) document.getElementById('adf-context').value = ctxParts.join('\n\n');
+  // Toast + scroll.
+  const banner = document.getElementById('artdev-resume-banner');
+  if (banner) {
+    const meta = document.getElementById('resume-banner-meta');
+    if (meta) meta.textContent = `Imported from ToolsScope — "${(payload.title || 'study').slice(0, 60)}" · ${new Date(payload.capturedAt || Date.now()).toLocaleDateString()}`;
+    banner.style.display = 'flex';
+  }
+  document.getElementById('artdev-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function _checkToolsScopeHash() {
+  try {
+    const m = location.hash.match(/[#&]tools=([^&]+)/);
+    if (!m) return;
+    const json = _fromBase64Url(m[1]);
+    const payload = JSON.parse(json);
+    if (payload && payload.source === 'toolsscope') {
+      applyToolsScopePayload(payload);
+      // Clear the hash so a refresh doesn't re-trigger it.
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  } catch (e) { console.warn('ToolsScope handoff failed:', e); }
+}
+_checkToolsScopeHash();
+
+// ── JOURNALTIME → RESEARCHFLOW REVISION LOOP ────────────────────────────────
+// While drafting, you often discover that the *upstream* framing is broken —
+// the question is fuzzy, the theory doesn't load-bear, the design can't test
+// the hypothesis. This button hands the draft *back* to ResearchFlow at the
+// specific stage with a note describing what to fix.
+function _toBase64Url(s) {
+  const bytes = new TextEncoder().encode(s);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function openRevisionDialog() {
+  const stages = [
+    { id: 'question',   label: 'Research question — too broad / not answerable' },
+    { id: 'literature', label: 'Literature & gaps — gap unconvincing' },
+    { id: 'theory',     label: 'Theoretical framework — theory doesn\'t fit' },
+    { id: 'hypothesis', label: 'Hypotheses — not testable or not aligned' },
+    { id: 'design',     label: 'Research design — design can\'t test the question' },
+    { id: 'sampling',   label: 'Sampling — sample wrong / too small' },
+    { id: 'instruments',label: 'Instruments — scales don\'t cover the construct' },
+    { id: 'analysis',   label: 'Analysis plan — wrong test for the data' },
+  ];
+  const list = stages.map((s, i) => `${i + 1}. ${s.label}`).join('\n');
+  const which = prompt(`Where does the issue live? Type the number:\n\n${list}`);
+  const idx = parseInt(which || '', 10) - 1;
+  if (!(idx >= 0 && idx < stages.length)) return;
+  const stage = stages[idx];
+  const note = prompt(`Note for the reviewer (what specifically needs to change at the "${stage.id}" stage)?`, '');
+  if (note === null) return;
+  // Pull the topic from the current draft as the "idea" carry-over.
+  const topic = (document.getElementById('adf-topic')?.value || '').trim()
+    || (_artdevPaper?.title || '').trim();
+  const payload = {
+    source: 'journaltime',
+    v: 1,
+    idea: topic,
+    stage: stage.id,
+    note: note.trim(),
+    sentAt: new Date().toISOString(),
+  };
+  const b64 = _toBase64Url(JSON.stringify(payload));
+  // ResearchFlow is on Vercel; we don't hard-code the project URL because the
+  // domain may change. The user can override via localStorage.
+  const base = localStorage.getItem('jt_researchflow_url') || 'https://researchflow.vercel.app/';
+  window.open(`${base}#revise=${b64}`, '_blank', 'noopener,noreferrer');
+}
 
 // Theme toggle
 (function(){
