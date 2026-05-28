@@ -2651,6 +2651,30 @@ function submitRevisionDialog() {
 })();
 </script>
 
+<!-- ─── Wobble: spring clicks + soft breathing, shared suite vibe ─── -->
+<style>
+.hero-btn, .syed-link, .theme-toggle, button, .btn, .btn-primary, .btn-secondary,
+.feat, .hero-feat, a.feat, .syed-link {
+  transition: transform .55s cubic-bezier(.34, 1.5, .6, 1),
+              box-shadow .35s cubic-bezier(.22, 1, .36, 1),
+              border-color .25s ease-out, opacity .2s ease, color .2s ease, background .2s ease;
+}
+.hero-btn:active, button.btn:active, .btn:active,
+.syed-link:active, .theme-toggle:active {
+  transform: scale(.97) translateY(1px); transition-duration: .14s;
+}
+.hero-btn { animation: hero-btn-breath 5s ease-in-out infinite; will-change: box-shadow; }
+@keyframes hero-btn-breath {
+  0%,100% { box-shadow: 0 6px 22px -8px rgba(241,69,117,.55); }
+  50%     { box-shadow: 0 14px 34px -10px rgba(146,112,244,.65); }
+}
+#ts-active-pill { animation: ts-bob 6s ease-in-out infinite; }
+@keyframes ts-bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0s !important; transition-duration: 0s !important; }
+}
+</style>
+
 <!-- ─── Research Suite — active-project pill (read-only; same-origin localStorage from the hub) ─── -->
 <style>
 #ts-active-pill {
