@@ -2623,6 +2623,34 @@ function submitRevisionDialog() {
   closeRevisionDialog();
 }
 </script>
+<script>
+// ── Quick Start hand-off: ?topic=<topic> from the hub Throughline lands
+// the user with the hero input pre-filled and heroStart() triggered, so
+// they arrive on a populated Research Compass instead of an empty page.
+(function(){
+  try {
+    var params = new URLSearchParams(location.search);
+    var topic = params.get('topic');
+    if (!topic) return;
+    history.replaceState(null, '', location.pathname + (location.hash || ''));
+    function tryFire() {
+      var input = document.getElementById('hero-input');
+      if (input && typeof heroStart === 'function') {
+        input.value = topic;
+        try { heroStart(); } catch (e) { /* ignore */ }
+      } else {
+        setTimeout(tryFire, 200);
+      }
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function(){ setTimeout(tryFire, 300); });
+    } else {
+      setTimeout(tryFire, 300);
+    }
+  } catch (e) {}
+})();
+</script>
+
 <!-- ─── Research Suite — active-project pill (read-only; same-origin localStorage from the hub) ─── -->
 <style>
 #ts-active-pill {
