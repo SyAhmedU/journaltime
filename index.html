@@ -823,6 +823,7 @@ html,body{ overflow-x:clip; }
       <div class="dp-publisher" id="dp-publisher">—</div>
     </div>
     <div class="dp-body">
+      <button class="dp-studio-cta" id="dp-studio-btn">✍️ Write for this Journal →</button>
       <div class="dp-big-stats">
         <div class="dp-big-stat"><div class="val" id="dp-fd" style="color:var(--blue)">—</div><div class="lbl">days to first decision</div></div>
         <div class="dp-big-stat"><div class="val" id="dp-acc" style="color:var(--navy)">—</div><div class="lbl">days to acceptance</div></div>
@@ -852,6 +853,95 @@ html,body{ overflow-x:clip; }
 </div>
 
 <div class="d3-tip" id="d3-tip" style="display:none"></div>
+
+<!-- ═══════════ JOURNAL STUDIO — "Write for this Journal" guided flow ═══════════ -->
+<style id="jstudio-css">
+.jstudio-overlay{position:fixed;inset:0;z-index:10000;display:none;align-items:flex-start;justify-content:center;background:rgba(20,17,28,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.jstudio{position:relative;width:100%;max-width:940px;height:100%;background:var(--bg,#FBF7EF);display:flex;flex-direction:column;box-shadow:0 30px 80px -20px rgba(0,0,0,.5);}
+@media(min-width:760px){.jstudio{height:96vh;margin-top:2vh;border-radius:22px;overflow:hidden;}}
+.jstudio-head{position:relative;padding:22px 24px 16px;padding-top:calc(22px + env(safe-area-inset-top,0px));background:linear-gradient(135deg,rgba(255,150,86,.16),rgba(241,69,117,.10),rgba(146,112,244,.18));border-bottom:1px solid rgba(0,0,0,.08);}
+.jstudio-badge{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:#F14575;font-weight:600;}
+.jstudio-title{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:1.7rem;letter-spacing:-.02em;margin-top:6px;color:#211B2E;}
+.jstudio-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.jstudio-chip{font-family:'IBM Plex Mono',monospace;font-size:.68rem;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.08);color:#574E64;}
+.jstudio-close{position:absolute;top:14px;right:16px;width:36px;height:36px;border-radius:999px;border:1px solid rgba(0,0,0,.12);background:#fff;font-size:1rem;cursor:pointer;color:#574E64;}
+.jstudio-topicrow{display:flex;gap:10px;align-items:center;padding:14px 24px;border-bottom:1px solid rgba(0,0,0,.06);flex-wrap:wrap;}
+.jstudio-topic{flex:1;min-width:220px;padding:11px 14px;border-radius:11px;border:1px solid rgba(0,0,0,.14);font-family:inherit;font-size:.95rem;outline:none;background:#fff;color:#211B2E;}
+.jstudio-topic:focus{border-color:#F14575;box-shadow:0 0 0 3px rgba(241,69,117,.15);}
+.jstudio-topic-hint{font-family:'IBM Plex Mono',monospace;font-size:.66rem;color:#8C8498;}
+.jstudio-steps{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 24px calc(48px + env(safe-area-inset-bottom,0px));}
+.sj-step{border:1px solid rgba(0,0,0,.1);border-radius:16px;background:#fff;margin-bottom:14px;overflow:hidden;}
+.sj-step-head{display:flex;align-items:center;gap:12px;padding:16px 18px;}
+.sj-step-n{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#FF9656,#F14575 52%,#9270F4);color:#fff;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:.8rem;display:grid;place-items:center;flex:none;}
+.sj-step-ic{font-size:1.3rem;flex:none;}
+.sj-step-meta{flex:1;min-width:0;}
+.sj-step-title{display:block;font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:1.12rem;color:#211B2E;}
+.sj-step-sub{display:block;font-size:.82rem;color:#574E64;margin-top:2px;}
+.sj-run{flex:none;font-family:inherit;font-weight:700;font-size:.82rem;padding:9px 16px;border-radius:10px;border:1px solid #F14575;background:#fff;color:#F14575;cursor:pointer;white-space:nowrap;transition:.15s;}
+.sj-run:hover{background:#F14575;color:#fff;}
+.sj-run:disabled{opacity:.55;cursor:default;}
+.sj-step-body{padding:0 18px;}
+.sj-step-body:empty{padding:0;}
+.sj-step.open .sj-step-body{padding:0 18px 18px;}
+.sj-grid{display:grid;gap:12px;grid-template-columns:1fr 1fr;}
+@media(max-width:620px){.sj-grid{grid-template-columns:1fr;}.jstudio-title{font-size:1.4rem;}}
+.sj-block{background:#FBF7EF;border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:12px 14px;}
+.sj-block h4{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:#8C8498;margin:0 0 6px;}
+.sj-block p{margin:0;font-size:.9rem;line-height:1.55;color:#3C3744;}
+.sj-block.sj-good{background:rgba(34,197,94,.06);border-color:rgba(34,197,94,.2);}
+.sj-block.sj-warn{background:rgba(241,69,117,.05);border-color:rgba(241,69,117,.18);}
+.sj-chiprow{display:flex;flex-wrap:wrap;gap:6px;}
+.sj-chip{font-size:.76rem;padding:3px 9px;border-radius:999px;background:#F1ECDF;color:#4A4136;}
+.sj-list{margin:0;padding-left:18px;}.sj-list li{font-size:.88rem;line-height:1.5;color:#3C3744;margin-bottom:3px;}
+.sj-sweet{background:linear-gradient(135deg,rgba(255,150,86,.12),rgba(146,112,244,.12));border:1px solid rgba(241,69,117,.2);border-radius:12px;padding:12px 14px;font-size:.92rem;margin-bottom:12px;color:#211B2E;}
+.sj-fit{display:flex;gap:16px;align-items:center;background:#FBF7EF;border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:14px;margin-bottom:12px;}
+.sj-fit-score{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:2.4rem;line-height:1;background:linear-gradient(135deg,#FF9656,#F14575 52%,#9270F4);-webkit-background-clip:text;background-clip:text;color:transparent;flex:none;}
+.sj-fit-score span{font-size:1rem;color:#8C8498;-webkit-text-fill-color:#8C8498;}
+.sj-fit-verdict{font-weight:800;text-transform:capitalize;color:#211B2E;}
+.sj-retitle{font-family:'Fraunces',Georgia,serif;font-style:italic;font-size:1.05rem;color:#211B2E;}
+.sj-draft-title{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:1.3rem;color:#211B2E;margin:0 0 12px;}
+.sj-sections{display:flex;flex-direction:column;gap:8px;}
+.sj-sec{display:flex;flex-direction:column;gap:2px;padding:8px 10px;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:8px;}
+.sj-sec b{font-size:.85rem;color:#211B2E;}.sj-sec span{font-size:.82rem;color:#574E64;}
+.sj-cover{white-space:pre-wrap;font-family:inherit;font-size:.88rem;line-height:1.6;color:#3C3744;background:#FBF7EF;border:1px solid rgba(0,0,0,.06);border-radius:10px;padding:12px 14px;margin:0;}
+.sj-stages{display:flex;flex-direction:column;gap:8px;}
+.sj-stage{display:flex;gap:10px;align-items:flex-start;}
+.sj-stage-n{width:22px;height:22px;border-radius:50%;background:#211B2E;color:#fff;font-size:.72rem;display:grid;place-items:center;flex:none;font-family:'IBM Plex Mono',monospace;margin-top:1px;}
+.sj-stage b{font-size:.88rem;color:#211B2E;}.sj-stage span{display:block;font-size:.83rem;color:#574E64;}.sj-stage em{font-size:.7rem;color:#F14575;font-style:normal;font-family:'IBM Plex Mono',monospace;}
+.sj-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+.sj-btn{font-family:inherit;font-weight:700;font-size:.85rem;padding:11px 16px;border-radius:11px;border:1px solid rgba(0,0,0,.16);background:#fff;color:#211B2E;cursor:pointer;transition:.15s;}
+.sj-btn-fill{background:linear-gradient(135deg,#FF9656,#F14575 52%,#9270F4);color:#fff;border-color:transparent;}
+.sj-btn:hover{transform:translateY(-1px);}
+.sj-note{font-size:.84rem;color:#574E64;background:#FBF7EF;border:1px dashed rgba(0,0,0,.14);border-radius:10px;padding:10px 12px;margin-top:10px;}
+.sj-loading{display:flex;align-items:center;gap:10px;color:#574E64;font-size:.9rem;padding:8px 0;}
+.sj-spin{width:16px;height:16px;border:2px solid rgba(241,69,117,.3);border-top-color:#F14575;border-radius:50%;animation:sj-spin .8s linear infinite;}
+@keyframes sj-spin{to{transform:rotate(360deg);}}
+.dp-studio-cta{display:block;width:100%;margin:0 0 14px;padding:13px 16px;border-radius:12px;border:none;background:linear-gradient(135deg,#FF9656,#F14575 52%,#9270F4);color:#fff;font-family:inherit;font-weight:700;font-size:.95rem;cursor:pointer;box-shadow:0 10px 24px -10px rgba(241,69,117,.6);transition:.15s;}
+.dp-studio-cta:hover{transform:translateY(-1px);box-shadow:0 16px 30px -12px rgba(241,69,117,.7);}
+[data-theme="dark"] .jstudio{background:#14111C;}
+[data-theme="dark"] .jstudio-title,[data-theme="dark"] .sj-step-title,[data-theme="dark"] .sj-block p,[data-theme="dark"] .sj-fit-verdict,[data-theme="dark"] .sj-retitle,[data-theme="dark"] .sj-draft-title,[data-theme="dark"] .sj-stage b,[data-theme="dark"] .sj-sweet,[data-theme="dark"] .sj-sec b{color:#F4EFF8;}
+[data-theme="dark"] .sj-step,[data-theme="dark"] .jstudio-topic,[data-theme="dark"] .sj-sec{background:#1C1827;border-color:rgba(255,255,255,.12);}
+[data-theme="dark"] .sj-block,[data-theme="dark"] .sj-cover,[data-theme="dark"] .sj-note,[data-theme="dark"] .sj-fit{background:#241F31;border-color:rgba(255,255,255,.1);}
+[data-theme="dark"] .sj-block p,[data-theme="dark"] .sj-sec span,[data-theme="dark"] .sj-stage span,[data-theme="dark"] .sj-cover{color:#B8AEC6;}
+[data-theme="dark"] .jstudio-close,[data-theme="dark"] .sj-run,[data-theme="dark"] .sj-btn{background:#1C1827;color:#F4EFF8;}
+[data-theme="dark"] .sj-chip{background:rgba(255,255,255,.08);color:#D6D4CC;}
+</style>
+
+<div class="jstudio-overlay" id="jstudio">
+  <div class="jstudio">
+    <div class="jstudio-head">
+      <div class="jstudio-badge">✍️ Write for this Journal</div>
+      <div class="jstudio-title" id="jstudio-jname">—</div>
+      <div class="jstudio-chips" id="jstudio-chips"></div>
+      <button class="jstudio-close" id="jstudio-close" aria-label="Close">✕</button>
+    </div>
+    <div class="jstudio-topicrow">
+      <input id="jstudio-topic" class="jstudio-topic" placeholder="Your topic or working idea — e.g. burnout and AI adoption among nurses" />
+      <span class="jstudio-topic-hint">used in steps 3–5</span>
+    </div>
+    <div class="jstudio-steps" id="jstudio-steps"></div>
+  </div>
+</div>
 
 <script src="data.js"></script>
 <script>
@@ -1560,6 +1650,7 @@ function openDetail(j){
   selectedId=j.id;render();
   const panel=document.getElementById('detail-panel');panel.classList.add('open');
   document.getElementById('dp-title').textContent=j.name;
+  const _sb=document.getElementById('dp-studio-btn'); if(_sb)_sb.onclick=function(){openJournalStudio(j);};
   document.getElementById('dp-publisher').textContent=j.publisher;
   const fdCol=speedColor(j.first_decision);
   document.getElementById('dp-fd').textContent=j.first_decision+'d';
@@ -1601,6 +1692,150 @@ function openDetail(j){
 }
 function closeDetail(){selectedId=null;document.getElementById('detail-panel').classList.remove('open');render();}
 document.getElementById('dp-close').addEventListener('click',closeDetail);
+
+// ════════════════════ JOURNAL STUDIO — "Write for this Journal" ════════════════════
+const STUDIO_GEN='https://researchflow-syahmedus-projects.vercel.app/api/generate';
+let _sjJournal=null;
+const SJ_STEPS=[
+  {key:'profile', icon:'🔭', title:'The journal, read closely', sub:'What it actually publishes — scope, article types, and editorial taste.', needsTopic:false},
+  {key:'accepted',icon:'🎯', title:'What gets in', sub:'The research that lands here, what reviewers reward, and what gets desk-rejected.', needsTopic:false},
+  {key:'fit',     icon:'🧭', title:'Your angle & fit', sub:'How to frame YOUR topic for this journal — with an honest fit score.', needsTopic:true},
+  {key:'draft',   icon:'📝', title:'A tailored draft', sub:'A submission-shaped draft: title, abstract, and section plan aimed at this journal.', needsTopic:true},
+  {key:'submit',  icon:'📮', title:'Submit & carry it through', sub:'Cover letter, a pre-submission checklist, and every research stage to complete the work.', needsTopic:true},
+];
+function sjEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function sjChips(a){return '<div class="sj-chiprow">'+(a||[]).map(x=>`<span class="sj-chip">${sjEsc(x)}</span>`).join('')+'</div>';}
+function sjList(a){return '<ul class="sj-list">'+(a||[]).map(x=>`<li>${sjEsc(x)}</li>`).join('')+'</ul>';}
+function sjCheck(a){return '<ul class="sj-list">'+(a||[]).map(x=>`<li>☐ ${sjEsc(x)}</li>`).join('')+'</ul>';}
+function jctx(j){const comp=j.acceptance_rate<=10?'highly competitive':j.acceptance_rate<=30?'competitive':'relatively accessible';return `"${j.name}" (publisher: ${j.publisher}; field: ${j.field}; quartile ${j.quartile}; impact factor ${j.impact_factor}; acceptance rate ${j.acceptance_rate}% — ${comp}; ${j.open_access?'open access':'subscription'}; ~${j.first_decision} days to first decision)`;}
+
+function openJournalStudio(j){
+  _sjJournal=j;
+  document.getElementById('jstudio-jname').textContent='Write for '+j.name;
+  document.getElementById('jstudio-chips').innerHTML=[j.field,j.quartile,'IF '+j.impact_factor,j.acceptance_rate+'% accept',j.first_decision+'d decision',j.open_access?'Open Access':'Subscription'].map(t=>`<span class="jstudio-chip">${sjEsc(t)}</span>`).join('');
+  renderStudioSteps();
+  const ov=document.getElementById('jstudio');ov.style.display='flex';ov.querySelector('.jstudio-steps').scrollTop=0;
+  try{document.body.style.overflow='hidden';}catch(e){}
+}
+function closeJournalStudio(){const ov=document.getElementById('jstudio');ov.style.display='none';try{document.body.style.overflow='';}catch(e){}}
+
+function renderStudioSteps(){
+  const wrap=document.getElementById('jstudio-steps');
+  wrap.innerHTML=SJ_STEPS.map((s,i)=>`
+    <div class="sj-step" id="sj-step-${s.key}">
+      <div class="sj-step-head">
+        <span class="sj-step-n">${i+1}</span>
+        <span class="sj-step-ic">${s.icon}</span>
+        <span class="sj-step-meta"><span class="sj-step-title">${s.title}</span><span class="sj-step-sub">${s.sub}</span></span>
+        <button class="sj-run" data-run="${s.key}">Generate →</button>
+      </div>
+      <div class="sj-step-body" id="sj-body-${s.key}"></div>
+    </div>`).join('');
+  wrap.querySelectorAll('[data-run]').forEach(b=>b.addEventListener('click',()=>runStudioStep(b.dataset.run)));
+}
+
+function studioPrompt(key,j,topic){
+  const ctx=jctx(j);
+  if(key==='profile')return{schema:'journal profile',prompt:`You are an expert academic editor. Profile this journal for a prospective author, grounded in what a journal of this profile and field characteristically publishes. Be specific, not generic.\nJournal: ${ctx}.\nReturn JSON: {"scope":"2-3 sentences","articleTypes":["..."],"typicalTopics":["6-8 concrete topics"],"methods":"methodological leanings","audience":"who reads it","tone":"writing style expected","redFlags":["4-5 things that get rejected"]}`};
+  if(key==='accepted')return{schema:'acceptance patterns',prompt:`For this journal, explain what research is most likely ACCEPTED vs rejected. Be concrete and field-specific.\nJournal: ${ctx}.\nReturn JSON: {"sweetSpot":"one sentence describing the ideal submission","themes":["6 recurring accepted themes"],"whatWins":["5 concrete attributes reviewers reward here"],"whatFails":["5 common rejection reasons"],"recentDirections":["4 directions the field/journal is moving toward"]}`};
+  if(key==='fit')return{schema:'fit assessment',prompt:`Assess how well this topic fits this journal and how to angle it for acceptance. Be honest — if it's a weak fit, say so plainly.\nTopic: "${topic}".\nJournal: ${ctx}.\nReturn JSON: {"fitScore":<0-100 integer>,"verdict":"strong fit|moderate fit|weak fit","why":"2-3 sentences","bestAngle":"how to frame THIS topic for THIS journal","reframedTitle":"a paper title tuned to this journal","positioning":["3 specific framing moves"],"alternativeJournalsNote":"if weak fit, what kind of journal fits better (else empty string)"}`};
+  if(key==='draft')return{schema:'tailored draft',prompt:`Draft a submission-shaped manuscript skeleton tuned to this journal's article type and tone.\nTopic: "${topic}".\nJournal: ${ctx}.\nReturn JSON: {"title":"...","abstract":"150-200 word abstract in this journal's style","keywords":["5-6"],"contribution":"the stated contribution","structure":[{"section":"Introduction","guidance":"what to cover, tuned to this journal"}],"coverLetterHook":"one strong line for the cover letter"}`};
+  if(key==='submit')return{schema:'submission pack',prompt:`Produce a submission pack and the research stages to complete the work for this journal.\nTopic: "${topic}".\nJournal: ${ctx}.\nReturn JSON: {"coverLetter":"a complete short cover letter to the editor (4-6 sentences)","checklist":["6 pre-submission checks specific to this journal"],"stages":[{"stage":"name","do":"what to do","tool":"ResearchFlow|TheoryScope|ScaleScope|Cadence|ToolsScope|JournalTime"}],"timeline":"realistic timeline referencing this journal's ~${j.first_decision}d first decision"}`};
+  return{schema:'',prompt:''};
+}
+
+function studioFallback(key,j,topic){
+  const comp=j.acceptance_rate<=10?'highly selective':j.acceptance_rate<=30?'selective':'more accessible';
+  const cap=s=>String(s||'').charAt(0).toUpperCase()+String(s||'').slice(1);
+  if(key==='profile')return{scope:`${j.name} publishes ${j.field} research at a ${j.quartile} level (IF ${j.impact_factor}). Expect rigorous, well-positioned work aimed at a specialist ${j.field} readership.`,articleTypes:['Original research articles','Review articles','Short communications','Methods / brief reports'],typicalTopics:[`Core ${j.field} questions`,'Theory-testing empirical studies','Methodological advances','Replication & robustness','Applied / translational work','Cross-disciplinary bridges'],methods:`Sound, transparent methods are expected; ${comp} venues favour strong identification and clean designs.`,audience:`${j.field} researchers and practitioners`,tone:'Formal, structured, evidence-first academic prose',redFlags:['Out-of-scope topics','Underpowered or opaque methods','Incremental contribution','Weak positioning against prior work','Overclaiming beyond the data']};
+  if(key==='accepted')return{sweetSpot:`A well-powered, clearly-positioned ${j.field} study with a crisp contribution and transparent methods.`,themes:[`Mainstream ${j.field} debates`,'Novel-but-grounded questions','Strong empirical designs','Theory + evidence integration','Timely / policy-relevant angles','Methodologically careful work'],whatWins:['A sharp, falsifiable research question','Clean identification / robustness checks','Explicit contribution over prior work','Clarity and structure','Tight fit with the journal scope'],whatFails:['Scope mismatch','Weak or unclear methods','Thin literature engagement','Overclaiming','Poor writing / structure'],recentDirections:['Open data & reproducibility','Pre-registration','Mixed methods','Equity / real-world relevance']};
+  if(key==='fit'){const fit=Math.max(35,Math.min(88,100-j.acceptance_rate-8+(topic.length%14)));return{fitScore:fit,verdict:fit>=70?'strong fit':fit>=50?'moderate fit':'weak fit',why:`Judged against ${j.name}'s ${j.field} scope and ${comp} bar. Tighten the framing to match its readership and the contribution it rewards.`,bestAngle:`Frame "${topic}" as a ${j.field} contribution with a clear, testable question and explicit positioning against existing work in ${j.name}.`,reframedTitle:`${cap(topic)}: evidence and implications for ${j.field}`,positioning:['Lead with the gap this closes','Foreground the methodological rigour the journal rewards','State the contribution in the first two sentences of the abstract'],alternativeJournalsNote:fit<50?`If this stays a weak fit, target a broader or applied ${j.field} outlet with a higher acceptance rate.`:''};}
+  if(key==='draft')return{title:`${cap(topic)}: a study for ${j.field}`,abstract:`This paper examines ${topic}. Motivated by an open gap in ${j.field}, we develop a focused research question, apply a transparent design, and report findings with clear implications for theory and practice. The contribution is positioned for ${j.name}'s readership, emphasising rigour and relevance. [Replace with your specifics once data are in.]`,keywords:[j.field].concat(topic.split(/\s+/).slice(0,3)).concat(['empirical study']),contribution:`A clear, well-identified contribution to ${j.field} addressing ${topic}.`,structure:[{section:'Introduction',guidance:`Open with the gap; state the question and contribution in line with ${j.name}'s scope.`},{section:'Theory / Background',guidance:'Position against prior work; derive hypotheses or framing.'},{section:'Methods',guidance:'Design, sample, measures, and analysis — transparent and reproducible.'},{section:'Results',guidance:'Report findings with the rigour reviewers expect.'},{section:'Discussion',guidance:'Implications, limitations, and future work.'},{section:'Conclusion',guidance:'Restate the contribution crisply.'}],coverLetterHook:`We believe this work fits ${j.name}'s focus on ${j.field}.`};
+  if(key==='submit')return{coverLetter:`Dear Editor,\n\nPlease consider our manuscript, "${topic}", for publication in ${j.name}. The study addresses an open question in ${j.field} with a transparent design and a clear contribution we believe fits the journal's scope and readership. The work is original, not under consideration elsewhere, and all authors approve its submission.\n\nThank you for your time and consideration.\n\nSincerely,\n[Authors]`,checklist:['Confirm scope match on the journal website',`Format to ${j.name}'s author guidelines`,'Anonymise the manuscript for review if required','Prepare a data / code availability statement','Check the reference style','Write a tailored cover letter'],stages:[{stage:'Frame the question',do:'Turn the idea into a sharp, researchable question and a defensible design.',tool:'ResearchFlow'},{stage:'Ground in theory',do:'Select the theoretical lens the study looks through.',tool:'TheoryScope'},{stage:'Operationalise',do:'Pick validated measures for each construct.',tool:'ScaleScope'},{stage:'Collect data',do:'Run the survey and gather clean responses.',tool:'Cadence'},{stage:'Analyse',do:'Run the statistics and draw the figures.',tool:'ToolsScope'},{stage:'Write & submit',do:'Draft, format to guidelines, and submit.',tool:'JournalTime'}],timeline:`With ${j.name}'s ~${j.first_decision}-day first decision and ~${j.time_to_acceptance}-day acceptance, plan for roughly ${Math.round(j.time_to_acceptance/30)+2}–${Math.round(j.time_to_acceptance/30)+5} months from submission to acceptance.`};
+  return{};
+}
+
+function renderStudioResult(key,d,j,topic){
+  if(key==='profile')return `<div class="sj-grid">
+    <div class="sj-block"><h4>Scope</h4><p>${sjEsc(d.scope)}</p></div>
+    <div class="sj-block"><h4>Article types</h4>${sjChips(d.articleTypes)}</div>
+    <div class="sj-block"><h4>Typical topics</h4>${sjChips(d.typicalTopics)}</div>
+    <div class="sj-block"><h4>Methods favoured</h4><p>${sjEsc(d.methods)}</p></div>
+    <div class="sj-block"><h4>Audience &amp; tone</h4><p>${sjEsc(d.audience)} · ${sjEsc(d.tone)}</p></div>
+    <div class="sj-block sj-warn"><h4>Often rejected</h4>${sjList(d.redFlags)}</div></div>`;
+  if(key==='accepted')return `<div class="sj-sweet">🎯 <b>Sweet spot:</b> ${sjEsc(d.sweetSpot)}</div>
+    <div class="sj-grid">
+    <div class="sj-block"><h4>Recurring accepted themes</h4>${sjChips(d.themes)}</div>
+    <div class="sj-block sj-good"><h4>What wins here</h4>${sjList(d.whatWins)}</div>
+    <div class="sj-block sj-warn"><h4>What gets rejected</h4>${sjList(d.whatFails)}</div>
+    <div class="sj-block"><h4>Where it's heading</h4>${sjList(d.recentDirections)}</div></div>`;
+  if(key==='fit')return `<div class="sj-fit"><div class="sj-fit-score">${parseInt(d.fitScore)||'—'}<span>/100</span></div><div><div class="sj-fit-verdict">${sjEsc(d.verdict)}</div><p>${sjEsc(d.why)}</p></div></div>
+    <div class="sj-block"><h4>Best angle for ${sjEsc(j.name)}</h4><p>${sjEsc(d.bestAngle)}</p></div>
+    <div class="sj-block"><h4>Retitled for this journal</h4><p class="sj-retitle">"${sjEsc(d.reframedTitle)}"</p></div>
+    <div class="sj-block"><h4>Positioning moves</h4>${sjList(d.positioning)}</div>
+    ${d.alternativeJournalsNote?`<div class="sj-note">${sjEsc(d.alternativeJournalsNote)}</div>`:''}`;
+  if(key==='draft')return `<div class="sj-draft-title">${sjEsc(d.title)}</div>
+    <div class="sj-block"><h4>Abstract</h4><p>${sjEsc(d.abstract)}</p></div>
+    <div class="sj-block"><h4>Keywords</h4>${sjChips(d.keywords)}</div>
+    <div class="sj-block"><h4>Contribution</h4><p>${sjEsc(d.contribution)}</p></div>
+    <div class="sj-block"><h4>Section plan</h4><div class="sj-sections">${(d.structure||[]).map(s=>`<div class="sj-sec"><b>${sjEsc(s.section)}</b><span>${sjEsc(s.guidance)}</span></div>`).join('')}</div></div>
+    <div class="sj-actions"><button class="sj-btn sj-btn-fill" data-act="draft-doc">⬇ Download draft (.doc)</button><button class="sj-btn" data-act="artdev">Refine in Article Developer →</button></div>`;
+  if(key==='submit')return `<div class="sj-block"><h4>Cover letter to the editor</h4><pre class="sj-cover">${sjEsc(d.coverLetter)}</pre></div>
+    <div class="sj-block"><h4>Pre-submission checklist</h4>${sjCheck(d.checklist)}</div>
+    <div class="sj-block"><h4>Carry it through — the research stages</h4><div class="sj-stages">${(d.stages||[]).map((s,i)=>`<div class="sj-stage"><span class="sj-stage-n">${i+1}</span><div><b>${sjEsc(s.stage)}</b><span>${sjEsc(s.do)}</span>${s.tool?`<em>via ${sjEsc(s.tool)}</em>`:''}</div></div>`).join('')}</div></div>
+    <div class="sj-note">⏱ ${sjEsc(d.timeline)}</div>
+    <div class="sj-actions"><button class="sj-btn sj-btn-fill" data-act="rf">Carry into ResearchFlow — run all stages →</button><button class="sj-btn" data-act="cover-doc">⬇ Download cover letter</button></div>`;
+  return '';
+}
+
+function sjDownloadDoc(filename,inner){
+  const html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"></head><body style="font-family:Georgia,serif;line-height:1.6">'+inner+'</body></html>';
+  const blob=new Blob(['﻿',html],{type:'application/msword'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+function wireStudioActions(key,d,j,topic){
+  const body=document.getElementById('sj-body-'+key);
+  body.querySelectorAll('[data-act]').forEach(el=>el.addEventListener('click',()=>{
+    const act=el.dataset.act, safe=(j.name+'-'+(topic||'draft')).replace(/[^a-z0-9]+/gi,'_').slice(0,60);
+    if(act==='draft-doc'){
+      const inner=`<h1>${sjEsc(d.title)}</h1><p><i>Prepared for ${sjEsc(j.name)} · ${sjEsc(j.field)}</i></p><h2>Abstract</h2><p>${sjEsc(d.abstract)}</p><p><b>Keywords:</b> ${(d.keywords||[]).map(sjEsc).join(', ')}</p>`+(d.structure||[]).map(s=>`<h2>${sjEsc(s.section)}</h2><p>[${sjEsc(s.guidance)}]</p>`).join('');
+      sjDownloadDoc(safe+'.doc',inner);
+    }else if(act==='artdev'){
+      closeJournalStudio();const ad=document.getElementById('artdev-section');if(ad)ad.scrollIntoView({behavior:'smooth'});
+    }else if(act==='rf'){
+      window.open('https://researchflow-syahmedus-projects.vercel.app/?idea='+encodeURIComponent(topic),'_blank','noopener');
+    }else if(act==='cover-doc'){
+      sjDownloadDoc(safe+'_cover-letter.doc','<p>'+sjEsc(d.coverLetter).replace(/\n/g,'<br>')+'</p>');
+    }
+  }));
+}
+
+async function runStudioStep(key){
+  const j=_sjJournal;if(!j)return;
+  const topic=(document.getElementById('jstudio-topic').value||'').trim();
+  const step=SJ_STEPS.find(s=>s.key===key);
+  const stepEl=document.getElementById('sj-step-'+key);
+  const body=document.getElementById('sj-body-'+key);
+  const btn=stepEl.querySelector('[data-run]');
+  stepEl.classList.add('open');
+  if(step.needsTopic&&!topic){body.innerHTML='<div class="sj-note">Add your topic in the box above first — this step is tuned to your specific work.</div>';const t=document.getElementById('jstudio-topic');t.focus();t.scrollIntoView({behavior:'smooth',block:'center'});return;}
+  btn.disabled=true;const orig=btn.textContent;btn.textContent='Working…';
+  body.innerHTML='<div class="sj-loading"><span class="sj-spin"></span> Thinking through '+sjEsc(j.name)+'…</div>';
+  let result=null;
+  try{
+    const {prompt,schema}=studioPrompt(key,j,topic);
+    const r=await fetch(STUDIO_GEN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,schema_hint:schema,temperature:0.5})});
+    if(r.ok){const data=await r.json();if(data&&data.result)result=data.result;}
+  }catch(e){}
+  if(!result)result=studioFallback(key,j,topic);
+  body.innerHTML=renderStudioResult(key,result,j,topic);
+  wireStudioActions(key,result,j,topic);
+  btn.disabled=false;btn.textContent='Regenerate ↻';
+}
+
+document.getElementById('jstudio-close').addEventListener('click',closeJournalStudio);
+document.getElementById('jstudio').addEventListener('click',function(e){if(e.target===this)closeJournalStudio();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){const ov=document.getElementById('jstudio');if(ov&&ov.style.display==='flex')closeJournalStudio();}});
 
 render();
 updateCompareBtn();
