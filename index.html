@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>JournalTime — Research Writing Workspace</title>
 <meta name="description" content="2,000+ Scopus journals with real turnaround times, plus an AI research compass, article developer, and crowdsourced submission data.">
 <meta name="theme-color" content="#FBF7EF">
@@ -22,7 +22,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232563eb'/><text x='16' y='23' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='800' font-size='19' fill='white'>S</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script>(function(){try{var t=localStorage.getItem('syed-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <style>
@@ -437,6 +437,16 @@ td{padding:10px 13px;font-size:.81rem;vertical-align:middle}
 .draft-modal-actions button{flex:1;min-width:140px;justify-content:center}
 @media(max-width:960px){.artdev-layout{flex-direction:column}.artdev-left{width:100%;max-height:none;position:static}.artdev-right{min-height:400px}}
 @media(max-width:600px){.artdev-paper{padding:16px 14px}.paper-main-title{font-size:1.1rem}.paper-section-head{flex-wrap:wrap}}
+</style>
+<style id="sx-infuse">
+/* ═══ Throughline identity + mobile-native (journaltime) ═══ */
+:root{ --font-display:'Fraunces',Georgia,'Times New Roman',serif; --font-mono:'IBM Plex Mono',ui-monospace,monospace; }
+h1,h2,h3{ font-family:var(--font-display); font-weight:600; letter-spacing:-.02em; }
+html,body{ overflow-x:clip; }
+*{ -webkit-tap-highlight-color:transparent; }
+.syed-bar{ padding-top:env(safe-area-inset-top,0px); }
+@media (hover:none){ button:hover{ transform:none; } }
+@media (max-width:600px){ button,.btn,[role="button"]{ min-height:46px; } }
 </style>
 </head>
 <body>
