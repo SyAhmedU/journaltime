@@ -19,6 +19,24 @@
 <meta name="twitter:title" content="JournalTime — Research Writing Workspace">
 <meta name="twitter:description" content="2,000+ Scopus journals · AI compass · article developer.">
 <meta name="twitter:image" content="https://syahmedu.github.io/journaltime/og.svg">
+<meta name="twitter:image:alt" content="JournalTime — a research writing workspace with journal turnaround data.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="Syed Ahmed">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "JournalTime",
+  "url": "https://syahmedu.github.io/journaltime/",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Web browser",
+  "description": "A research writing workspace: 2,000+ Scopus journals with real turnaround times, an AI research-gap compass, an article developer, and crowdsourced submission data.",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "author": { "@type": "Person", "name": "Syed Ahmed", "url": "https://syahmedu.github.io/nexus/" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232563eb'/><text x='16' y='23' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='800' font-size='19' fill='white'>S</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -454,6 +472,8 @@ html,body{ overflow-x:clip; }
 </head>
 <body>
 
+<a class="skip-link" href="#main-content">Skip to content</a>
+
 <!-- SYED BRAND BAR -->
 <div class="syed-bar">
   <a class="syed-bar-logo" href="https://syahmedu.github.io/nexus/" target="_blank" rel="noopener">
@@ -780,7 +800,7 @@ html,body{ overflow-x:clip; }
     <button class="clear-btn" id="clear-btn">Reset all filters</button>
   </aside>
 
-  <main class="main">
+  <main class="main" id="main-content" tabindex="-1">
     <div class="results-header">
       <div class="results-count"><strong id="result-count">0</strong> journals shown</div>
       <button onclick="openExperienceModal()" style="padding:6px 14px;background:#fff;color:#1f2937;border:1px solid #d1d5db;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;transition:.12s" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='#fff'" title="Share your real submission turnaround so the dataset improves">📤 Share Your Experience</button>
@@ -2921,6 +2941,24 @@ function submitRevisionDialog() {
 @keyframes ts-bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0s !important; transition-duration: 0s !important; }
+}
+/* ── Accessibility (WCAG 2.2 AA) ── */
+a:focus-visible, button:focus-visible, input:focus-visible,
+textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible, [role="button"]:focus-visible {
+  outline: 3px solid #9270F4; outline-offset: 2px; border-radius: 6px;
+}
+:focus:not(:focus-visible) { outline: none; }
+.skip-link {
+  position: fixed; top: 10px; left: 10px; z-index: 10000;
+  transform: translateY(-160%); transition: transform .2s ease;
+  background: var(--ink, #0E0E18); color: var(--bg, #FBF7EF);
+  padding: 10px 16px; border-radius: 10px; font-weight: 700; text-decoration: none;
+  box-shadow: 0 8px 24px -14px rgba(0,0,0,.5);
+}
+.skip-link:focus { transform: translateY(0); outline: 3px solid #9270F4; outline-offset: 2px; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
 </style>
 
