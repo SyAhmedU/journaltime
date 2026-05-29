@@ -2999,5 +2999,98 @@ textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible, [role="b
   } catch(e) {}
 })();
 </script>
+
+<!-- ════════════════════════════════════════════════════════════════
+     Suite sync (Throughline Phase 0). JournalTime is same-origin as the
+     hub, so it imports suite-auth.js directly and inherits the hub's
+     sign-in — no auth UI here. We sync only the Article Developer DRAFT
+     (jt_artdev_draft) into the active project's `jt` slice.
+
+     ADDITIVE & non-gating: if not configured / not signed in / no active
+     project, this does nothing and the app stays exactly as-is on
+     localStorage. Cloud wins on load only when it's newer; pushes happen
+     on tab-hide (reliable) plus a best-effort wrap of the draft writer.
+     See research-suite/ADOPTING-SYNC.md.
+     ════════════════════════════════════════════════════════════════ -->
+<script type="module">
+import * as Auth from 'https://syahmedu.github.io/research-suite/suite-auth.js';
+
+const TOOL_KEY = 'jt';
+const DRAFT_LS = 'jt_artdev_draft';
+let lastPushed = null;  // serialized draft we last synced, to skip no-op writes
+
+async function activeId() {
+  try {
+    if (!Auth.isConfigured()) return null;
+    const user = await Auth.currentUser(); if (!user) return null;
+    const { id } = await Auth.getActiveProject(); if (!id) return null;
+    return id;
+  } catch { return null; }
+}
+function readDraft() { try { return JSON.parse(localStorage.getItem(DRAFT_LS) || 'null'); } catch { return null; } }
+
+// Re-paint the active-project pill once getActiveProject has reconciled the
+// localStorage mirror from the cloud (covers a fresh device where the mirror
+// was empty when the synchronous pill script ran).
+function refreshPill() {
+  try {
+    const id = localStorage.getItem('active_project_id');
+    const name = localStorage.getItem('active_project_name');
+    const pill = document.getElementById('ts-active-pill');
+    const nm = document.getElementById('ts-active-pill-name');
+    if (id && name && pill && nm) { nm.textContent = name; pill.classList.add('show'); }
+  } catch {}
+}
+
+async function hydrate() {
+  const id = await activeId();
+  refreshPill();
+  if (!id) return;
+  let cloud; try { cloud = await Auth.getToolData(id, TOOL_KEY); } catch { return; }
+  const cd = cloud?.draft;
+  if (!cd) { const l = readDraft(); lastPushed = l ? JSON.stringify(l) : null; return; }
+  const local = readDraft();
+  const cloudNewer = !local || (cd.savedAt && (!local.savedAt || cd.savedAt > local.savedAt));
+  if (cloudNewer) {
+    try { localStorage.setItem(DRAFT_LS, JSON.stringify(cd)); } catch {}
+    lastPushed = JSON.stringify(cd);
+    try { window.showResumeBanner && window.showResumeBanner(); } catch {}
+  } else {
+    lastPushed = local ? JSON.stringify(local) : null;
+  }
+}
+
+async function pushIfChanged() {
+  const id = await activeId(); if (!id) return;
+  const draft = readDraft();
+  const ser = draft ? JSON.stringify(draft) : null;
+  if (ser === lastPushed) return;
+  try { await Auth.setToolData(id, TOOL_KEY, { draft }); lastPushed = ser; } catch {}
+}
+
+// Best-effort: wrap the draft writer so saves sync promptly (debounced).
+// Function declarations in the app's classic scripts are global, so this
+// intercepts internal calls; the tab-hide net below covers it if not.
+let _t = null;
+const _save = window.saveDraftToStorage;
+if (typeof _save === 'function') {
+  window.saveDraftToStorage = function (...a) {
+    const r = _save.apply(this, a);
+    clearTimeout(_t); _t = setTimeout(pushIfChanged, 900);
+    return r;
+  };
+}
+const _clear = window.clearDraftStorage;
+if (typeof _clear === 'function') {
+  window.clearDraftStorage = function (...a) { const r = _clear.apply(this, a); pushIfChanged(); return r; };
+}
+
+// Reliable sync points + react to sign-in that happens after load.
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') pushIfChanged(); });
+window.addEventListener('pagehide', pushIfChanged);
+try { Auth.onAuthChange(() => hydrate()); } catch {}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hydrate);
+else hydrate();
+</script>
 </body>
 </html>
