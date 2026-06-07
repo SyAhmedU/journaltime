@@ -509,30 +509,18 @@ html,body{ overflow-x:clip; }
   <div class="hero-features">
     <span class="hero-feat" onclick="navScrollTo('compass-section',null)">🧭 Research Compass</span>
     <span class="hero-feat" onclick="navScrollTo('artdev-section',null)">✍️ Article Developer</span>
-    <span class="hero-feat" onclick="navScrollTo('finder-section',null)">🎯 Find My Journal</span>
-    <span class="hero-feat" onclick="navScrollTo('browser-section',null)">📚 Journal Library</span>
-    <span class="hero-feat" onclick="navScrollTo('dashboard-section',null)">📊 Analytics</span>
+    <a class="hero-feat" href="https://syahmedu.github.io/scholarscope/" target="_blank" rel="noopener">📮 Where to publish ↗</a>
   </div>
   <div class="hero-scroll" onclick="navScrollTo('compass-section',null)">
     <span>Start with the Compass below</span>
     <span class="hero-scroll-arrow">↓</span>
   </div>
 </header>
-<!-- hidden stat holders so JS doesn't break -->
-<div aria-hidden="true" style="display:none">
-  <span id="journal-count-badge"></span><span id="s-total"></span>
-  <span id="s-fastest"></span><span id="s-fastest-sub"></span>
-  <span id="s-slowest"></span><span id="s-slowest-sub"></span>
-  <span id="s-pub"></span><span id="s-pub-sub"></span><span id="s-oa"></span>
-</div>
-
 <!-- SITE NAV -->
 <nav class="site-nav" id="site-nav">
   <a class="nav-tab active" onclick="navScrollTo('compass-section',this)">🧭 Research Compass</a>
   <a class="nav-tab" onclick="navScrollTo('artdev-section',this)">✍️ Article Developer</a>
-  <a class="nav-tab" onclick="navScrollTo('finder-section',this)">🎯 Find My Journal</a>
-  <a class="nav-tab" onclick="navScrollTo('browser-section',this)">📚 Journal Reference</a>
-  <a class="nav-tab" onclick="navScrollTo('dashboard-section',this)">📊 Analytics</a>
+  <a class="nav-tab" href="https://syahmedu.github.io/scholarscope/" target="_blank" rel="noopener" style="margin-left:auto;color:var(--blue)">📮 Where to publish ↗</a>
 </nav>
 
 <!-- RESEARCH COMPASS — FLAGSHIP, CENTER STAGE -->
@@ -575,32 +563,6 @@ html,body{ overflow-x:clip; }
     <div id="compass-authors" class="compass-authors-grid"></div>
   </div>
   <div class="compass-error" id="compass-error" style="display:none"></div>
-</div>
-
-<!-- VISUAL DASHBOARD -->
-<div class="dashboard" id="dashboard-section">
-  <div class="dash-card">
-    <div class="dash-title">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-      Avg First Decision by Field
-    </div>
-    <svg id="bar-chart"></svg>
-  </div>
-  <div class="dash-card">
-    <div class="dash-title">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-      Impact Factor vs. Wait Time
-      <span style="margin-left:auto;font-size:.65rem;color:var(--faint);font-weight:400;text-transform:none;letter-spacing:0">bubble = acceptance rate</span>
-    </div>
-    <svg id="scatter-chart"></svg>
-  </div>
-  <div class="dash-card">
-    <div class="dash-title">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      Fastest Publishers (≥3 journals)
-    </div>
-    <div id="pub-ranking"></div>
-  </div>
 </div>
 
 <!-- ARTICLE DEVELOPER -->
@@ -701,179 +663,44 @@ html,body{ overflow-x:clip; }
   </div>
 </div>
 
-<!-- FIND MY JOURNAL WIZARD -->
-<div class="finder" id="finder-section">
-  <div class="finder-header">
-    <div class="finder-icon">🎯</div>
-    <div>
-      <h2>Find My Journal</h2>
-      <span>Get ranked recommendations for your criteria</span>
+<!-- WRITE FOR A SPECIFIC JOURNAL — re-homed Journal Studio launcher (the journal
+     browser moved to ScholarScope in merge #2; the writing flow stays here) -->
+<style id="jl-launch-css">
+.jl-launch{max-width:1180px;margin:22px auto 0;padding:0 24px;}
+.jl-launch-inner{background:var(--card,#fff);border:1px solid var(--border,#e5e7eb);border-radius:16px;padding:22px 24px;}
+.jl-launch-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;}
+.jl-launch-icon{font-size:1.7rem;flex:none;line-height:1;}
+.jl-launch-head h3{font-size:1.15rem;font-weight:700;color:var(--ink,#111827);margin:0 0 3px;}
+.jl-launch-head p{font-size:.85rem;color:var(--muted,#6b7280);margin:0;line-height:1.5;max-width:64ch;}
+.jl-launch-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.jl-launch-input{flex:1;min-width:240px;padding:11px 14px;border:1px solid var(--border,#d1d5db);border-radius:11px;font-family:inherit;font-size:.92rem;background:#fff;color:var(--text,#111827);outline:none;}
+.jl-launch-input:focus{border-color:var(--blue,#2563eb);box-shadow:0 0 0 3px rgba(37,99,235,.13);}
+.jl-launch-btn{font-family:inherit;font-weight:700;font-size:.88rem;padding:11px 20px;border:none;border-radius:11px;background:linear-gradient(135deg,#FF9656,#F14575 52%,#9270F4);color:#fff;cursor:pointer;white-space:nowrap;box-shadow:0 10px 24px -12px rgba(241,69,117,.6);transition:.15s;}
+.jl-launch-btn:hover{transform:translateY(-1px);}
+.jl-launch-note{font-size:.82rem;color:var(--muted,#6b7280);margin-top:9px;min-height:1px;}
+.jl-launch-sub{font-size:.8rem;color:var(--faint,#9ca3af);margin-top:10px;}
+.jl-launch-sub a{color:var(--blue,#2563eb);font-weight:600;text-decoration:none;}
+.jl-launch-sub a:hover{text-decoration:underline;}
+[data-theme="dark"] .jl-launch-input{background:#1C1827;color:#F4EFF8;}
+</style>
+<div class="jl-launch" id="jl-launch-section">
+  <div class="jl-launch-inner">
+    <div class="jl-launch-head">
+      <span class="jl-launch-icon">📮</span>
+      <div>
+        <h3>Write for a specific journal</h3>
+        <p>Name a target journal and Journal Studio reads it closely — what it publishes, an honest fit score for your topic, a submission-shaped draft, and a cover letter.</p>
+      </div>
     </div>
-  </div>
-  <div class="finder-form">
-    <div class="finder-field">
-      <label>Field</label>
-      <select id="finder-field">
-        <option value="">Any field</option>
-      </select>
+    <div class="jl-launch-row">
+      <input list="jl-launch-list" id="jl-launch-input" class="jl-launch-input" placeholder="Journal name — e.g. Journal of Applied Psychology" autocomplete="off">
+      <datalist id="jl-launch-list"></datalist>
+      <button class="jl-launch-btn" id="jl-launch-btn">Open Journal Studio →</button>
     </div>
-    <div class="finder-field">
-      <label>Min Quartile</label>
-      <select id="finder-quartile">
-        <option value="">Any</option>
-        <option value="Q1">Q1 only</option>
-        <option value="Q1,Q2">Q1 or Q2</option>
-      </select>
-    </div>
-    <div class="finder-field">
-      <label>Open Access</label>
-      <select id="finder-oa">
-        <option value="">Any</option>
-        <option value="oa">OA only</option>
-        <option value="sub">Subscription only</option>
-      </select>
-    </div>
-    <div class="finder-field">
-      <label>Max wait (days)</label>
-      <input type="number" id="finder-maxdays" placeholder="e.g. 30" min="7" max="365"/>
-    </div>
-    <button class="finder-btn" id="finder-btn">Find Journals →</button>
-  </div>
-  <div class="finder-results" id="finder-results">
-    <div class="finder-results-title" id="finder-results-title">Top matches</div>
-    <div class="finder-cards" id="finder-cards"></div>
+    <div class="jl-launch-note" id="jl-launch-note"></div>
+    <div class="jl-launch-sub">Not sure where to submit? <a href="https://syahmedu.github.io/scholarscope/" target="_blank" rel="noopener">Find a journal by turnaround, quartile &amp; fit in ScholarScope ↗</a></div>
   </div>
 </div>
-
-<!-- APP: SIDEBAR + TABLE + DETAIL -->
-<div class="app" id="browser-section">
-  <aside class="sidebar">
-    <div class="sidebar-section">
-      <div class="sidebar-label">Search</div>
-      <div class="search-wrap">
-        <svg class="search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="search-input" placeholder="Journal or publisher…"/>
-      </div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-label">Field</div>
-      <div class="field-pills" id="field-pills"></div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-label">Quartile</div>
-      <div class="check-group" id="quartile-pills">
-        <div class="check-pill active" data-q="Q1">Q1</div>
-        <div class="check-pill active" data-q="Q2">Q2</div>
-        <div class="check-pill active" data-q="Q3">Q3</div>
-        <div class="check-pill active" data-q="Q4">Q4</div>
-      </div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-label">Open Access Only</div>
-      <div class="toggle-row">
-        <label>OA journals only</label>
-        <label class="toggle"><input type="checkbox" id="oa-toggle"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-      </div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-label">Max First Decision (days)</div>
-      <input type="range" id="speed-slider" min="7" max="120" value="120" style="width:100%;accent-color:var(--blue)"/>
-      <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--faint);margin-top:2px">
-        <span>7d</span><span id="slider-val" style="font-weight:700;color:var(--text)">Any</span><span>120d+</span>
-      </div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-label">Sort By</div>
-      <select class="sort-select" id="sort-select">
-        <option value="first_decision_asc">First Decision ↑ (fastest)</option>
-        <option value="first_decision_desc">First Decision ↓ (slowest)</option>
-        <option value="time_to_acceptance_asc">Acceptance Time ↑</option>
-        <option value="time_to_acceptance_desc">Acceptance Time ↓</option>
-        <option value="acceptance_rate_desc">Acceptance Rate ↑ (easiest)</option>
-        <option value="acceptance_rate_asc">Acceptance Rate ↓ (hardest)</option>
-        <option value="impact_factor_desc">Impact Factor ↓</option>
-        <option value="name_asc">Name A→Z</option>
-      </select>
-    </div>
-    <button class="clear-btn" id="clear-btn">Reset all filters</button>
-  </aside>
-
-  <main class="main" id="main-content" tabindex="-1">
-    <div class="results-header">
-      <div class="results-count"><strong id="result-count">0</strong> journals shown</div>
-      <button onclick="openExperienceModal()" style="padding:6px 14px;background:#fff;color:#1f2937;border:1px solid #d1d5db;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;transition:.12s" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='#fff'" title="Share your real submission turnaround so the dataset improves">📤 Share Your Experience</button>
-      <button id="compare-btn" onclick="openCompare()" style="display:none;padding:6px 14px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;transition:.12s" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='var(--blue)'">⚖ Compare (<span id="compare-count">0</span>)</button>
-      <div class="legend">
-        <div class="leg-item"><div class="leg-dot" style="background:var(--fast1)"></div>≤14d</div>
-        <div class="leg-item"><div class="leg-dot" style="background:var(--fast2)"></div>15–30d</div>
-        <div class="leg-item"><div class="leg-dot" style="background:var(--mid)"></div>31–60d</div>
-        <div class="leg-item"><div class="leg-dot" style="background:var(--slow1)"></div>61–90d</div>
-        <div class="leg-item"><div class="leg-dot" style="background:var(--slow2)"></div>>90d</div>
-        <div class="leg-item" style="margin-left:6px;color:var(--oa);font-weight:700">◈ OA</div>
-      </div>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:32px;text-align:center" title="Shortlist for comparison">★</th>
-            <th data-col="name">Journal <span class="sa">↕</span></th>
-            <th data-col="field">Field <span class="sa">↕</span></th>
-            <th data-col="quartile">Q <span class="sa">↕</span></th>
-            <th data-col="first_decision">First Decision <span class="sa">↕</span></th>
-            <th data-col="time_to_acceptance">To Acceptance <span class="sa">↕</span></th>
-            <th data-col="acceptance_rate">Accept % <span class="sa">↕</span></th>
-            <th data-col="impact_factor">IF <span class="sa">↕</span></th>
-            <th>Source</th>
-          </tr>
-        </thead>
-        <tbody id="table-body"></tbody>
-      </table>
-    </div>
-    <div class="empty" id="empty-state" style="display:none">
-      <div class="empty-icon">🔍</div>
-      <p>No journals match your filters.</p>
-      <p style="font-size:.78rem;margin-top:5px;color:var(--faint)">Try widening your field selection or increasing the speed limit.</p>
-    </div>
-  </main>
-
-  <div class="detail-panel" id="detail-panel">
-    <div class="dp-header">
-      <button class="dp-close" id="dp-close">✕</button>
-      <div class="dp-title" id="dp-title">—</div>
-      <div class="dp-publisher" id="dp-publisher">—</div>
-    </div>
-    <div class="dp-body">
-      <button class="dp-studio-cta" id="dp-studio-btn">✍️ Write for this Journal →</button>
-      <div class="dp-big-stats">
-        <div class="dp-big-stat"><div class="val" id="dp-fd" style="color:var(--blue)">—</div><div class="lbl">days to first decision</div></div>
-        <div class="dp-big-stat"><div class="val" id="dp-acc" style="color:var(--navy)">—</div><div class="lbl">days to acceptance</div></div>
-      </div>
-      <div class="dp-section">
-        <div class="dp-section-title">Journal Details</div>
-        <div class="dp-metric"><span class="dp-metric-label">Field</span><span class="dp-metric-value" id="dp-field">—</span></div>
-        <div class="dp-metric"><span class="dp-metric-label">Quartile</span><span class="dp-metric-value" id="dp-q">—</span></div>
-        <div class="dp-metric"><span class="dp-metric-label">Impact Factor</span><span class="dp-metric-value" id="dp-if">—</span></div>
-        <div class="dp-metric"><span class="dp-metric-label">Acceptance Rate</span><span class="dp-metric-value" id="dp-ar">—</span></div>
-        <div class="dp-metric"><span class="dp-metric-label">Open Access</span><span class="dp-metric-value" id="dp-oa-val">—</span></div>
-        <div class="dp-metric"><span class="dp-metric-label">Data Source</span><span class="dp-metric-value" id="dp-src">—</span></div>
-        <div class="dp-metric" id="dp-issn-row" style="display:none"><span class="dp-metric-label">ISSN</span><span class="dp-metric-value" id="dp-issn">—</span></div>
-        <div class="dp-metric" id="dp-apc-row" style="display:none"><span class="dp-metric-label">APC Cost</span><span class="dp-metric-value" id="dp-apc">—</span></div>
-      </div>
-      <div class="dp-section">
-        <div class="dp-section-title">Timeline Breakdown</div>
-        <div class="dp-metric"><span class="dp-metric-label">First Decision</span><span class="dp-metric-value" id="dp-fd2">—</span></div>
-        <div class="dp-metric"><span class="dp-metric-label">Full Acceptance</span><span class="dp-metric-value" id="dp-acc2">—</span></div>
-        <div class="dp-metric"><span class="dp-metric-label">Review + Revision Est.</span><span class="dp-metric-value" id="dp-rev">—</span></div>
-      </div>
-      <div class="dp-tags" id="dp-tags"></div>
-      <a class="dp-website-btn" id="dp-website-link" href="#" target="_blank" rel="noopener" style="display:none">Visit Journal Website →</a>
-      <div class="dp-disclaimer">⚠ Data from publisher editorial statistics, researcher community reports, and field-level estimates. Always verify on the journal's official website.</div>
-    </div>
-  </div>
-</div>
-
-<div class="d3-tip" id="d3-tip" style="display:none"></div>
 
 <!-- ═══════════ JOURNAL STUDIO — "Write for this Journal" guided flow ═══════════ -->
 <style id="jstudio-css">
@@ -986,107 +813,6 @@ const speedPct=d=>Math.min(100,Math.round((d/120)*100));
 const arClass=r=>r<=10?'ar-low':r<=30?'ar-mid':'ar-high';
 const srcClass=s=>`src-${s}`;
 const srcLabel=s=>s==='publisher'?'Publisher':s==='community'?'Community':'Estimated';
-
-// ── STATS BAR ─────────────────────────────────────────────────────────────────
-function computeStats(){
-  const fa=FIELDS.map(f=>{const js=data.filter(j=>j.field===f);return{f,avg:Math.round(js.reduce((s,j)=>s+j.first_decision,0)/js.length)};}).sort((a,b)=>a.avg-b.avg);
-  const fastest=fa[0],slowest=fa[fa.length-1];
-  const pm={};data.forEach(j=>{if(!pm[j.publisher])pm[j.publisher]={s:0,n:0};pm[j.publisher].s+=j.first_decision;pm[j.publisher].n++;});
-  const pa=Object.entries(pm).filter(([,v])=>v.n>=3).map(([p,v])=>({p,avg:Math.round(v.s/v.n)})).sort((a,b)=>a.avg-b.avg);
-  const fp=pa[0];
-  document.getElementById('s-total').textContent=data.length;
-  document.getElementById('journal-count-badge').textContent=`${data.length} journals tracked`;
-  const hc=document.getElementById('hero-count');if(hc)hc.textContent=data.length.toLocaleString();
-  document.getElementById('s-fastest').textContent=fastest.f;
-  document.getElementById('s-fastest-sub').textContent=`avg ${fastest.avg}d first decision`;
-  document.getElementById('s-slowest').textContent=slowest.f;
-  document.getElementById('s-slowest-sub').textContent=`avg ${slowest.avg}d first decision`;
-  document.getElementById('s-pub').textContent=fp?fp.p.split('/')[0].trim():'—';
-  document.getElementById('s-pub-sub').textContent=fp?`avg ${fp.avg}d first decision`:'';
-  document.getElementById('s-oa').textContent=data.filter(j=>j.open_access).length;
-}
-computeStats();
-
-// ── D3 BAR CHART ─────────────────────────────────────────────────────────────
-function drawBar(){
-  const container=document.getElementById('bar-chart').parentElement;
-  const W=container.clientWidth-36, H=container.clientHeight-50||190;
-  const fieldAvgs=FIELDS.map(f=>{
-    const js=data.filter(j=>j.field===f);
-    return{f,avg:Math.round(js.reduce((s,j)=>s+j.first_decision,0)/js.length)};
-  }).sort((a,b)=>a.avg-b.avg);
-  const margin={top:4,right:55,bottom:4,left:130};
-  const w=W-margin.left-margin.right, h=Math.max(fieldAvgs.length*16+20,H-margin.top-margin.bottom);
-  const svg=d3.select('#bar-chart').attr('width',W).attr('height',h+margin.top+margin.bottom);
-  svg.selectAll('*').remove();
-  const g=svg.append('g').attr('transform',`translate(${margin.left},${margin.top})`);
-  const x=d3.scaleLinear().domain([0,d3.max(fieldAvgs,d=>d.avg)*1.15]).range([0,w]);
-  const y=d3.scaleBand().domain(fieldAvgs.map(d=>d.f)).range([0,h]).padding(.25);
-  g.selectAll('.bar').data(fieldAvgs).enter().append('rect').attr('class','bar')
-    .attr('x',0).attr('y',d=>y(d.f)).attr('width',d=>x(d.avg)).attr('height',y.bandwidth())
-    .attr('rx',3).attr('fill',d=>speedColor(d.avg)).attr('opacity',.85);
-  g.selectAll('.bar-label').data(fieldAvgs).enter().append('text')
-    .attr('x',d=>x(d.avg)+5).attr('y',d=>y(d.f)+y.bandwidth()/2+4)
-    .attr('font-size','10px').attr('fill','var(--muted)').text(d=>`${d.avg}d`);
-  g.selectAll('.field-label').data(fieldAvgs).enter().append('text')
-    .attr('x',-6).attr('y',d=>y(d.f)+y.bandwidth()/2+4).attr('text-anchor','end')
-    .attr('font-size','10px').attr('fill','var(--text)').text(d=>d.f);
-}
-
-// ── D3 SCATTER ───────────────────────────────────────────────────────────────
-function drawScatter(){
-  const container=document.getElementById('scatter-chart').parentElement;
-  const W=container.clientWidth-36, H=container.clientHeight-50||190;
-  const margin={top:10,right:20,bottom:35,left:45};
-  const w=W-margin.left-margin.right, h=H-margin.top-margin.bottom;
-  const svg=d3.select('#scatter-chart').attr('width',W).attr('height',H);
-  svg.selectAll('*').remove();
-  const g=svg.append('g').attr('transform',`translate(${margin.left},${margin.top})`);
-  const pts=data.filter(d=>d.impact_factor>0&&d.impact_factor<100);
-  const x=d3.scaleLinear().domain([0,d3.max(pts,d=>d.impact_factor)*1.05]).range([0,w]);
-  const y=d3.scaleLinear().domain([0,d3.max(pts,d=>d.time_to_acceptance)*1.05]).range([h,0]);
-  const r=d3.scaleSqrt().domain([0,d3.max(pts,d=>d.acceptance_rate)]).range([2,8]);
-  g.append('g').attr('transform',`translate(0,${h})`).call(d3.axisBottom(x).ticks(5).tickSize(3))
-    .call(ax=>{ax.selectAll('text').attr('font-size','9px').attr('fill','var(--muted)');ax.select('.domain').attr('stroke','var(--border)');ax.selectAll('.tick line').attr('stroke','var(--border)');});
-  g.append('g').call(d3.axisLeft(y).ticks(5).tickSize(3))
-    .call(ax=>{ax.selectAll('text').attr('font-size','9px').attr('fill','var(--muted)');ax.select('.domain').attr('stroke','var(--border)');ax.selectAll('.tick line').attr('stroke','var(--border)');});
-  g.append('text').attr('x',w/2).attr('y',h+28).attr('text-anchor','middle').attr('font-size','9px').attr('fill','var(--muted)').text('Impact Factor');
-  g.append('text').attr('transform','rotate(-90)').attr('x',-h/2).attr('y',-32).attr('text-anchor','middle').attr('font-size','9px').attr('fill','var(--muted)').text('Days to Acceptance');
-  const tip=document.getElementById('d3-tip');
-  g.selectAll('circle').data(pts).enter().append('circle')
-    .attr('cx',d=>x(d.impact_factor)).attr('cy',d=>y(d.time_to_acceptance))
-    .attr('r',d=>r(d.acceptance_rate)).attr('fill',d=>FCOLORS[d.field]||'#888').attr('opacity',.65).attr('stroke','#fff').attr('stroke-width',.5)
-    .on('mousemove',function(event,d){
-      tip.style.display='block';tip.style.left=(event.pageX+12)+'px';tip.style.top=(event.pageY-28)+'px';
-      tip.innerHTML=`<strong>${d.name}</strong><br>${d.field}<br>IF: ${d.impact_factor} · ${d.time_to_acceptance}d · ${d.acceptance_rate}%`;
-    }).on('mouseleave',()=>{tip.style.display='none';});
-}
-
-// ── PUBLISHER RANKING ────────────────────────────────────────────────────────
-function drawPubRanking(){
-  const pm={};
-  data.forEach(j=>{if(!pm[j.publisher])pm[j.publisher]={s:0,n:0};pm[j.publisher].s+=j.first_decision;pm[j.publisher].n++;});
-  const ranked=Object.entries(pm).filter(([,v])=>v.n>=3).map(([p,v])=>({p,avg:Math.round(v.s/v.n),n:v.n})).sort((a,b)=>a.avg-b.avg).slice(0,10);
-  const max=ranked[ranked.length-1]?.avg||120;
-  const container=document.getElementById('pub-ranking');
-  container.innerHTML=ranked.map((r,i)=>`
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-      <span style="font-size:.65rem;font-weight:800;color:var(--muted);width:14px;text-align:right">${i+1}</span>
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
-          <span style="font-size:.74rem;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${r.p.split('/')[0].trim()}</span>
-          <span style="font-size:.72rem;font-weight:700;color:${speedColor(r.avg)}">${r.avg}d</span>
-        </div>
-        <div style="background:#f1f5f9;border-radius:3px;height:5px">
-          <div style="width:${Math.round((r.avg/max)*100)}%;height:5px;border-radius:3px;background:${speedColor(r.avg)}"></div>
-        </div>
-        <div style="font-size:.62rem;color:var(--faint);margin-top:1px">${r.n} journals</div>
-      </div>
-    </div>`).join('');
-}
-
-setTimeout(()=>{drawBar();drawScatter();drawPubRanking();},100);
-window.addEventListener('resize',()=>{drawBar();drawScatter();});
 
 // ── RESEARCH COMPASS ────────────────────────────────────────────────────────
 const meta = window.__JOURNAL_META__ || {};
@@ -1339,381 +1065,6 @@ function renderCompassAuthors(authors) {
   }).join('');
 }
 
-// ── FINDER ───────────────────────────────────────────────────────────────────
-const finderFieldSel=document.getElementById('finder-field');
-FIELDS.forEach(f=>{const o=document.createElement('option');o.value=f;o.textContent=f;finderFieldSel.appendChild(o);});
-
-document.getElementById('finder-btn').addEventListener('click',()=>{
-  const field=document.getElementById('finder-field').value;
-  const q=document.getElementById('finder-quartile').value;
-  const oa=document.getElementById('finder-oa').value;
-  const maxd=parseInt(document.getElementById('finder-maxdays').value)||9999;
-  let results=data.filter(j=>{
-    if(field&&j.field!==field)return false;
-    if(q==='Q1'&&j.quartile!=='Q1')return false;
-    if(q==='Q1,Q2'&&j.quartile!=='Q1'&&j.quartile!=='Q2')return false;
-    if(oa==='oa'&&!j.open_access)return false;
-    if(oa==='sub'&&j.open_access)return false;
-    if(j.first_decision>maxd)return false;
-    return true;
-  }).sort((a,b)=>a.first_decision-b.first_decision).slice(0,6);
-  const container=document.getElementById('finder-cards');
-  const resDiv=document.getElementById('finder-results');
-  const title=document.getElementById('finder-results-title');
-  if(!results.length){container.innerHTML='<p style="color:#93c5fd;font-size:.8rem">No matches — try relaxing your criteria.</p>';resDiv.classList.add('show');return;}
-  title.textContent=`Top ${results.length} match${results.length>1?'es':''} for your criteria`;
-  container.innerHTML=results.map((j,i)=>`
-    <div class="finder-card" data-id="${j.id}">
-      <div class="finder-card-rank">#${i+1} ${speedLabel(j.first_decision)}</div>
-      <div class="finder-card-name">${j.name}</div>
-      <div class="finder-card-speed">First decision: ${j.first_decision}d · Acceptance: ${j.time_to_acceptance}d</div>
-      <div class="finder-card-meta">${j.quartile} · IF ${j.impact_factor} · ${j.acceptance_rate}% accept${j.open_access?' · OA':''}</div>
-    </div>`).join('');
-  resDiv.classList.add('show');
-  container.querySelectorAll('.finder-card').forEach(card=>{
-    card.addEventListener('click',()=>{const j=data.find(x=>x.id===parseInt(card.dataset.id));if(j)openDetail(j);});
-  });
-});
-
-// ── FILTER STATE ─────────────────────────────────────────────────────────────
-let activeFields=new Set(FIELDS),activeQuartiles=new Set(['Q1','Q2','Q3','Q4']);
-let oaOnly=false,maxSpeed=120,sortKey='first_decision_asc',searchQ='',selectedId=null;
-let shortlist=new Set(JSON.parse(localStorage.getItem('jt_shortlist')||'[]'));
-
-function toggleShortlist(id,e){
-  if(e){e.stopPropagation();}
-  if(shortlist.has(id))shortlist.delete(id);else shortlist.add(id);
-  localStorage.setItem('jt_shortlist',JSON.stringify([...shortlist]));
-  updateCompareBtn();
-  render();
-}
-function updateCompareBtn(){
-  const btn=document.getElementById('compare-btn');
-  const cc=document.getElementById('compare-count');
-  if(shortlist.size>0){btn.style.display='';cc.textContent=shortlist.size;}
-  else{btn.style.display='none';}
-}
-function openCompare(){
-  const journals=data.filter(j=>shortlist.has(j.id));
-  if(!journals.length)return;
-  const metrics=[
-    {label:'First Decision',key:'first_decision',unit:'d',better:'lower'},
-    {label:'To Acceptance',key:'time_to_acceptance',unit:'d',better:'lower'},
-    {label:'Accept Rate',key:'acceptance_rate',unit:'%',better:'higher'},
-    {label:'Impact Factor',key:'impact_factor',unit:'',better:'higher'},
-    {label:'Open Access',key:'open_access',unit:'',better:null},
-    {label:'Field',key:'field',unit:'',better:null},
-    {label:'Quartile',key:'quartile',unit:'',better:null},
-  ];
-  const cols=journals.map(j=>`<th style="padding:10px 14px;font-size:.75rem;font-weight:700;color:var(--navy);text-align:center;background:#f8fafc;border-bottom:2px solid var(--blue)">${j.name}<br><small style="font-weight:400;color:var(--muted)">${j.publisher}</small></th>`).join('');
-  const rows=metrics.map(m=>{
-    const vals=journals.map(j=>j[m.key]);
-    const best=m.better==='lower'?Math.min(...vals.filter(v=>typeof v==='number')):m.better==='higher'?Math.max(...vals.filter(v=>typeof v==='number')):null;
-    const cells=journals.map(j=>{
-      const v=j[m.key];
-      const isBest=best!==null&&v===best;
-      let disp=v===true?'✓ OA':v===false?'No':v+(m.unit||'');
-      return `<td style="padding:10px 14px;text-align:center;font-size:.8rem;font-weight:${isBest?700:400};color:${isBest?'#15803d':'var(--text)'}${isBest?';background:#f0fdf4':''}">${disp}</td>`;
-    }).join('');
-    return `<tr><td style="padding:10px 14px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);white-space:nowrap;background:#fafafa;border-right:1px solid var(--border)">${m.label}</td>${cells}</tr>`;
-  }).join('');
-  const html=`<div onclick="this.remove()" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px">
-    <div onclick="event.stopPropagation()" style="background:#fff;border-radius:16px;overflow:hidden;max-width:900px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)">
-      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-        <span style="font-weight:700;font-size:.9rem">Journal Comparison</span>
-        <div style="display:flex;gap:8px;align-items:center">
-          <span style="font-size:.72rem;color:var(--muted)">🟢 = best value</span>
-          <button onclick="document.getElementById('compare-modal').remove()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:.75rem;color:var(--muted)">✕ Close</button>
-        </div>
-      </div>
-      <div style="overflow-x:auto">
-        <table style="width:100%;border-collapse:collapse">
-          <thead><tr><th style="background:#fafafa;padding:10px 14px;border-right:1px solid var(--border);border-bottom:2px solid var(--blue)"></th>${cols}</tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>
-  </div>`;
-  const div=document.createElement('div');div.id='compare-modal';div.innerHTML=html;
-  document.body.appendChild(div);
-}
-
-// ── SHARE YOUR EXPERIENCE ──────────────────────────────────────────
-function openExperienceModal() {
-  if (document.getElementById('xp-modal')) return;
-  const journalNames = (window.data || data || []).map(j => j.name).filter(Boolean).sort();
-  const datalistOpts = journalNames.slice(0, 500).map(n => `<option value="${n.replace(/"/g, '&quot;')}">`).join('');
-  const html = `
-    <div style="position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);" onclick="if(event.target===this) closeExperienceModal()">
-      <div style="background:#fff;border-radius:16px;max-width:540px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);">
-        <div style="padding:22px 24px 16px;border-bottom:1px solid #e5e7eb;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
-            <div>
-              <div style="font-size:1.05rem;font-weight:800;letter-spacing:-.01em;color:#0f172a;">📤 Share Your Experience</div>
-              <div style="font-size:.78rem;color:#64748b;margin-top:4px;line-height:1.5;">Help build a community dataset on real journal turnaround. Your submission becomes a public GitHub issue we review and merge into the data.</div>
-            </div>
-            <button onclick="closeExperienceModal()" style="background:none;border:0;font-size:1.4rem;color:#94a3b8;cursor:pointer;line-height:1;">×</button>
-          </div>
-        </div>
-        <form id="xp-form" onsubmit="submitExperience(event)" style="padding:20px 24px;">
-          <div style="display:grid;gap:14px;">
-            <label style="display:flex;flex-direction:column;gap:4px;">
-              <span style="font-size:.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;">Journal name *</span>
-              <input list="xp-journals" name="journal" required placeholder="e.g. Journal of Marketing" style="padding:9px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.85rem;outline:none;font-family:inherit;">
-              <datalist id="xp-journals">${datalistOpts}</datalist>
-            </label>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <label style="display:flex;flex-direction:column;gap:4px;">
-                <span style="font-size:.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;">First decision (days)</span>
-                <input type="number" name="firstDecision" min="0" max="730" placeholder="e.g. 28" style="padding:9px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.85rem;outline:none;font-family:inherit;">
-              </label>
-              <label style="display:flex;flex-direction:column;gap:4px;">
-                <span style="font-size:.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;">To acceptance (days)</span>
-                <input type="number" name="acceptance" min="0" max="1095" placeholder="optional" style="padding:9px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.85rem;outline:none;font-family:inherit;">
-              </label>
-            </div>
-            <label style="display:flex;flex-direction:column;gap:4px;">
-              <span style="font-size:.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;">Decision outcome</span>
-              <select name="outcome" style="padding:9px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.85rem;outline:none;font-family:inherit;background:#fff;">
-                <option value="">— Select —</option>
-                <option>Accepted</option>
-                <option>Minor revision</option>
-                <option>Major revision</option>
-                <option>Rejected after review</option>
-                <option>Desk rejected</option>
-                <option>Still under review</option>
-              </select>
-            </label>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <label style="display:flex;flex-direction:column;gap:4px;">
-                <span style="font-size:.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;">Submission year</span>
-                <input type="number" name="year" min="2015" max="2030" placeholder="e.g. 2025" style="padding:9px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.85rem;outline:none;font-family:inherit;">
-              </label>
-              <label style="display:flex;flex-direction:column;gap:4px;">
-                <span style="font-size:.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;">Manuscript type</span>
-                <select name="msType" style="padding:9px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.85rem;outline:none;font-family:inherit;background:#fff;">
-                  <option value="">—</option>
-                  <option>Empirical (quantitative)</option>
-                  <option>Empirical (qualitative)</option>
-                  <option>Theoretical / conceptual</option>
-                  <option>Review / meta-analysis</option>
-                  <option>Methods</option>
-                </select>
-              </label>
-            </div>
-            <label style="display:flex;flex-direction:column;gap:4px;">
-              <span style="font-size:.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;">Notes (optional)</span>
-              <textarea name="notes" rows="3" placeholder="Reviewer quality, editor responsiveness, anything you'd tell a future submitter…" style="padding:9px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.85rem;outline:none;font-family:inherit;resize:vertical;"></textarea>
-            </label>
-          </div>
-          <div style="display:flex;gap:10px;align-items:center;margin-top:18px;">
-            <button type="submit" style="flex:1;padding:10px 18px;background:#2563eb;color:#fff;border:0;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;">Open issue on GitHub →</button>
-            <button type="button" onclick="closeExperienceModal()" style="padding:10px 16px;background:#fff;color:#475569;border:1px solid #d1d5db;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;">Cancel</button>
-          </div>
-          <div style="font-size:.7rem;color:#94a3b8;margin-top:10px;line-height:1.5;">By submitting you confirm this reflects your own experience. The data goes to a public issue so reviewers can sanity-check before merging.</div>
-        </form>
-      </div>
-    </div>`;
-  const wrap = document.createElement('div'); wrap.id = 'xp-modal'; wrap.innerHTML = html;
-  document.body.appendChild(wrap);
-}
-
-function closeExperienceModal() {
-  const m = document.getElementById('xp-modal');
-  if (m) m.remove();
-}
-
-function submitExperience(e) {
-  e.preventDefault();
-  const fd = new FormData(e.target);
-  const j = Object.fromEntries(fd.entries());
-  const title = `[Experience] ${j.journal || 'Journal'} — ${j.firstDecision ? `${j.firstDecision}d to first decision` : 'turnaround report'}`;
-  const lines = [
-    `### Journal\n${j.journal || ''}\n`,
-    `### Turnaround\n- First decision: ${j.firstDecision || '—'} days\n- To acceptance: ${j.acceptance || '—'} days\n`,
-    `### Outcome\n${j.outcome || '—'}\n`,
-    `### Submission year\n${j.year || '—'}\n`,
-    `### Manuscript type\n${j.msType || '—'}\n`,
-  ];
-  if (j.notes && j.notes.trim()) lines.push(`### Notes\n${j.notes.trim()}\n`);
-  lines.push(`\n---\n_Submitted via journaltime crowdsource form._`);
-  const body = lines.join('\n');
-  const url = `https://github.com/SyAhmedU/journaltime/issues/new?labels=experience-report&title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
-  window.open(url, '_blank', 'noopener');
-  closeExperienceModal();
-}
-
-window.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeExperienceModal();
-});
-
-// field pills
-const fpContainer=document.getElementById('field-pills');
-FIELDS.forEach(f=>{
-  const count=data.filter(j=>j.field===f).length;
-  const el=document.createElement('div');el.className='field-pill active';el.dataset.field=f;
-  el.innerHTML=`<span class="fp-dot" style="background:${FCOLORS[f]||'#888'}"></span>${f}<span class="fp-count">${count}</span>`;
-  el.addEventListener('click',()=>{if(activeFields.has(f))activeFields.delete(f);else activeFields.add(f);el.classList.toggle('active',activeFields.has(f));updateHash();render();});
-  fpContainer.appendChild(el);
-});
-
-document.querySelectorAll('.check-pill[data-q]').forEach(el=>{
-  el.addEventListener('click',()=>{const q=el.dataset.q;if(activeQuartiles.has(q))activeQuartiles.delete(q);else activeQuartiles.add(q);el.classList.toggle('active',activeQuartiles.has(q));updateHash();render();});
-});
-document.getElementById('oa-toggle').addEventListener('change',e=>{oaOnly=e.target.checked;updateHash();render();});
-const slider=document.getElementById('speed-slider');
-const sliderVal=document.getElementById('slider-val');
-slider.addEventListener('input',()=>{maxSpeed=parseInt(slider.value);sliderVal.textContent=maxSpeed>=120?'Any':`≤${maxSpeed}d`;updateHash();render();});
-document.getElementById('sort-select').addEventListener('change',e=>{sortKey=e.target.value;updateHash();render();});
-let _searchTimer=null;
-document.getElementById('search-input').addEventListener('input',e=>{
-  clearTimeout(_searchTimer);
-  const v=e.target.value.toLowerCase().trim();
-  _searchTimer=setTimeout(()=>{searchQ=v;updateHash();render();},180);
-});
-document.getElementById('clear-btn').addEventListener('click',()=>{
-  activeFields=new Set(FIELDS);activeQuartiles=new Set(['Q1','Q2','Q3','Q4']);
-  oaOnly=false;maxSpeed=120;sortKey='first_decision_asc';searchQ='';
-  document.getElementById('search-input').value='';
-  document.getElementById('oa-toggle').checked=false;
-  slider.value=120;sliderVal.textContent='Any';
-  document.getElementById('sort-select').value='first_decision_asc';
-  document.querySelectorAll('.field-pill').forEach(el=>el.classList.add('active'));
-  document.querySelectorAll('.check-pill[data-q]').forEach(el=>el.classList.add('active'));
-  closeDetail();history.replaceState(null,'',location.pathname);render();
-});
-document.querySelectorAll('thead th[data-col]').forEach(th=>{
-  th.addEventListener('click',()=>{
-    const col=th.dataset.col;
-    sortKey=sortKey===`${col}_asc`?`${col}_desc`:`${col}_asc`;
-    document.getElementById('sort-select').value=sortKey;
-    updateHash();render();
-  });
-});
-
-// ── URL HASH STATE ────────────────────────────────────────────────────────────
-function updateHash(){
-  const params=new URLSearchParams();
-  const af=[...activeFields];if(af.length<FIELDS.length)params.set('fields',af.join('|'));
-  const aq=[...activeQuartiles];if(aq.length<4)params.set('q',aq.join('|'));
-  if(oaOnly)params.set('oa','1');
-  if(maxSpeed<120)params.set('maxd',maxSpeed);
-  if(sortKey!=='first_decision_asc')params.set('sort',sortKey);
-  if(searchQ)params.set('s',searchQ);
-  history.replaceState(null,'',params.toString()?`#${params}`:'#');
-}
-function loadHash(){
-  const hash=location.hash.replace('#','');if(!hash)return;
-  const params=new URLSearchParams(hash);
-  if(params.has('fields')){activeFields=new Set(params.get('fields').split('|'));document.querySelectorAll('.field-pill').forEach(el=>{el.classList.toggle('active',activeFields.has(el.dataset.field));});}
-  if(params.has('q')){activeQuartiles=new Set(params.get('q').split('|'));document.querySelectorAll('.check-pill[data-q]').forEach(el=>{el.classList.toggle('active',activeQuartiles.has(el.dataset.q));});}
-  if(params.has('oa')){oaOnly=true;document.getElementById('oa-toggle').checked=true;}
-  if(params.has('maxd')){maxSpeed=parseInt(params.get('maxd'));slider.value=maxSpeed;sliderVal.textContent=`≤${maxSpeed}d`;}
-  if(params.has('sort')){sortKey=params.get('sort');document.getElementById('sort-select').value=sortKey;}
-  if(params.has('s')){searchQ=params.get('s');document.getElementById('search-input').value=searchQ;}
-}
-loadHash();
-
-// ── FILTER + SORT ─────────────────────────────────────────────────────────────
-function filtered(){
-  return data.filter(j=>{
-    if(!activeFields.has(j.field))return false;
-    if(!activeQuartiles.has(j.quartile))return false;
-    if(oaOnly&&!j.open_access)return false;
-    if(maxSpeed<120&&j.first_decision>maxSpeed)return false;
-    if(searchQ&&!j.name.toLowerCase().includes(searchQ)&&!j.publisher.toLowerCase().includes(searchQ))return false;
-    return true;
-  });
-}
-function sortFn(arr){
-  const parts=sortKey.split(/_(?=[^_]+$)/);const col=parts[0],dir=parts[1];
-  return[...arr].sort((a,b)=>{
-    const va=a[col],vb=b[col];
-    if(typeof va==='string')return dir==='asc'?va.localeCompare(vb):vb.localeCompare(va);
-    return dir==='asc'?va-vb:vb-va;
-  });
-}
-
-// ── RENDER TABLE ──────────────────────────────────────────────────────────────
-function render(){
-  const rows=sortFn(filtered());
-  document.getElementById('result-count').textContent=rows.length;
-  document.querySelectorAll('thead th[data-col]').forEach(th=>{
-    const col=th.dataset.col,isSorted=sortKey.startsWith(col);
-    th.classList.toggle('sorted',isSorted);
-    th.querySelector('.sa').textContent=isSorted?(sortKey.endsWith('_asc')?'↑':'↓'):'↕';
-  });
-  const tbody=document.getElementById('table-body');
-  tbody.innerHTML='';
-  document.getElementById('empty-state').style.display=rows.length?'none':'block';
-  rows.forEach(j=>{
-    const tr=document.createElement('tr');
-    if(j.id===selectedId)tr.classList.add('selected');
-    const col=speedColor(j.first_decision),pct=speedPct(j.first_decision);
-    const isStarred = shortlist.has(j.id);
-    tr.innerHTML=`
-      <td style="text-align:center;width:32px;padding:4px"><button class="star-btn${isStarred?' starred':''}" data-id="${j.id}" title="Add to comparison shortlist" onclick="toggleShortlist(${j.id},event)" style="background:none;border:none;cursor:pointer;font-size:14px;color:${isStarred?'#f59e0b':'#cbd5e1'};transition:.15s">${isStarred?'★':'☆'}</button></td>
-      <td class="td-name">${j.name}${j.open_access?` <span class="oa-badge">◈ OA</span>`:''}<small>${j.publisher}</small></td>
-      <td style="font-size:.75rem;color:var(--muted)"><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:${FCOLORS[j.field]||'#888'};flex-shrink:0"></span>${j.field}</span></td>
-      <td><span class="q-badge q-${j.quartile}">${j.quartile}</span></td>
-      <td><div class="speed-cell"><div class="speed-dot" style="background:${col}"></div><div class="speed-bar-wrap"><div class="speed-bar" style="width:${pct}%;background:${col}"></div></div><span class="speed-val" style="color:${col}">${j.first_decision}d</span></div></td>
-      <td style="font-weight:600;color:var(--navy);font-size:.8rem">${j.time_to_acceptance}d</td>
-      <td><span class="ar-val ${arClass(j.acceptance_rate)}">${j.acceptance_rate}%</span></td>
-      <td style="font-size:.77rem;color:var(--muted)">${j.impact_factor}</td>
-      <td><span class="src-badge ${srcClass(j.source)}">${srcLabel(j.source)}</span></td>`;
-    tr.addEventListener('click',()=>openDetail(j));
-    tbody.appendChild(tr);
-  });
-}
-
-// ── DETAIL PANEL ──────────────────────────────────────────────────────────────
-function openDetail(j){
-  selectedId=j.id;render();
-  const panel=document.getElementById('detail-panel');panel.classList.add('open');
-  document.getElementById('dp-title').textContent=j.name;
-  const _sb=document.getElementById('dp-studio-btn'); if(_sb)_sb.onclick=function(){openJournalStudio(j);};
-  document.getElementById('dp-publisher').textContent=j.publisher;
-  const fdCol=speedColor(j.first_decision);
-  document.getElementById('dp-fd').textContent=j.first_decision+'d';
-  document.getElementById('dp-fd').style.color=fdCol;
-  document.getElementById('dp-acc').textContent=j.time_to_acceptance+'d';
-  document.getElementById('dp-field').textContent=j.field;
-  document.getElementById('dp-q').innerHTML=`<span class="q-badge q-${j.quartile}">${j.quartile}</span>`;
-  document.getElementById('dp-if').textContent=j.impact_factor;
-  document.getElementById('dp-ar').innerHTML=`<span class="ar-val ${arClass(j.acceptance_rate)}">${j.acceptance_rate}%</span>`;
-  document.getElementById('dp-oa-val').textContent=j.open_access?'✓ Open Access':'Subscription';
-  document.getElementById('dp-src').innerHTML=`<span class="src-badge ${srcClass(j.source)}">${srcLabel(j.source)}</span>`;
-  // ISSN
-  const issnRow=document.getElementById('dp-issn-row');
-  if(j.issn){issnRow.style.display='';document.getElementById('dp-issn').textContent=j.issn;}
-  else{issnRow.style.display='none';}
-  // APC
-  const apcRow=document.getElementById('dp-apc-row');
-  if(j.apc_usd!==undefined){
-    apcRow.style.display='';
-    const apcEl=document.getElementById('dp-apc');
-    if(j.apc_usd===0)apcEl.textContent='Free (Diamond OA)';
-    else if(j.apc_usd===null)apcEl.textContent='N/A (Subscription)';
-    else apcEl.textContent='$'+j.apc_usd.toLocaleString();
-  }else{apcRow.style.display='none';}
-  // Website
-  const webLink=document.getElementById('dp-website-link');
-  if(j.website){webLink.href=j.website;webLink.style.display='block';}
-  else{webLink.style.display='none';}
-  document.getElementById('dp-fd2').textContent=`${j.first_decision} days (${speedLabel(j.first_decision)})`;
-  document.getElementById('dp-acc2').textContent=`${j.time_to_acceptance} days`;
-  document.getElementById('dp-rev').textContent=`~${j.time_to_acceptance-j.first_decision} days`;
-  const tagsEl=document.getElementById('dp-tags');
-  tagsEl.innerHTML='';
-  [j.field,j.quartile,j.open_access?'Open Access':'Subscription',srcLabel(j.source)+' data'].forEach(t=>{
-    const span=document.createElement('span');
-    span.style.cssText='background:#f1f5f9;color:#475569;font-weight:500;font-size:.7rem;padding:2px 7px;border-radius:4px';
-    span.textContent=t;tagsEl.appendChild(span);
-  });
-}
-function closeDetail(){selectedId=null;document.getElementById('detail-panel').classList.remove('open');render();}
-document.getElementById('dp-close').addEventListener('click',closeDetail);
-
 // ════════════════════ JOURNAL STUDIO — "Write for this Journal" ════════════════════
 const STUDIO_GEN='https://researchflow-syahmedus-projects.vercel.app/api/generate';
 let _sjJournal=null;
@@ -1858,16 +1209,24 @@ document.getElementById('jstudio-close').addEventListener('click',closeJournalSt
 document.getElementById('jstudio').addEventListener('click',function(e){if(e.target===this)closeJournalStudio();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){const ov=document.getElementById('jstudio');if(ov&&ov.style.display==='flex')closeJournalStudio();}});
 
-render();
-updateCompareBtn();
-// Redesign: Article Developer first, Analytics last
+// Re-homed Journal Studio launcher — the journal browser moved to ScholarScope
+// (merge #2), so "Write for this journal" is now launched from the Article
+// Developer area: pick a journal by name → open the guided Studio flow.
 (function(){
-  const nav=document.getElementById('site-nav');
-  const artdev=document.getElementById('artdev-section');
-  const dashboard=document.getElementById('dashboard-section');
-  const browser=document.getElementById('browser-section');
-  if(nav&&artdev)nav.insertAdjacentElement('afterend',artdev);
-  if(browser&&dashboard)browser.insertAdjacentElement('afterend',dashboard);
+  const input=document.getElementById('jl-launch-input'), list=document.getElementById('jl-launch-list'),
+        btn=document.getElementById('jl-launch-btn'), note=document.getElementById('jl-launch-note');
+  if(!input||!btn) return;
+  const data=window.__JOURNAL_DATA__||[];
+  if(list) list.innerHTML = data.map(j=>`<option value="${String(j.name).replace(/"/g,'&quot;')}">`).join('');
+  function launch(){
+    const q=input.value.trim().toLowerCase();
+    if(!q){ input.focus(); return; }
+    const j = data.find(x=>x.name.toLowerCase()===q) || data.find(x=>x.name.toLowerCase().includes(q));
+    if(j){ if(note) note.textContent=''; openJournalStudio(j); }
+    else if(note){ note.innerHTML='No journal matches that name. <a href="https://syahmedu.github.io/scholarscope/" target="_blank" rel="noopener" style="color:var(--blue);font-weight:600">Browse 1,959 journals in ScholarScope ↗</a>'; }
+  }
+  btn.addEventListener('click',launch);
+  input.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); launch(); } });
 })();
 
 })();
@@ -2175,7 +1534,7 @@ function heroStart() {
 }
 
 // Highlight active nav tab on scroll
-const _navSections = ['compass-section','artdev-section','finder-section','browser-section','dashboard-section'];
+const _navSections = ['compass-section','artdev-section'];
 window.addEventListener('scroll', () => {
   let current = '';
   _navSections.forEach(id => {
