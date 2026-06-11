@@ -361,6 +361,7 @@ html,body{ overflow-x:clip; }
   <div class="hero-features">
     <span class="hero-feat" onclick="navScrollTo('compass-section',null)">🧭 Research Compass</span>
     <span class="hero-feat" onclick="navScrollTo('artdev-section',null)">✍️ Article Developer</span>
+    <span class="hero-feat" onclick="navScrollTo('fmt-section',null)">📄 Journal Formatter</span>
     <a class="hero-feat" href="https://syahmedu.github.io/scholarscope/" target="_blank" rel="noopener">📮 Where to publish ↗</a>
   </div>
   <div class="hero-scroll" onclick="navScrollTo('compass-section',null)">
@@ -372,6 +373,7 @@ html,body{ overflow-x:clip; }
 <nav class="site-nav" id="site-nav">
   <a class="nav-tab active" onclick="navScrollTo('compass-section',this)">🧭 Research Compass</a>
   <a class="nav-tab" onclick="navScrollTo('artdev-section',this)">✍️ Article Developer</a>
+  <a class="nav-tab" onclick="navScrollTo('fmt-section',this)">📄 Journal Formatter</a>
   <a class="nav-tab" href="https://syahmedu.github.io/scholarscope/" target="_blank" rel="noopener" style="margin-left:auto;color:var(--blue)">📮 Where to publish ↗</a>
 </nav>
 
@@ -551,6 +553,116 @@ html,body{ overflow-x:clip; }
     </div>
     <div class="jl-launch-note" id="jl-launch-note"></div>
     <div class="jl-launch-sub">Not sure where to submit? <a href="https://syahmedu.github.io/scholarscope/" target="_blank" rel="noopener">Find a journal by turnaround, quartile &amp; fit in ScholarScope ↗</a></div>
+  </div>
+</div>
+
+<!-- ═══════════ JOURNAL FORMATTER — manuscript → journal format ═══════════ -->
+<style id="fmt-css">
+.fmt-wrap{max-width:1180px;margin:26px auto 0;padding:0 24px;}
+.fmt-inner{background:var(--card,#fff);border:1px solid var(--border,#e5e7eb);border-radius:16px;padding:22px 24px;}
+.fmt-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
+.fmt-icon{font-size:1.7rem;flex:none;line-height:1;}
+.fmt-head h3{font-size:1.15rem;font-weight:700;color:var(--ink,#111827);margin:0 0 3px;}
+.fmt-head p{font-size:.85rem;color:var(--muted,#6b7280);margin:0;line-height:1.5;max-width:72ch;}
+.fmt-honest{font-size:.78rem;color:var(--muted,#6b7280);background:var(--bg,#FBF7EF);border:1px dashed var(--border,#d1d5db);border-radius:10px;padding:8px 12px;margin-bottom:14px;line-height:1.5;}
+.fmt-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
+.fmt-filelabel{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border:1px solid var(--border,#d1d5db);border-radius:11px;cursor:pointer;font-size:.88rem;font-weight:600;color:var(--ink,#111827);background:var(--bg,#FBF7EF);}
+.fmt-filelabel:hover{border-color:var(--blue,#2563eb);}
+.fmt-filelabel input{display:none;}
+.fmt-file-name{font-size:.8rem;color:var(--muted,#6b7280);font-family:'IBM Plex Mono',monospace;}
+.fmt-or{font-size:.8rem;color:var(--faint,#9ca3af);}
+.fmt-link-btn{background:none;border:none;color:var(--blue,#2563eb);font-size:.85rem;font-weight:600;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline;}
+.fmt-paste{width:100%;min-height:170px;padding:12px 14px;border:1px solid var(--border,#d1d5db);border-radius:11px;font-family:inherit;font-size:.88rem;line-height:1.55;resize:vertical;outline:none;background:var(--card,#fff);color:var(--ink,#111827);}
+.fmt-paste:focus{border-color:var(--blue,#2563eb);box-shadow:0 0 0 3px rgba(37,99,235,.13);}
+.fmt-input,.fmt-select{padding:11px 14px;border:1px solid var(--border,#d1d5db);border-radius:11px;font-family:inherit;font-size:.9rem;outline:none;background:var(--card,#fff);color:var(--ink,#111827);}
+.fmt-input{flex:1;min-width:230px;}
+.fmt-input:focus{border-color:var(--blue,#2563eb);box-shadow:0 0 0 3px rgba(37,99,235,.13);}
+.fmt-check{display:inline-flex;align-items:center;gap:6px;font-size:.84rem;color:var(--muted,#6b7280);cursor:pointer;}
+.fmt-family-note{font-size:.82rem;color:var(--muted,#6b7280);line-height:1.55;margin:4px 0 12px;}
+.fmt-verify{color:#c2335f;font-weight:600;}
+.fmt-btn{font-family:inherit;font-weight:700;font-size:.9rem;padding:12px 22px;border:none;border-radius:11px;background:linear-gradient(135deg,#FF9656,#F14575 52%,#9270F4);color:#fff;cursor:pointer;transition:.15s;}
+.fmt-btn:hover{transform:translateY(-1px);}
+.fmt-btn:disabled{opacity:.55;cursor:default;}
+.fmt-btn2{font-family:inherit;font-weight:700;font-size:.86rem;padding:11px 18px;border-radius:11px;border:1px solid var(--border,#d1d5db);background:var(--card,#fff);color:var(--ink,#111827);cursor:pointer;transition:.15s;}
+.fmt-btn2:hover{transform:translateY(-1px);border-color:var(--blue,#2563eb);}
+.fmt-status{font-size:.84rem;color:var(--muted,#6b7280);min-height:1.3em;margin-top:8px;display:flex;align-items:center;gap:8px;}
+.fmt-spin{width:14px;height:14px;border:2px solid rgba(241,69,117,.3);border-top-color:#F14575;border-radius:50%;display:inline-block;animation:fmt-spin .8s linear infinite;flex:none;}
+@keyframes fmt-spin{to{transform:rotate(360deg);}}
+.fmt-results{display:none;margin-top:18px;border-top:1px solid var(--border,#e5e7eb);padding-top:16px;}
+.fmt-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.fmt-chip{font-family:'IBM Plex Mono',monospace;font-size:.7rem;padding:4px 10px;border-radius:999px;background:var(--bg,#F1ECDF);color:var(--ink,#4A4136);border:1px solid var(--border,#e5e7eb);}
+.fmt-chip-warn{background:rgba(241,69,117,.08);color:#c2335f;border-color:rgba(241,69,117,.25);}
+.fmt-meta-grid{display:grid;gap:10px;grid-template-columns:1fr 1fr;margin-bottom:14px;}
+@media(max-width:640px){.fmt-meta-grid{grid-template-columns:1fr;}}
+.fmt-field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint,#9ca3af);margin-bottom:4px;}
+.fmt-field input,.fmt-field textarea{width:100%;padding:9px 12px;border:1px solid var(--border,#d1d5db);border-radius:9px;font-family:inherit;font-size:.86rem;background:var(--card,#fff);color:var(--ink,#111827);outline:none;resize:vertical;}
+.fmt-field-full{grid-column:1/-1;}
+.fmt-refs-title{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint,#9ca3af);margin:14px 0 8px;}
+.fmt-refs-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;border:1px solid var(--border,#e5e7eb);border-radius:11px;padding:10px;}
+.fmt-ref{display:flex;gap:10px;align-items:flex-start;font-size:.8rem;line-height:1.5;color:var(--ink,#3C3744);padding:6px 8px;border-radius:8px;}
+.fmt-ref-flag{background:rgba(241,69,117,.06);}
+.fmt-ref-badge{flex:none;font-family:'IBM Plex Mono',monospace;font-size:.64rem;padding:2px 7px;border-radius:999px;background:rgba(34,197,94,.12);color:#15803d;margin-top:2px;white-space:nowrap;}
+.fmt-ref-flag .fmt-ref-badge{background:rgba(241,69,117,.12);color:#c2335f;}
+.fmt-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+.fmt-preview-wrap{display:none;margin-top:18px;}
+.fmt-preview{border:1px solid var(--border,#e5e7eb);border-radius:14px;overflow:hidden;box-shadow:0 14px 40px -18px rgba(0,0,0,.25);}
+.fmt-preview-bar{display:flex;justify-content:flex-end;margin-bottom:8px;}
+[data-theme="dark"] .fmt-paste,[data-theme="dark"] .fmt-input,[data-theme="dark"] .fmt-select,[data-theme="dark"] .fmt-field input,[data-theme="dark"] .fmt-field textarea{background:#1C1827;color:#F4EFF8;border-color:rgba(255,255,255,.14);}
+[data-theme="dark"] .fmt-filelabel,[data-theme="dark"] .fmt-btn2{background:#1C1827;color:#F4EFF8;border-color:rgba(255,255,255,.14);}
+[data-theme="dark"] .fmt-honest{background:#241F31;border-color:rgba(255,255,255,.14);}
+[data-theme="dark"] .fmt-chip{background:rgba(255,255,255,.08);color:#D6D4CC;border-color:rgba(255,255,255,.1);}
+[data-theme="dark"] .fmt-ref{color:#B8AEC6;}
+[data-theme="dark"] .fmt-preview{border-color:rgba(255,255,255,.14);}
+</style>
+<div class="fmt-wrap" id="fmt-section">
+  <div class="fmt-inner">
+    <div class="fmt-head">
+      <span class="fmt-icon">📄</span>
+      <div>
+        <h3>Journal Formatter — manuscript → submission format</h3>
+        <p>Upload your draft (.docx) or paste the text, pick the target journal, and download a submission-ready manuscript — or see it in a published two-column look. Your words are never rewritten: structure, typography and reference style only.</p>
+      </div>
+    </div>
+    <div class="fmt-honest">🔒 <b>Nothing is invented.</b> References are restyled only when they match a real Crossref record (strict title + author + year check); anything unmatched passes through <b>verbatim</b> and is flagged ⚠. In-text citations are left exactly as written. Publisher layouts are house <i>defaults</i> — always verify against the journal's guide for authors.</div>
+    <div class="fmt-row">
+      <label class="fmt-filelabel">📎 Upload .docx<input type="file" id="fmt-file" accept=".docx"></label>
+      <span class="fmt-file-name" id="fmt-file-name"></span>
+      <span class="fmt-or">or</span>
+      <button class="fmt-link-btn" id="fmt-paste-toggle" type="button">paste your manuscript text</button>
+    </div>
+    <div id="fmt-paste-wrap" style="display:none;margin-bottom:10px;">
+      <textarea class="fmt-paste" id="fmt-paste" placeholder="Paste the full manuscript — title on the first line, then authors, Abstract, sections, and a References list. Markdown headings (#) and numbered headings both work."></textarea>
+    </div>
+    <div class="fmt-row">
+      <input list="fmt-journal-list" id="fmt-journal" class="fmt-input" placeholder="Target journal — e.g. Journal of Business Research" autocomplete="off">
+      <datalist id="fmt-journal-list"></datalist>
+      <select class="fmt-select" id="fmt-style"><option value="auto">Style: auto from journal</option></select>
+      <label class="fmt-check"><input type="checkbox" id="fmt-blind"> Blind for review</label>
+      <label class="fmt-check"><input type="checkbox" id="fmt-resolve" checked> Restyle references (Crossref)</label>
+      <button class="fmt-btn" id="fmt-run">Format manuscript →</button>
+    </div>
+    <div class="fmt-family-note" id="fmt-family-note"></div>
+    <div class="fmt-status" id="fmt-status"></div>
+    <div class="fmt-results" id="fmt-results">
+      <div class="fmt-chips" id="fmt-chips"></div>
+      <div class="fmt-meta-grid">
+        <div class="fmt-field fmt-field-full"><label>Title</label><input id="fmt-title"></div>
+        <div class="fmt-field"><label>Authors (as they should appear)</label><input id="fmt-authors" placeholder="e.g. Syed A. Ahmed and Jane Q. Public"></div>
+        <div class="fmt-field"><label>Affiliations (one per line)</label><textarea id="fmt-affil" rows="2"></textarea></div>
+        <div class="fmt-field fmt-field-full"><label>Abstract</label><textarea id="fmt-abstract" rows="3"></textarea></div>
+        <div class="fmt-field fmt-field-full"><label>Keywords</label><input id="fmt-keywords" placeholder="comma-separated"></div>
+      </div>
+      <div class="fmt-refs-title">References — restyled where matched, verbatim where not</div>
+      <div class="fmt-refs-list" id="fmt-refs-list"></div>
+      <div class="fmt-actions">
+        <button class="fmt-btn" id="fmt-download">⬇ Download submission .docx</button>
+        <button class="fmt-btn2" id="fmt-preview-btn">👁 Published look</button>
+      </div>
+    </div>
+    <div class="fmt-preview-wrap" id="fmt-preview-wrap">
+      <div class="fmt-preview-bar"><button class="fmt-btn2" id="fmt-print">🖨 Print / Save as PDF</button></div>
+      <div class="fmt-preview" id="fmt-preview"></div>
+    </div>
   </div>
 </div>
 
@@ -2282,6 +2394,7 @@ try { Auth.onAuthChange(() => hydrate()); } catch {}
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hydrate);
 else hydrate();
 </script>
+<script src="formatter.js"></script>
 <script>/* syed-juice: subtle, professional interaction polish (additive, no colour/design change, reduced-motion aware; no particle/burst or cursor-magnet effects) */
 (function(){if(typeof document==='undefined'||document.getElementById('syed-juice'))return;
 var css=[
