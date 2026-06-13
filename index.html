@@ -40,7 +40,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232563eb'/><text x='16' y='23' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='800' font-size='19' fill='white'>S</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..700,0,0;1,9..144,400..600,0,1&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script>(function(){try{var t=localStorage.getItem('syed-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <style>
@@ -92,14 +92,15 @@ h1,h2,h3,h4{font-family:'Plus Jakarta Sans','Inter',system-ui,sans-serif;letter-
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 30%,#3b82f615 0%,transparent 70%);pointer-events:none}
 .hero-eyebrow{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:#F14575;margin-bottom:20px;position:relative}
 .hero-title{font-family:'Plus Jakarta Sans','Inter',system-ui,sans-serif;font-size:clamp(2.6rem,7vw,5rem);font-weight:800;color:var(--ink);letter-spacing:-.04em;line-height:1.02;margin-bottom:18px;position:relative}
-.hero-title span{background:var(--grad-warm);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-title span{font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:500;font-variation-settings:'SOFT' 100,'WONK' 1;letter-spacing:-.02em;background:var(--grad-warm);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero-sub{font-size:1.02rem;color:var(--muted);max-width:540px;line-height:1.7;margin-bottom:40px;position:relative}
 .hero-input-wrap{display:flex;gap:10px;width:100%;max-width:700px;margin-bottom:32px;position:relative;flex-wrap:wrap;justify-content:center}
 .hero-input{flex:1;min-width:280px;padding:17px 22px;border:1.5px solid var(--border);border-radius:14px;background:#fff;color:var(--ink);font-size:.95rem;outline:none;font-family:inherit;transition:.2s}
 .hero-input:focus{border-color:#F14575;background:#fff;box-shadow:0 0 0 3px rgba(241,69,117,.15)}
 .hero-input::placeholder{color:var(--faint)}
-.hero-btn{padding:17px 36px;background:var(--grad-warm);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s;letter-spacing:-.01em;box-shadow:0 6px 22px -8px rgba(241,69,117,.55);font-family:'Plus Jakarta Sans','Inter',system-ui,sans-serif}
+.hero-btn{padding:17px 36px;background:var(--grad-warm);color:#fff;border:none;border-radius:999px;font-size:.95rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s;letter-spacing:-.01em;box-shadow:0 6px 22px -8px rgba(241,69,117,.55);font-family:'Plus Jakarta Sans','Inter',system-ui,sans-serif;position:relative;overflow:hidden}
 .hero-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px -10px rgba(241,69,117,.65);opacity:.95}
+@media (prefers-reduced-motion:no-preference){.hero-btn::after{content:'';position:absolute;top:0;bottom:0;left:-70%;width:45%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.32),transparent);transform:skewX(-18deg);transition:left .6s cubic-bezier(.22,1,.36,1);pointer-events:none}.hero-btn:hover::after{left:125%}}
 .hero-features{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:48px;position:relative}
 .hero-feat{display:flex;align-items:center;gap:5px;font-size:.78rem;color:var(--muted);cursor:pointer;padding:7px 16px;border:1px solid var(--border);border-radius:20px;transition:.15s;background:#fff;font-weight:600}
 .hero-feat:hover{background:rgba(241,69,117,.06);color:var(--ink);border-color:#F14575;transform:translateY(-1px)}
