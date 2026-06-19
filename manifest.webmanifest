@@ -1,0 +1,18 @@
+{
+  "name": "JournalTime — Research Writing",
+  "short_name": "JournalTime",
+  "description": "Research writing workspace: gap finder, draft developer, journal studio & formatter.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#FBF7EF",
+  "theme_color": "#FBF7EF",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
