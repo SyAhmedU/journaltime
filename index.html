@@ -324,14 +324,6 @@ html,body{ overflow-x:clip; }
 <style id="sx-aurora-css">html{background:var(--bg,#FBF7EF);}body{background:transparent !important;}canvas.sx-aurora{position:fixed!important;inset:0!important;width:100%!important;height:100%!important;z-index:-1!important;pointer-events:none;}@media (prefers-reduced-motion:reduce){canvas.sx-aurora{display:none;}}</style>
 <script src="https://syahmedu.github.io/research-suite/identity/syed-aurora.js" defer></script>
 <script>document.addEventListener('DOMContentLoaded',function(){try{if(window.SyedAurora&&SyedAurora.mount({zIndex:-1,intensity:0.85}))document.body.classList.add('aurora-on');}catch(e){}});</script>
-<!-- SYED-PWA -->
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon.svg">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="JournalTime">
-<!-- /SYED-PWA -->
 <!-- SYED-GATE · entry password, re-locks every load · injected by research-suite/tools/gate/inject.mjs -->
 <script>(function(){"use strict";
 if(window.__syedGate)return;window.__syedGate=1;
@@ -355,6 +347,14 @@ function mk(){
 mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mk);
 })();</script>
 <!-- /SYED-GATE -->
+<!-- SYED-PWA -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="JournalTime">
+<!-- /SYED-PWA -->
 </head>
 <body>
 
