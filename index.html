@@ -1141,11 +1141,10 @@ function renderStudioResult(key,d,j,topic){
 }
 
 function sjDownloadDoc(filename,inner){
-  const html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"></head><body style="font-family:Georgia,serif;line-height:1.6">'+inner+'
-<!-- SYED-PWA-SW -->
-<script>if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
-<!-- /SYED-PWA-SW -->
-</body></html>';
+  // NOTE: the closing body/html tags are assembled from pieces so no literal
+  // end-tag appears in this source — the PWA injector once matched the marker
+  // INSIDE this string and broke the whole Compass/Studio block (fixed 2026-07-02).
+  const html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"></head><body style="font-family:Georgia,serif;line-height:1.6">'+inner+'</bo'+'dy></ht'+'ml>';
   const blob=new Blob(['﻿',html],{type:'application/msword'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
 }
@@ -2556,5 +2555,8 @@ var s=document.createElement('style');s.id='syed-juice';s.textContent=css;docume
 })();
 </script>
 <!-- /SYED-AMBIENT -->
+<!-- SYED-PWA-SW -->
+<script>if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+<!-- /SYED-PWA-SW -->
 </body>
 </html>
