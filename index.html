@@ -390,11 +390,23 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
     <input class="hero-input" id="hero-input" placeholder="Your research idea — e.g. algorithmic management and gig-worker autonomy, ESG &amp; investor behavior, AI adoption in SMEs…" onkeydown="if(event.key==='Enter')heroStart()"/>
     <button class="hero-btn" onclick="heroStart()">🧭 Find My Research Gap →</button>
   </div>
-  <div class="hero-features">
-    <span class="hero-feat" onclick="navScrollTo('compass-section',null)">🧭 Research Compass</span>
-    <span class="hero-feat" onclick="navScrollTo('artdev-section',null)">✍️ Article Developer</span>
-    <span class="hero-feat" onclick="navScrollTo('fmt-section',null)">📄 Journal Formatter</span>
-    <a class="hero-feat" href="https://syahmedu.github.io/scholarscope/" target="_blank" rel="noopener">📮 Where to publish ↗</a>
+  <div style="margin:26px auto 0;max-width:860px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted,#6b7280);margin-bottom:10px">What do you want to do?</div>
+    <div class="hero-router" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+      <button class="hr-card" onclick="navScrollTo('compass-section',null)" style="text-align:left;padding:14px 16px;border:1px solid var(--border,#e5e7eb);border-radius:14px;background:var(--card,#fff);cursor:pointer;font-family:inherit">
+        <div style="font-size:1.3rem">🧭</div><div style="font-weight:700;font-size:.9rem;margin-top:4px;color:var(--ink,#111827)">Find my gap</div><div style="font-size:.76rem;color:var(--muted,#6b7280);margin-top:2px">Map a topic, surface open questions</div>
+      </button>
+      <button class="hr-card" onclick="navScrollTo('artdev-section',null)" style="text-align:left;padding:14px 16px;border:1px solid var(--border,#e5e7eb);border-radius:14px;background:var(--card,#fff);cursor:pointer;font-family:inherit">
+        <div style="font-size:1.3rem">✍️</div><div style="font-weight:700;font-size:.9rem;margin-top:4px;color:var(--ink,#111827)">Draft an article</div><div style="font-size:.76rem;color:var(--muted,#6b7280);margin-top:2px">A full framework you complete</div>
+      </button>
+      <button class="hr-card" onclick="navScrollTo('jl-launch-section',null)" style="text-align:left;padding:14px 16px;border:1px solid var(--border,#e5e7eb);border-radius:14px;background:var(--card,#fff);cursor:pointer;font-family:inherit">
+        <div style="font-size:1.3rem">📮</div><div style="font-weight:700;font-size:.9rem;margin-top:4px;color:var(--ink,#111827)">Write for a journal</div><div style="font-size:.76rem;color:var(--muted,#6b7280);margin-top:2px">Studio reads your target closely</div>
+      </button>
+      <button class="hr-card" onclick="navScrollTo('fmt-section',null)" style="text-align:left;padding:14px 16px;border:1px solid var(--border,#e5e7eb);border-radius:14px;background:var(--card,#fff);cursor:pointer;font-family:inherit">
+        <div style="font-size:1.3rem">📄</div><div style="font-weight:700;font-size:.9rem;margin-top:4px;color:var(--ink,#111827)">Format for submission</div><div style="font-size:.76rem;color:var(--muted,#6b7280);margin-top:2px">Manuscript → journal style, verbatim</div>
+      </button>
+    </div>
+    <style>.hr-card:hover{border-color:var(--blue,#2563eb)!important;transform:translateY(-2px)}.hr-card{transition:transform .15s,border-color .15s}[data-theme="dark"] .hr-card{background:#1C1827!important}[data-theme="dark"] .hr-card div{color:#F4EFF8}</style>
   </div>
   <div class="hero-scroll" onclick="navScrollTo('compass-section',null)">
     <span>Start with the Compass below</span>
@@ -441,6 +453,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
       <span class="ctree-legend-item"><span class="ctree-dot debate"></span>Contested / debated</span>
       <span class="ctree-legend-item"><span class="ctree-dot gap"></span>Research gap — do this!</span>
       <span class="ctree-legend-hint">Hover for details · Click 🟢🟣 to open paper · Click 🟠 gap to generate a draft</span>
+      <button id="compass-png-btn" onclick="downloadCompassGapCard()" style="margin-left:auto;font-family:inherit;font-size:.76rem;font-weight:700;padding:6px 12px;border-radius:9px;border:1px solid var(--border,#d1d5db);background:var(--card,#fff);color:var(--ink,#111827);cursor:pointer" title="A one-page PNG of your topic's gap map — share it with a supervisor">🖼 Export gap map (PNG)</button>
     </div>
     <div id="compass-tree-wrap" class="compass-tree-wrap"></div>
     <div class="ctree-section-label">🎯 Best Journals to Target</div>
@@ -587,6 +600,10 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
     </div>
     <div class="jl-launch-note" id="jl-launch-note"></div>
     <div class="jl-launch-sub">Not sure where to submit? <a href="https://syahmedu.github.io/scholarscope/" target="_blank" rel="noopener">Find a journal by turnaround, quartile &amp; fit in ScholarScope ↗</a></div>
+    <div id="jl-scatter-wrap" style="margin-top:16px;border-top:1px solid var(--border,#e5e7eb);padding-top:12px">
+      <div style="font-size:.78rem;color:var(--muted,#6b7280);margin-bottom:6px">The landscape: quartile × days to first decision, all 1,959 journals. <b>★</b> = your ScholarScope shortlist (shared on this device) — click a star to open its Studio. <b>◆</b> = estimated turnaround, never measured.</div>
+      <svg id="jl-scatter" style="width:100%;max-width:900px;display:block"></svg>
+    </div>
   </div>
 </div>
 
@@ -783,6 +800,10 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
       <input id="jstudio-topic" class="jstudio-topic" placeholder="Your topic or working idea — e.g. burnout and AI adoption among nurses" />
       <span class="jstudio-topic-hint">used in steps 3–5</span>
     </div>
+    <div style="padding:10px 24px 0;display:flex;align-items:center;gap:10px">
+      <div style="flex:1;height:7px;border-radius:99px;background:rgba(0,0,0,.08);overflow:hidden"><div id="jstudio-meter" style="height:100%;width:0%;border-radius:99px;background:linear-gradient(135deg,#FF9656,#F14575 52%,#9270F4);transition:width .4s"></div></div>
+      <span id="jstudio-meter-label" style="font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:#8C8498;white-space:nowrap">0 / 5 steps</span>
+    </div>
     <div class="jstudio-steps" id="jstudio-steps"></div>
   </div>
 </div>
@@ -849,6 +870,47 @@ document.getElementById('compass-btn').addEventListener('click', async () => {
     btnText.textContent = 'Analyze Research Space →';
   }
 });
+
+// One-pager PNG of the gap map — verbatim node names from the last Compass run,
+// painted on canvas (no external libs). Nothing is invented at export time.
+window.downloadCompassGapCard = function(){
+  const snap = _compassSnapshot;
+  if(!snap || !snap.tree){ alert('Run a Compass analysis first.'); return; }
+  const leaves = [];
+  for(const b of (snap.tree.children||[])) for(const l of (b.children||[])) leaves.push({branch:b.name, name:l.name, type:l.type});
+  const gaps = leaves.filter(l=>l.type==='gap'), debates = leaves.filter(l=>l.type==='debate'), studied = leaves.filter(l=>l.type==='studied');
+  const c = document.createElement('canvas'); c.width = 1200; c.height = 630;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#FBF7EF'; ctx.fillRect(0,0,1200,630);
+  const grad = ctx.createLinearGradient(0,0,1200,0); grad.addColorStop(0,'#FF9656'); grad.addColorStop(.55,'#F14575'); grad.addColorStop(1,'#9270F4');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,1200,8);
+  ctx.fillStyle = '#8C8498'; ctx.font = '600 20px system-ui,sans-serif';
+  ctx.fillText('🧭 Research Compass · gap map', 56, 62);
+  ctx.fillStyle = '#211B2E'; ctx.font = '600 40px Georgia,serif';
+  const topic = String(snap.topic||'').slice(0,70);
+  ctx.fillText(topic + (String(snap.topic||'').length>70?'…':''), 56, 116);
+  ctx.font = '600 22px system-ui,sans-serif';
+  ctx.fillStyle = '#f97316'; ctx.fillText('🔬 '+gaps.length+' research gaps', 56, 168);
+  ctx.fillStyle = '#8b5cf6'; ctx.fillText('⚡ '+debates.length+' contested', 340, 168);
+  ctx.fillStyle = '#22c55e'; ctx.fillText('✅ '+studied.length+' established', 580, 168);
+  ctx.fillStyle = '#574E64'; ctx.font = '700 19px system-ui,sans-serif';
+  ctx.fillText('Top open gaps — verbatim from the analysis:', 56, 224);
+  ctx.font = '400 21px Georgia,serif';
+  let y = 262;
+  for(const g of gaps.slice(0,7)){
+    const line = '• ' + g.name + (g.branch?('  ('+g.branch+')'):'');
+    ctx.fillStyle = '#211B2E';
+    ctx.fillText(line.length>92 ? line.slice(0,90)+'…' : line, 72, y);
+    y += 40;
+    if(y > 540) break;
+  }
+  ctx.fillStyle = '#9ca3af'; ctx.font = '400 17px system-ui,sans-serif';
+  ctx.fillText('AI-mapped landscape — verify against the literature · JournalTime · syahmedu.github.io/journaltime', 56, 596);
+  const a = document.createElement('a');
+  a.href = c.toDataURL('image/png');
+  a.download = 'gap-map-' + topic.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,40) + '.png';
+  a.click();
+};
 
 function renderCompassTree(treeData) {
   const wrap = document.getElementById('compass-tree-wrap');
@@ -1061,11 +1123,49 @@ function sjList(a){return '<ul class="sj-list">'+(a||[]).map(x=>`<li>${sjEsc(x)}
 function sjCheck(a){return '<ul class="sj-list">'+(a||[]).map(x=>`<li>☐ ${sjEsc(x)}</li>`).join('')+'</ul>';}
 function jctx(j){const comp=j.acceptance_rate<=10?'highly competitive':j.acceptance_rate<=30?'competitive':'relatively accessible';return `"${j.name}" (publisher: ${j.publisher}; field: ${j.field}; quartile ${j.quartile}; impact factor ${j.impact_factor}; acceptance rate ${j.acceptance_rate}% — ${comp}; ${j.open_access?'open access':'subscription'}; ~${j.first_decision} days to first decision)`;}
 
+// Per-journal Studio session persistence: generated steps survive a close/reopen,
+// so a 5-step flow can be resumed instead of restarted. On-device only.
+const SJ_STORE='jt_studio_v1';
+function sjLoadStore(){ try{return JSON.parse(localStorage.getItem(SJ_STORE)||'{}');}catch(e){return{};} }
+function sjSaveResult(j,key,topic,result){
+  try{
+    const store=sjLoadStore();
+    const rec=store[j.name]||(store[j.name]={results:{}});
+    rec.results[key]=result; rec.topic=topic; rec.ts=new Date().toISOString();
+    // keep the store bounded: most-recent 8 journals
+    const names=Object.keys(store);
+    if(names.length>8){ names.sort((a,b)=>String(store[a].ts||'').localeCompare(String(store[b].ts||''))); delete store[names[0]]; }
+    localStorage.setItem(SJ_STORE,JSON.stringify(store));
+  }catch(e){}
+}
+function sjUpdateMeter(){
+  const j=_sjJournal; if(!j) return;
+  const rec=sjLoadStore()[j.name];
+  const done=rec?Object.keys(rec.results||{}).filter(k=>SJ_STEPS.some(s=>s.key===k)).length:0;
+  const bar=document.getElementById('jstudio-meter'), lbl=document.getElementById('jstudio-meter-label');
+  if(bar) bar.style.width=Math.round(done/SJ_STEPS.length*100)+'%';
+  if(lbl) lbl.textContent=done+' / '+SJ_STEPS.length+' steps'+(done===SJ_STEPS.length?' ✓':'');
+}
 function openJournalStudio(j){
   _sjJournal=j;
   document.getElementById('jstudio-jname').textContent='Write for '+j.name;
   document.getElementById('jstudio-chips').innerHTML=[j.field,j.quartile,'IF '+j.impact_factor,j.acceptance_rate+'% accept',j.first_decision+'d decision',j.open_access?'Open Access':'Subscription'].map(t=>`<span class="jstudio-chip">${sjEsc(t)}</span>`).join('');
   renderStudioSteps();
+  // resume a previous session for this journal: restore topic + generated steps
+  const rec=sjLoadStore()[j.name];
+  if(rec){
+    if(rec.topic) document.getElementById('jstudio-topic').value=rec.topic;
+    for(const key of Object.keys(rec.results||{})){
+      const body=document.getElementById('sj-body-'+key), stepEl=document.getElementById('sj-step-'+key);
+      if(body&&stepEl){
+        stepEl.classList.add('open');
+        body.innerHTML=renderStudioResult(key,rec.results[key],j,rec.topic||'');
+        wireStudioActions(key,rec.results[key],j,rec.topic||'');
+        const btn=stepEl.querySelector('[data-run]'); if(btn) btn.textContent='Regenerate ↻';
+      }
+    }
+  }
+  sjUpdateMeter();
   const ov=document.getElementById('jstudio');ov.style.display='flex';ov.querySelector('.jstudio-steps').scrollTop=0;
   try{document.body.style.overflow='hidden';}catch(e){}
 }
@@ -1185,6 +1285,8 @@ async function runStudioStep(key){
   if(!result)result=studioFallback(key,j,topic);
   body.innerHTML=renderStudioResult(key,result,j,topic);
   wireStudioActions(key,result,j,topic);
+  sjSaveResult(j,key,topic,result);
+  sjUpdateMeter();
   btn.disabled=false;btn.textContent='Regenerate ↻';
 }
 
@@ -1210,6 +1312,46 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){const ov=do
   }
   btn.addEventListener('click',launch);
   input.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); launch(); } });
+
+  // ── Shortlist scatter: quartile bands × first-decision days, hand-rolled SVG.
+  // ss_shortlist is ScholarScope's key — same syahmedu.github.io origin, so the
+  // shortlist you build there shows up pinned here with zero server involved.
+  (function renderJlScatter(){
+    const svg=document.getElementById('jl-scatter'); if(!svg||!data.length) return;
+    let short=new Set(); try{ short=new Set(JSON.parse(localStorage.getItem('ss_shortlist')||'[]')); }catch(e){}
+    const W=900,H=190,mL=34,mR=10,mT=8,mB=24,w=W-mL-mR,h=H-mT-mB;
+    const quarts=[...new Set(data.map(j=>j.quartile))].filter(Boolean).sort();
+    const maxD=Math.max(...data.map(j=>j.first_decision||0))*1.05;
+    const x=d=>mL+(d/maxD)*w;
+    const bandH=h/quarts.length;
+    const jit=id=>((id*2654435761)%1000)/1000; // stable hash jitter — renders identically every load
+    const y=j=>mT+quarts.indexOf(j.quartile)*bandH+4+jit(j.id)*(bandH-8);
+    const sc=d=>d<=30?'#16a34a':d<=60?'#c97a1a':'#c0392b';
+    let out='';
+    for(let i=0;i<quarts.length;i++){
+      out+=`<text x="4" y="${(mT+i*bandH+bandH/2+3).toFixed(1)}" font-size="10" fill="var(--muted,#6b7280)">${quarts[i]}</text>`;
+      if(i) out+=`<line x1="${mL}" y1="${(mT+i*bandH).toFixed(1)}" x2="${W-mR}" y2="${(mT+i*bandH).toFixed(1)}" stroke="var(--border,#e5e7eb)" stroke-width=".5"/>`;
+    }
+    for(const t of [30,60,90,120]) if(t<maxD) out+=`<text x="${x(t).toFixed(1)}" y="${H-8}" font-size="9" text-anchor="middle" fill="var(--muted,#9ca3af)">${t}d</text>`;
+    for(const j of data){
+      if(!j.quartile||!j.first_decision) continue;
+      const cx=x(j.first_decision).toFixed(1), cy=y(j).toFixed(1);
+      if(short.has(j.id)) continue; // pins drawn last, on top
+      if(j.source==='estimated') out+=`<rect x="${(+cx-1.8).toFixed(1)}" y="${(+cy-1.8).toFixed(1)}" width="3.6" height="3.6" transform="rotate(45 ${cx} ${cy})" fill="${sc(j.first_decision)}" opacity=".28"><title>${String(j.name).replace(/[<>&]/g,'')} · ${j.quartile} · ${j.first_decision}d (estimated)</title></rect>`;
+      else out+=`<circle cx="${cx}" cy="${cy}" r="2" fill="${sc(j.first_decision)}" opacity=".4"><title>${String(j.name).replace(/[<>&]/g,'')} · ${j.quartile} · ${j.first_decision}d</title></circle>`;
+    }
+    for(const j of data){
+      if(!short.has(j.id)||!j.quartile||!j.first_decision) continue;
+      const cx=x(j.first_decision).toFixed(1), cy=y(j).toFixed(1);
+      out+=`<g class="jl-pin" data-jid="${j.id}" style="cursor:pointer"><text x="${cx}" y="${(+cy+4).toFixed(1)}" text-anchor="middle" font-size="13" fill="#F14575">★<title>${String(j.name).replace(/[<>&]/g,'')} — click to open Journal Studio</title></text><text x="${(+cx+8).toFixed(1)}" y="${(+cy+3).toFixed(1)}" font-size="8.5" fill="var(--muted,#6b7280)">${String(j.name).replace(/[<>&]/g,'').slice(0,26)}</text></g>`;
+    }
+    svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+    svg.innerHTML=out;
+    svg.querySelectorAll('.jl-pin').forEach(el=>el.addEventListener('click',()=>{
+      const j=data.find(x=>x.id===+el.dataset.jid);
+      if(j){ input.value=j.name; openJournalStudio(j); }
+    }));
+  })();
 })();
 
 })();
@@ -1657,6 +1799,24 @@ function saveDraftToStorage(paper, gap, topic, journal) {
       paper, gap, topic, journal, savedAt: new Date().toISOString()
     }));
   } catch (e) { /* storage full — ignore */ }
+  // revision snapshots: every save also lands in a rolling history (last 5),
+  // so a regenerate never silently destroys a draft you liked better
+  try {
+    const snaps = JSON.parse(localStorage.getItem('jt_artdev_snaps') || '[]');
+    snaps.unshift({ paper, gap, topic, journal, savedAt: new Date().toISOString() });
+    localStorage.setItem('jt_artdev_snaps', JSON.stringify(snaps.slice(0, 5)));
+  } catch (e) { /* storage full — ignore */ }
+}
+
+function loadSnapshots() {
+  try { return JSON.parse(localStorage.getItem('jt_artdev_snaps') || '[]'); } catch { return []; }
+}
+function restoreSnapshot(i) {
+  const snap = loadSnapshots()[i];
+  if (!snap || !snap.paper) return;
+  _artdevPaper = snap.paper;
+  renderArticlePaper(snap.paper, snap.gap, snap.journal, snap.topic);
+  try { localStorage.setItem(JT_DRAFT_KEY, JSON.stringify(snap)); } catch (e) {}
 }
 
 function loadDraftFromStorage() {
@@ -1676,8 +1836,20 @@ function showResumeBanner() {
   const banner = document.getElementById('artdev-resume-banner');
   if (!banner) return;
   const date = new Date(saved.savedAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
-  document.getElementById('resume-banner-meta').textContent =
+  const metaEl = document.getElementById('resume-banner-meta');
+  metaEl.textContent =
     `"${(saved.topic || '').slice(0, 55)}${(saved.topic||'').length > 55 ? '…' : ''}" · Saved ${date}`;
+  // snapshot history: earlier saves restorable with one click
+  const snaps = loadSnapshots();
+  if (snaps.length > 1) {
+    const row = document.createElement('span');
+    row.style.cssText = 'display:block;margin-top:4px;font-size:.72rem;color:var(--muted,#6b7280)';
+    row.innerHTML = '↺ History: ' + snaps.map((s, i) => {
+      const t = new Date(s.savedAt).toLocaleString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+      return `<button onclick="restoreSnapshot(${i})" style="font-family:inherit;font-size:.72rem;color:var(--blue,#2563eb);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0 4px">${t}</button>`;
+    }).join(' · ');
+    metaEl.appendChild(row);
+  }
   banner.style.display = 'flex';
 }
 
@@ -1896,6 +2068,12 @@ function buildRefs(paper) {
 }
 
 // ── TRACKER ───────────────────────────────────────────────────────────────────
+// Typical empirical-article section lengths (words) — a writing heuristic for
+// orientation, NOT any journal's rule; always badged as such in the UI.
+const SECTION_TYPICAL = {
+  abstract:[150,250], intro:[600,1200], theory:[800,1800], litreview:[1200,2500],
+  methodology:[800,1500], results:[800,1500], discussion:[1000,2000], conclusion:[300,600],
+};
 function updateTracker(sections) {
   const fill  = document.getElementById('tracker-fill');
   const label = document.getElementById('tracker-label');
@@ -1904,13 +2082,55 @@ function updateTracker(sections) {
   fill.style.width  = Math.round(aiCount / sections.length * 100) + '%';
   label.textContent = `${aiCount} AI drafted · ${sections.length - aiCount} need your input`;
   const badges = { ai:'AI Draft', needs:'Your Input', required:'You Write' };
-  items.innerHTML = sections.map(sec => `
+  items.innerHTML = sections.map(sec => {
+    const range = SECTION_TYPICAL[sec.id];
+    let lenNote = '';
+    if (range) {
+      const wc = adWordCount(sec.content);
+      const state = wc < range[0] ? `▁ ${wc}w · short of typical ${range[0]}–${range[1]}` :
+                    wc > range[1] ? `▔ ${wc}w · above typical ${range[0]}–${range[1]}` :
+                                    `● ${wc}w · in typical range`;
+      lenNote = `<span style="display:block;font-size:.66rem;color:var(--muted,#9ca3af);margin-top:1px">${state}</span>`;
+    }
+    return `
     <div class="tracker-item" onclick="document.getElementById('ps-${sec.id}')?.scrollIntoView({behavior:'smooth'})">
       <span class="tracker-dot ${sec.status}"></span>
-      <span class="tracker-label">${adEsc(sec.num ? `${sec.num}. ${sec.name}` : sec.name)}</span>
+      <span class="tracker-label">${adEsc(sec.num ? `${sec.num}. ${sec.name}` : sec.name)}${lenNote}</span>
       <span class="tracker-badge ${sec.status}">${badges[sec.status] || ''}</span>
-    </div>`).join('');
+    </div>`;
+  }).join('') + `<div style="font-size:.64rem;color:var(--muted,#9ca3af);padding:6px 4px 0">Length ranges are a <b>heuristic</b> for typical empirical articles — check your target journal's own limits.</div>
+  <div style="font-size:.64rem;color:var(--muted,#9ca3af);padding:4px 4px 0">⌨ J / K jump sections · E edit · C copy (when not typing)</div>`;
 }
+
+// ── KEYBOARD-FIRST FLOW (Article Developer) ──────────────────────────────────
+// J/K move between sections, E toggles edit on the current one, C copies it.
+// Ignored while typing in any input/textarea/contenteditable.
+let _adKbIndex = -1;
+document.addEventListener('keydown', e => {
+  const paper = document.getElementById('artdev-paper-wrap');
+  if (!paper || !paper.innerHTML || !document.querySelector('.paper-section')) return;
+  const t = e.target;
+  if (/^(input|textarea|select)$/i.test(t.tagName) || t.isContentEditable) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const secs = [...document.querySelectorAll('.paper-section')];
+  if (!secs.length) return;
+  const key = e.key.toLowerCase();
+  if (key === 'j' || key === 'k') {
+    e.preventDefault();
+    _adKbIndex = key === 'j' ? Math.min(secs.length - 1, _adKbIndex + 1) : Math.max(0, _adKbIndex - 1);
+    const sec = secs[_adKbIndex];
+    sec.scrollIntoView({ behavior:'smooth', block:'start' });
+    secs.forEach(s => s.style.outline = '');
+    sec.style.outline = '2px solid rgba(146,112,244,.5)'; sec.style.outlineOffset = '3px';
+    setTimeout(() => { sec.style.outline = ''; }, 1500);
+  } else if (key === 'e' && _adKbIndex >= 0) {
+    e.preventDefault();
+    const btn = secs[_adKbIndex].querySelector('.paper-sec-edit-btn'); if (btn) btn.click();
+  } else if (key === 'c' && _adKbIndex >= 0) {
+    e.preventDefault();
+    const btn = secs[_adKbIndex].querySelector('.paper-sec-copy-btn'); if (btn) btn.click();
+  }
+});
 
 // ── SECTION ACTIONS ───────────────────────────────────────────────────────────
 function adToggleEdit(bodyId, btn) {

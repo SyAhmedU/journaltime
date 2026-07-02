@@ -582,6 +582,7 @@ function renderResults() {
   if (absWords > 250) chips.push('abstract ' + absWords + ' words — many journals cap at 250');
   $('fmt-chips').innerHTML = chips.map(c => '<span class="fmt-chip' + (/⚠/.test(c) ? ' fmt-chip-warn' : '') + '">' + escHtml(c) + '</span>').join('');
   ms.warnings.forEach(w => { $('fmt-chips').innerHTML += '<span class="fmt-chip fmt-chip-warn">' + escHtml(w) + '</span>'; });
+  renderTrustPanel(ms);
 
   const style = state.family.refStyle;
   const list = styledRefs(ms.refs, style);
@@ -593,6 +594,66 @@ function renderResults() {
 
   $('fmt-results').style.display = 'block';
   $('fmt-results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── Trust panel + citation-age histogram ────────────────────────────────────
+// A visual summary of exactly how much of the reference list was restyled from
+// real Crossref records vs kept verbatim, plus a deterministic age histogram
+// of the years found in the reference strings themselves (regex, no lookup).
+function renderTrustPanel(ms) {
+  let panel = $('fmt-trust');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = 'fmt-trust';
+    panel.style.cssText = 'margin:0 0 14px;padding:12px 14px;border:1px solid var(--border,#e5e7eb);border-radius:11px;background:var(--bg,#FBF7EF)';
+    const chipsEl = $('fmt-chips');
+    chipsEl.parentNode.insertBefore(panel, chipsEl.nextSibling);
+  }
+  const total = ms.refs.length;
+  if (!total) { panel.style.display = 'none'; return; }
+  panel.style.display = '';
+  const resolved = ms.refs.filter(r => r.status === 'resolved').length;
+  const verbatim = total - resolved;
+  const pct = Math.round(resolved / total * 100);
+
+  // citation years: prefer the Crossref-resolved year, else the first plausible
+  // year in the raw string (1900–2029). Refs with no detectable year are counted honestly.
+  const nowY = new Date().getFullYear();
+  const years = [];
+  let noYear = 0;
+  for (const r of ms.refs) {
+    let y = r.resolved && r.resolved.year ? parseInt(r.resolved.year) : null;
+    if (!y) { const m = String(r.raw).match(/\b(19\d\d|20[0-2]\d)\b/); y = m ? parseInt(m[1]) : null; }
+    if (y && y <= nowY + 1) years.push(y); else noYear++;
+  }
+  const buckets = [['≤5y', y => nowY - y <= 5], ['6–10y', y => nowY - y > 5 && nowY - y <= 10], ['11–20y', y => nowY - y > 10 && nowY - y <= 20], ['>20y', y => nowY - y > 20]];
+  const counts = buckets.map(([label, fn]) => [label, years.filter(fn).length]);
+  const maxN = Math.max(1, ...counts.map(c => c[1]));
+  const stalePct = years.length ? Math.round(years.filter(y => nowY - y > 10).length / years.length * 100) : 0;
+
+  panel.innerHTML =
+    '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint,#9ca3af);margin-bottom:6px">Reference trust panel</div>' +
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">' +
+      '<div style="flex:1;height:10px;border-radius:6px;overflow:hidden;display:flex">' +
+        '<span style="width:' + pct + '%;background:#22c55e"></span>' +
+        '<span style="flex:1;background:rgba(241,69,117,.45)"></span>' +
+      '</div>' +
+      '<span style="font-size:.78rem;color:var(--muted,#6b7280);white-space:nowrap"><b style="color:#15803d">' + resolved + ' ✓ Crossref</b> · <b style="color:#c2335f">' + verbatim + ' ⚠ verbatim</b></span>' +
+    '</div>' +
+    '<div style="font-size:.74rem;color:var(--muted,#6b7280);margin-bottom:10px">Restyled entries come from real Crossref records; ⚠ entries pass through exactly as you wrote them — check those by hand.</div>' +
+    '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint,#9ca3af);margin-bottom:6px">Citation age · years parsed from your own reference list</div>' +
+    '<div style="display:flex;gap:10px;align-items:flex-end;height:56px;max-width:360px">' +
+      counts.map(([label, n]) =>
+        '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;justify-content:flex-end">' +
+          '<span style="font-size:.68rem;color:var(--muted,#6b7280)">' + n + '</span>' +
+          '<div style="width:100%;border-radius:4px 4px 0 0;background:linear-gradient(135deg,#FF9656,#F14575 52%,#9270F4);height:' + Math.max(3, n / maxN * 34) + 'px"></div>' +
+          '<span style="font-size:.66rem;color:var(--faint,#9ca3af)">' + label + '</span>' +
+        '</div>').join('') +
+    '</div>' +
+    '<div style="font-size:.72rem;color:var(--muted,#6b7280);margin-top:6px">' +
+      (stalePct >= 50 ? '⚠ ' + stalePct + '% of dated references are older than 10 years — reviewers often flag a stale base.' : stalePct + '% of dated references are older than 10 years.') +
+      (noYear ? ' · ' + noYear + ' reference' + (noYear === 1 ? '' : 's') + ' had no detectable year (not guessed).' : '') +
+    '</div>';
 }
 
 function syncEdits() {
