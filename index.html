@@ -693,6 +693,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
       <button class="fmt-btn" id="fmt-run">Format manuscript →</button>
     </div>
     <div class="fmt-family-note" id="fmt-family-note"></div>
+    <div style="font-size:.72rem;color:var(--faint,#9ca3af);margin:-6px 0 10px">Journal list: 1,959 Scopus-indexed journals (snapshot; turnaround &amp; metrics age with it) — always confirm against the journal's own author guidelines ↗</div>
     <div class="fmt-status" id="fmt-status"></div>
     <div class="fmt-results" id="fmt-results">
       <div class="fmt-chips" id="fmt-chips"></div>
@@ -1991,7 +1992,19 @@ function renderArticlePaper(paper, gap, targetJournal, topic) {
       </div>`;
   }).join('');
 
-  wrap.innerHTML = toolbar + titleBlock + contrib + sectionHtml;
+  // Readability strip — deterministic, approximate, computed on the draft text.
+  const fullText = sections.map(s => String(s.content).replace(/<[^>]+>/g, ' ')).join(' ');
+  const rWords = fullText.split(/\s+/).filter(Boolean);
+  const rSents = fullText.split(/[.!?]+\s/).filter(s => s.trim().length > 2);
+  const rSyll = rWords.reduce((n, w) => n + Math.max(1, (w.toLowerCase().match(/[aeiouy]+/g) || []).length), 0);
+  const flesch = rWords.length && rSents.length
+    ? Math.round(206.835 - 1.015 * (rWords.length / rSents.length) - 84.6 * (rSyll / rWords.length))
+    : null;
+  const readStrip = flesch !== null
+    ? `<div class="paper-meta" style="margin-top:6px;font-size:.7rem;color:#94a3b8">Readability (approximate): Flesch ~${flesch} · avg sentence ${Math.round(rWords.length / rSents.length)} words — academic prose usually lands 20–40 Flesch; very low means long, dense sentences.</div>`
+    : '';
+
+  wrap.innerHTML = toolbar + titleBlock + readStrip + contrib + sectionHtml;
 
   updateTracker(sections);
   document.getElementById('artdev-tracker').style.display = 'block';
@@ -2144,7 +2157,11 @@ function adToggleEdit(bodyId, btn) {
 
 function adCopySection(bodyId) {
   const body = document.getElementById(bodyId);
-  navigator.clipboard.writeText(body.innerText || body.textContent).then(() => {
+  // Provenance travels with the text: the watermark is appended as a plain
+  // text line so it survives copy-paste into Word/Docs.
+  const text = (body.innerText || body.textContent)
+    + '\n\n[AI-drafted with JournalTime — verify every claim and citation, and rewrite in your own voice before submission.]';
+  navigator.clipboard.writeText(text).then(() => {
     const btn = body.previousElementSibling?.querySelector('.paper-sec-copy-btn');
     if (!btn) return;
     const orig = btn.textContent;
@@ -2231,11 +2248,21 @@ function applyToolsScopePayload(payload) {
     ctxParts.push('REFERENCES (to include):\n' + payload.references.map(r => '• ' + r).join('\n'));
   }
   if (ctxParts.length) document.getElementById('adf-context').value = ctxParts.join('\n\n');
-  // Toast + scroll.
+  // Receipt: itemise exactly what arrived in the hash — silent imports make
+  // users distrust what appeared in their form fields.
   const banner = document.getElementById('artdev-resume-banner');
   if (banner) {
     const meta = document.getElementById('resume-banner-meta');
-    if (meta) meta.textContent = `Imported from ToolsScope — "${(payload.title || 'study').slice(0, 60)}" · ${new Date(payload.capturedAt || Date.now()).toLocaleDateString()}`;
+    if (meta) {
+      const got = [
+        payload.topic && 'topic', payload.gap && 'gap', payload.field && 'field',
+        Array.isArray(payload.keywords) && payload.keywords.length && `${payload.keywords.length} keywords`,
+        payload.methodSummary && 'methods summary',
+        payload.resultsSummary && 'results summary',
+        Array.isArray(payload.references) && payload.references.length && `${payload.references.length} references`,
+      ].filter(Boolean).join(' · ');
+      meta.textContent = `Imported from ToolsScope — "${(payload.title || 'study').slice(0, 60)}" · ${new Date(payload.capturedAt || Date.now()).toLocaleDateString()} · received: ${got || 'nothing recognisable'}`;
+    }
     banner.style.display = 'flex';
   }
   document.getElementById('artdev-section').scrollIntoView({ behavior: 'smooth', block: 'start' });

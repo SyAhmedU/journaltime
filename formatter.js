@@ -316,15 +316,18 @@ function fmtVancouver(r) {
 }
 const ENGINES = { apa: fmtAPA, emerald: fmtEmerald, vancouver: fmtVancouver };
 
-// → [{html, text, flagged, raw}] in style order (author–date sorts; numbered keeps manuscript order)
+// → [{html, text, flagged, raw, refIdx, doi, wasResolved}] in style order
+// (author–date sorts; numbered keeps manuscript order). A ref whose status was
+// manually reverted to 'verbatim' renders verbatim even though a Crossref
+// match exists — the user's call always wins.
 function styledRefs(refs, style) {
   const fmt = ENGINES[style] || fmtAPA;
-  const list = refs.map(ref => {
-    if (ref.resolved) {
+  const list = refs.map((ref, refIdx) => {
+    if (ref.resolved && ref.status === 'resolved') {
       const html = fmt(ref.resolved);
-      return { html, text: html.replace(/<\/?i>/g, ''), flagged: false, raw: ref.raw, sortKey: html.toLowerCase() };
+      return { html, text: html.replace(/<\/?i>/g, ''), flagged: false, raw: ref.raw, refIdx, doi: ref.resolved.doi || '', wasResolved: true, sortKey: html.toLowerCase() };
     }
-    return { html: escHtml(ref.raw), text: ref.raw, flagged: true, raw: ref.raw, sortKey: ref.raw.toLowerCase() };
+    return { html: escHtml(ref.raw), text: ref.raw, flagged: true, raw: ref.raw, refIdx, doi: '', wasResolved: !!ref.resolved, sortKey: ref.raw.toLowerCase() };
   });
   if (style !== 'vancouver') list.sort((a, b) => a.sortKey < b.sortKey ? -1 : 1);
   return list;
@@ -586,11 +589,34 @@ function renderResults() {
 
   const style = state.family.refStyle;
   const list = styledRefs(ms.refs, style);
+  // Each restyled ref is inspectable (original text + matched DOI) and
+  // reversible (one click back to verbatim). Trust in automation comes from
+  // inspectable, reversible decisions.
   $('fmt-refs-list').innerHTML = list.map((r, i) =>
     '<div class="fmt-ref' + (r.flagged ? ' fmt-ref-flag' : '') + '">' +
     '<span class="fmt-ref-badge">' + (r.flagged ? '⚠ verbatim' : '✓ Crossref') + '</span>' +
-    '<span class="fmt-ref-text">' + (style === 'vancouver' ? (i + 1) + '. ' : '') + r.html + '</span></div>').join('')
+    '<span class="fmt-ref-text">' + (style === 'vancouver' ? (i + 1) + '. ' : '') + r.html + '</span>' +
+    '<span style="display:block;margin-top:3px;font-size:.72rem">' +
+      (r.doi ? '<a href="https://doi.org/' + escHtml(r.doi) + '" target="_blank" rel="noopener" style="color:var(--muted,#6b7280);text-decoration:underline">' + escHtml(r.doi) + ' ↗</a> · ' : '') +
+      (!r.flagged
+        ? '<button type="button" class="fmt-ref-revert" data-ref="' + r.refIdx + '" data-act="revert" style="border:0;background:none;color:#c2335f;cursor:pointer;font-size:.72rem;text-decoration:underline;padding:0">↩ keep my original wording</button>'
+        : (r.wasResolved ? '<button type="button" class="fmt-ref-revert" data-ref="' + r.refIdx + '" data-act="apply" style="border:0;background:none;color:#15803d;cursor:pointer;font-size:.72rem;text-decoration:underline;padding:0">✓ re-apply Crossref match</button>' : '')) +
+    '</span>' +
+    (!r.flagged
+      ? '<details style="margin-top:2px"><summary style="font-size:.68rem;color:var(--faint,#9ca3af);cursor:pointer">original as you wrote it</summary><span style="font-size:.72rem;color:var(--muted,#6b7280)">' + escHtml(r.raw) + '</span></details>'
+      : '') +
+    '</div>').join('')
     || '<div class="fmt-ref">No references detected.</div>';
+
+  // Delegate revert/re-apply clicks (innerHTML wipes listeners on re-render).
+  $('fmt-refs-list').onclick = (ev) => {
+    const btn = ev.target.closest('.fmt-ref-revert');
+    if (!btn) return;
+    const ref = ms.refs[+btn.dataset.ref];
+    if (!ref) return;
+    ref.status = btn.dataset.act === 'apply' ? 'resolved' : 'verbatim';
+    renderResults();
+  };
 
   $('fmt-results').style.display = 'block';
   $('fmt-results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -640,7 +666,7 @@ function renderTrustPanel(ms) {
       '</div>' +
       '<span style="font-size:.78rem;color:var(--muted,#6b7280);white-space:nowrap"><b style="color:#15803d">' + resolved + ' ✓ Crossref</b> · <b style="color:#c2335f">' + verbatim + ' ⚠ verbatim</b></span>' +
     '</div>' +
-    '<div style="font-size:.74rem;color:var(--muted,#6b7280);margin-bottom:10px">Restyled entries come from real Crossref records; ⚠ entries pass through exactly as you wrote them — check those by hand.</div>' +
+    '<div style="font-size:.74rem;color:var(--muted,#6b7280);margin-bottom:10px">Your body text is never touched — only the reference list is restyled. Restyled entries come from real Crossref records (DOI shown, one click reverts any of them); ⚠ entries pass through exactly as you wrote them — check those by hand.</div>' +
     '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint,#9ca3af);margin-bottom:6px">Citation age · years parsed from your own reference list</div>' +
     '<div style="display:flex;gap:10px;align-items:flex-end;height:56px;max-width:360px">' +
       counts.map(([label, n]) =>
