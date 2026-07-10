@@ -408,6 +408,28 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
       </button>
     </div>
     <style>.hr-card:hover{border-color:var(--blue,#2563eb)!important;transform:translateY(-2px)}.hr-card{transition:transform .15s,border-color .15s}[data-theme="dark"] .hr-card{background:#1C1827!important}[data-theme="dark"] .hr-card div{color:#F4EFF8}</style>
+    <!-- SYED-CONCEPT · publishing-landscape vitals — computed live from __JOURNAL_DATA__ -->
+    <div id="jt-vitals" style="display:none;margin-top:14px;justify-content:center;gap:8px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted,#6b7280)"></div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      try{
+        var J = window.__JOURNAL_DATA__ || [];
+        if (!J.length) return;
+        var oa = J.filter(function(j){return j.open_access}).length;
+        var q1 = J.filter(function(j){return j.quartile==='Q1'}).length;
+        var fd = J.map(function(j){return j.first_decision}).filter(function(v){return typeof v==='number'&&v>0}).sort(function(a,b){return a-b});
+        var medFd = fd.length ? fd[Math.floor(fd.length/2)] : null;
+        var chip = function(txt){return '<span style="border:1px solid var(--border,#e5e7eb);border-radius:999px;padding:4px 12px;background:var(--card,#fff)">'+txt+'</span>'};
+        var el = document.getElementById('jt-vitals');
+        el.innerHTML =
+          chip('<b style="color:var(--ink,#111827)">'+J.length.toLocaleString()+'</b> journals') +
+          chip('<b style="color:var(--ink,#111827)">'+q1.toLocaleString()+'</b> Q1') +
+          chip('<b style="color:var(--ink,#111827)">'+Math.round(oa/J.length*100)+'%</b> open access') +
+          (medFd ? chip('median first decision <b style="color:var(--ink,#111827)">'+medFd+'d</b> · reported/estimated mix — verify per journal') : '');
+        el.style.display='flex';
+      }catch(e){}
+    });
+    </script>
   </div>
   <div class="hero-scroll" onclick="navScrollTo('compass-section',null)">
     <span>Start with the Compass below</span>
