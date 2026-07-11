@@ -430,6 +430,86 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
       }catch(e){}
     });
     </script>
+    <!-- SYED-CONCEPT · "Writing Desk at Night" margin instruments: quiet until
+         hovered; session word-velocity spark + measured section balance. All
+         numbers counted from the draft on THIS device — nothing invented. -->
+    <style id="jt-desk-css">
+    #jt-desk{position:fixed;right:14px;top:50%;transform:translateY(-50%);width:172px;z-index:60;
+      background:var(--card,#fff);border:1px solid var(--border,#e5e7eb);border-radius:14px;
+      box-shadow:0 10px 34px -18px rgba(20,12,40,.35);padding:12px 13px;opacity:.38;
+      transition:opacity .25s;display:none;font-family:'IBM Plex Mono',monospace}
+    #jt-desk:hover,#jt-desk:focus-within{opacity:1}
+    #jt-desk .jtd-h{font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted,#6b7280);margin-bottom:8px}
+    #jt-desk .jtd-big{font-size:1.15rem;font-weight:700;color:var(--ink,#111827);line-height:1}
+    #jt-desk .jtd-sub{font-size:.62rem;color:var(--muted,#6b7280);margin-top:2px}
+    #jt-desk .jtd-bal{margin-top:10px}
+    #jt-desk .jtd-row{display:flex;align-items:center;gap:6px;margin:4px 0}
+    #jt-desk .jtd-name{font-size:.58rem;color:var(--muted,#6b7280);width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+    #jt-desk .jtd-trk{flex:1;height:5px;border-radius:3px;background:var(--border,#e5e7eb);overflow:hidden}
+    #jt-desk .jtd-trk i{display:block;height:100%;background:linear-gradient(90deg,#FF9656,#F14575 60%,#9270F4);border-radius:3px}
+    #jt-desk .jtd-note{font-size:.55rem;color:var(--faint,#9ca3af);margin-top:8px;line-height:1.5}
+    @media (max-width:1180px),print{#jt-desk{display:none !important}}
+    [data-theme="dark"] #jt-desk{background:#1C1827;border-color:#332945}
+    </style>
+    <div id="jt-desk" aria-label="Writing instruments — measured from your draft">
+      <div class="jtd-h">✒ The desk</div>
+      <div class="jtd-big" id="jtdWords">0</div>
+      <div class="jtd-sub">words this session</div>
+      <svg id="jtdSpark" width="146" height="26" viewBox="0 0 146 26" style="margin-top:6px"></svg>
+      <div class="jtd-bal" id="jtdBal"></div>
+      <div class="jtd-note">measured on this device · section shares of your draft — norms vary by journal</div>
+    </div>
+    <script>
+    (function(){
+      var desk=document.getElementById('jt-desk'); if(!desk) return;
+      var startWords=null, samples=[];
+      function secWords(){
+        var out=[]; document.querySelectorAll('#artdev-section .paper-section').forEach(function(s){
+          var name=(s.querySelector('.paper-section-name')||{}).textContent||'';
+          var body=s.querySelector('.paper-section-body');
+          var w=body?(body.textContent.trim().match(/\S+/g)||[]).length:0;
+          out.push({name:name.trim(),w:w});
+        });
+        return out;
+      }
+      function tick(){
+        var ad=document.getElementById('artdev-section');
+        var r=ad?ad.getBoundingClientRect():null;
+        var onScreen=r && r.bottom>120 && r.top<window.innerHeight-80;
+        var secs=secWords();
+        var total=secs.reduce(function(n,s){return n+s.w},0);
+        if(!onScreen||!secs.length||!total){ desk.style.display='none'; return; }
+        desk.style.display='block';
+        if(startWords===null) startWords=total;
+        if(samples[samples.length-1]!==total){ samples.push(total); if(samples.length>40) samples.shift(); }
+        var d=total-startWords;
+        document.getElementById('jtdWords').textContent=(d>=0?'+':'')+d.toLocaleString();
+        // velocity spark: session totals, min-max normalised
+        var svg=document.getElementById('jtdSpark');
+        if(samples.length>1){
+          var mn=Math.min.apply(null,samples), mx=Math.max.apply(null,samples), rg=mx-mn||1;
+          var pts=samples.map(function(v,i){return (i/(samples.length-1)*146).toFixed(1)+','+(23-((v-mn)/rg)*20).toFixed(1)}).join(' ');
+          svg.innerHTML='<polyline points="'+pts+'" fill="none" stroke="#F14575" stroke-width="1.8" stroke-linejoin="round"/>';
+        }
+        // section balance: measured shares, top 6 by words
+        var top=secs.slice().sort(function(a,b){return b.w-a.w}).slice(0,6);
+        var maxW=top[0]?top[0].w:1;
+        document.getElementById('jtdBal').innerHTML=top.map(function(s){
+          return '<div class="jtd-row"><span class="jtd-name" title="'+s.name.replace(/"/g,'&quot;')+'">'+s.name+'</span>'+
+            '<span class="jtd-trk"><i style="width:'+Math.max(3,Math.round(s.w/maxW*100))+'%"></i></span>'+
+            '<span style="font-size:.55rem;color:var(--muted,#6b7280)">'+s.w+'</span></div>';
+        }).join('');
+      }
+      setInterval(tick, 20000);
+      document.addEventListener('input', function(e){ if(e.target && e.target.closest && e.target.closest('#artdev-section')) tick(); }, true);
+      var scrollT=0;
+      window.addEventListener('scroll', function(){
+        if(scrollT) return;
+        scrollT=setTimeout(function(){ scrollT=0; if(document.querySelector('#artdev-section .paper-section')) tick(); }, 350);
+      }, {passive:true});
+      setTimeout(tick, 3000);
+    })();
+    </script>
   </div>
   <div class="hero-scroll" onclick="navScrollTo('compass-section',null)">
     <span>Start with the Compass below</span>
