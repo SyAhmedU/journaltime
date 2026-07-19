@@ -2103,17 +2103,45 @@ function renderArticlePaper(paper, gap, targetJournal, topic) {
       </div>`;
   }).join('');
 
-  // Readability strip — deterministic, approximate, computed on the draft text.
+  // Draft analytics — deterministic and approximate (regex, not NLP), computed
+  // entirely on the draft text in the browser. No AI, nothing sent anywhere.
   const fullText = sections.map(s => String(s.content).replace(/<[^>]+>/g, ' ')).join(' ');
   const rWords = fullText.split(/\s+/).filter(Boolean);
-  const rSents = fullText.split(/[.!?]+\s/).filter(s => s.trim().length > 2);
+  const rSentsRaw = fullText.split(/[.!?]+\s/).filter(s => s.trim().length > 2);
+  const rSents = rSentsRaw;
   const rSyll = rWords.reduce((n, w) => n + Math.max(1, (w.toLowerCase().match(/[aeiouy]+/g) || []).length), 0);
   const flesch = rWords.length && rSents.length
     ? Math.round(206.835 - 1.015 * (rWords.length / rSents.length) - 84.6 * (rSyll / rWords.length))
     : null;
-  const readStrip = flesch !== null
-    ? `<div class="paper-meta" style="margin-top:6px;font-size:.7rem;color:#94a3b8">Readability (approximate): Flesch ~${flesch} · avg sentence ${Math.round(rWords.length / rSents.length)} words — academic prose usually lands 20–40 Flesch; very low means long, dense sentences.</div>`
-    : '';
+  let readStrip = '';
+  if (flesch !== null) {
+    // sentence-length distribution (words per sentence, 5 bins)
+    const lens = rSentsRaw.map(s => s.split(/\s+/).filter(Boolean).length);
+    const bins = [0, 0, 0, 0, 0];
+    lens.forEach(L => bins[L < 10 ? 0 : L < 20 ? 1 : L < 30 ? 2 : L < 40 ? 3 : 4]++);
+    const binMax = Math.max(...bins, 1);
+    const binLbl = ['<10', '10s', '20s', '30s', '40+'];
+    const histo = bins.map((b, i) =>
+      `<span title="${b} sentence${b === 1 ? '' : 's'} of ${binLbl[i]} words" style="display:inline-flex;flex-direction:column;align-items:center;gap:1px;margin:0 1px">` +
+      `<span style="display:block;width:14px;height:${Math.max(2, Math.round((b / binMax) * 26))}px;background:${i >= 3 ? '#f59e0b' : '#94a3b8'};border-radius:2px;align-self:flex-end"></span>` +
+      `<span style="font-size:.55rem;color:#94a3b8">${binLbl[i]}</span></span>`).join('');
+    // approximate passive voice: to-be verb + past participle (regex heuristic)
+    const passive = rSentsRaw.filter(s => /\b(is|are|was|were|been|being|be)\s+\w+(ed|en)\b/i.test(s)).length;
+    const passivePct = Math.round((passive / rSents.length) * 100);
+    // section balance: word share per numbered section
+    const secWc = sections.filter(s => s.num).map(s => ({ name: s.name, wc: adWordCount(s.content) }));
+    const wcTot = secWc.reduce((a, s) => a + s.wc, 0) || 1;
+    const balance = secWc.map(s =>
+      `<span title="${adEsc(s.name)}: ~${s.wc} words (${Math.round((s.wc / wcTot) * 100)}%)" style="display:inline-block;height:8px;border-radius:2px;background:#c7d2fe;margin-right:2px;width:${Math.max(2, Math.round((s.wc / wcTot) * 160))}px"></span>`).join('');
+    readStrip = `
+    <div style="margin:10px 0 4px;padding:10px 14px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:flex-end;font-size:.7rem;color:#64748b">
+      <span><strong style="color:#334155">Draft analytics</strong> <span style="color:#94a3b8">(deterministic · approximate · on-device)</span></span>
+      <span title="Flesch reading ease — academic prose usually lands 20–40">Flesch ~<strong style="color:#334155">${flesch}</strong> · avg sentence <strong style="color:#334155">${Math.round(rWords.length / rSents.length)}</strong> words</span>
+      <span style="display:inline-flex;align-items:flex-end;gap:2px" title="Sentence-length distribution — a pile-up in 40+ means dense prose">${histo}</span>
+      <span title="Regex heuristic (to-be verb + past participle) — a prompt to scan, not a verdict">~<strong style="color:${passivePct > 40 ? '#ea580c' : '#334155'}">${passivePct}%</strong> passive-looking sentences</span>
+      <span style="display:inline-flex;align-items:center;gap:6px" title="Word share per section — one giant bar usually means an unbalanced draft">balance ${balance}</span>
+    </div>`;
+  }
 
   wrap.innerHTML = toolbar + titleBlock + readStrip + contrib + sectionHtml;
 
