@@ -347,7 +347,7 @@ function mk(){
 mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mk);
 })();</script>
 <!-- /SYED-GATE -->
-<link rel="stylesheet" href="product-design.css?v=20260912">
+<link rel="stylesheet" href="product-design.css?v=20261010">
 <!-- SYED-PWA -->
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -366,17 +366,17 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
 
 <!-- SYED-BAR:START — generated from research-suite/tools/brand-bar; run: node tools/brand-bar/build.mjs -->
 <div class="syed-bar">
-  <a class="syed-bar-logo" href="https://syahmedu.github.io/nexus/" target="_blank" rel="noopener"><span class="syed-mark">S</span><span class="syed-name">Syed</span></a>
+  <a class="syed-bar-logo" href="https://syed-launchpad.vercel.app" target="_blank" rel="noopener"><span class="syed-mark">S</span><span class="syed-name">Projects</span></a>
   <span class="syed-divider"></span>
   <span class="syed-project">JournalTime</span>
   <nav class="syed-links" aria-label="Research Suite">
-    <span class="syed-suite-label">Research Suite</span>
+    <a class="syed-suite-label" href="https://throughline-studio.vercel.app" target="_blank" rel="noopener">Studio ↗</a>
     <span class="syed-suite-step"><a class="syed-link" href="https://papercards.vercel.app" target="_blank" rel="noopener">PaperCards</a></span>
-    <span class="syed-suite-step"><span class="syed-caret" aria-hidden="true">›</span><a class="syed-link" href="https://researchflow-syahmedus-projects.vercel.app" target="_blank" rel="noopener">ResearchFlow</a></span>
-    <span class="syed-suite-step"><span class="syed-caret" aria-hidden="true">›</span><a class="syed-link" href="https://theoryscope.vercel.app" target="_blank" rel="noopener">TheoryScope</a></span>
-    <span class="syed-suite-step"><span class="syed-caret" aria-hidden="true">›</span><a class="syed-link" href="https://scalescope.vercel.app" target="_blank" rel="noopener">ScaleScope</a></span>
-    <span class="syed-suite-step"><span class="syed-caret" aria-hidden="true">›</span><a class="syed-link" href="https://toolsscope.vercel.app" target="_blank" rel="noopener">ToolsScope</a></span>
-    <span class="syed-suite-step"><span class="syed-caret" aria-hidden="true">›</span><a class="syed-link syed-link-active" href="#" aria-current="page">JournalTime</a></span>
+    <span class="syed-suite-step"><span class="syed-caret" aria-hidden="true">·</span><a class="syed-link" href="https://researchflow-alpha.vercel.app" target="_blank" rel="noopener">ResearchFlow</a></span>
+    <span class="syed-suite-step"><span class="syed-caret" aria-hidden="true">·</span><a class="syed-link" href="https://theoryscope.vercel.app" target="_blank" rel="noopener">TheoryScope</a></span>
+    <span class="syed-suite-step"><span class="syed-caret" aria-hidden="true">·</span><a class="syed-link" href="https://scalescope.vercel.app" target="_blank" rel="noopener">ScaleScope</a></span>
+    <span class="syed-suite-step"><span class="syed-caret" aria-hidden="true">·</span><a class="syed-link" href="https://toolsscope.vercel.app" target="_blank" rel="noopener">ToolsScope</a></span>
+    <span class="syed-suite-step"><span class="syed-caret" aria-hidden="true">·</span><a class="syed-link syed-link-active" href="#" aria-current="page">JournalTime</a></span>
   </nav>
   <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark">
     <span class="sun">☀️</span><span class="moon">🌙</span>
@@ -388,11 +388,11 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
 <style id="syed-hero-motion">@media (prefers-reduced-motion:no-preference){.hero>*{opacity:0;animation:syedHeroRise .7s cubic-bezier(.22,1,.36,1) both}.hero>*:nth-child(1){animation-delay:.04s}.hero>*:nth-child(2){animation-delay:.13s}.hero>*:nth-child(3){animation-delay:.22s}.hero>*:nth-child(4){animation-delay:.31s}.hero>*:nth-child(5){animation-delay:.40s}.hero>*:nth-child(6){animation-delay:.49s}}@keyframes syedHeroRise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}</style>
 <style id="syed-wave3">@media (prefers-reduced-motion:no-preference){.hero-title span{background-size:220% 220%;animation:sydGradDrift 9s ease-in-out infinite alternate}@keyframes sydGradDrift{from{background-position:0% 50%}to{background-position:100% 50%}}}</style>
 <header class="hero" id="hero" tabindex="-1">
-  <div class="hero-eyebrow">🧭 Research Compass &middot; AI-Powered Gap Finder &middot; <span id="hero-count">2,000+</span> Scopus Journals</div>
+  <div class="hero-eyebrow">🧭 Research Compass &middot; AI-Powered Gap Finder &middot; <span id="hero-count">1,959</span> Scopus Journals</div>
   <h1 class="hero-title">Find the <span>Gap.</span></h1>
   <p class="hero-sub">Type a topic. Map what's published, surface the open gaps, find the target journals and key authors — in seconds. The rest of the writing workspace is here when you need it.</p>
   <div class="hero-input-wrap">
-    <input class="hero-input" id="hero-input" placeholder="Your research idea — e.g. algorithmic management and gig-worker autonomy, ESG &amp; investor behavior, AI adoption in SMEs…" onkeydown="if(event.key==='Enter')heroStart()"/>
+    <input class="hero-input" id="hero-input" aria-label="Research idea" placeholder="Your research idea — e.g. algorithmic management and gig-worker autonomy, ESG &amp; investor behavior, AI adoption in SMEs…" onkeydown="if(event.key==='Enter')heroStart()"/>
     <button class="hero-btn" onclick="heroStart()">🧭 Find My Research Gap →</button>
   </div>
   <div style="margin:26px auto 0;max-width:860px">
@@ -543,7 +543,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
   <p class="compass-tagline">Type your research idea or topic below. Claude will map what's already published, identify research gaps, recommend journals, and suggest fresh angles — in seconds.</p>
   <div class="compass-form">
     <div class="compass-textarea-wrap">
-      <textarea class="compass-textarea" id="compass-input" placeholder="e.g. &quot;How does algorithmic management affect employee wellbeing and autonomy in gig economy platforms?&quot;&#10;&#10;Or try: &quot;AI adoption barriers in SMEs&quot; / &quot;ESG reporting and investor behavior&quot; / &quot;Burnout in remote workers&quot;"></textarea>
+      <textarea class="compass-textarea" id="compass-input" aria-label="Research topic for gap analysis" placeholder="e.g. &quot;How does algorithmic management affect employee wellbeing and autonomy in gig economy platforms?&quot;&#10;&#10;Or try: &quot;AI adoption barriers in SMEs&quot; / &quot;ESG reporting and investor behavior&quot; / &quot;Burnout in remote workers&quot;"></textarea>
     </div>
     <!-- Blank-form rescue: clickable starters beat a placeholder (which vanishes
          on focus and can't be tapped) — one tap fills a full idea, ready to edit. -->
@@ -554,7 +554,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
       <button type="button" data-fill="How does ESG reporting quality shape investor behavior and firm valuation?" onclick="var t=document.getElementById('compass-input');t.value=this.dataset.fill;t.focus()" style="font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text);font-family:inherit">ESG &amp; investor behavior</button>
     </div>
     <div class="compass-controls">
-      <select class="compass-field-select" id="compass-field">
+      <select class="compass-field-select" id="compass-field" aria-label="Research field">
         <option value="">All fields (recommended)</option>
       </select>
       <button class="compass-btn" id="compass-btn">
@@ -596,21 +596,21 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
         <div class="artdev-form-title">📝 Generate New Draft</div>
         <div class="adf-field">
           <label>Research Topic *</label>
-          <textarea id="adf-topic" placeholder="e.g. How does algorithmic management affect employee wellbeing in gig economy platforms?"></textarea>
+          <textarea id="adf-topic" aria-label="Article topic" placeholder="e.g. How does algorithmic management affect employee wellbeing in gig economy platforms?"></textarea>
         </div>
         <div class="adf-field">
           <label>Research Gap / Problem *</label>
-          <textarea id="adf-gap" rows="2" placeholder="e.g. No study examines this in Southeast Asian food-delivery platforms using longitudinal data"></textarea>
+          <textarea id="adf-gap" aria-label="Research gap" rows="2" placeholder="e.g. No study examines this in Southeast Asian food-delivery platforms using longitudinal data"></textarea>
         </div>
         <div class="adf-field">
           <label>Field</label>
-          <select id="adf-field-sel">
+          <select id="adf-field-sel" aria-label="Article field">
             <option value="">Select field…</option>
           </select>
         </div>
         <div class="adf-field">
           <label>Research Method</label>
-          <select id="adf-method">
+          <select id="adf-method" aria-label="Research method">
             <option value="Survey / Questionnaire">Survey / Questionnaire</option>
             <option value="PLS-SEM / Structural Equation Modelling">PLS-SEM / SEM</option>
             <option value="Hierarchical Regression Analysis">Hierarchical Regression</option>
@@ -625,16 +625,16 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
         </div>
         <div class="adf-field">
           <label>Target Journal <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-          <input type="text" id="adf-journal" placeholder="e.g. Journal of Management" list="adf-journal-list" autocomplete="off"/>
+          <input type="text" id="adf-journal" aria-label="Target journal" placeholder="e.g. Journal of Management" list="adf-journal-list" autocomplete="off"/>
           <datalist id="adf-journal-list"></datalist>
         </div>
         <div class="adf-field">
           <label>Keywords <span style="font-weight:400;text-transform:none;letter-spacing:0">(comma-separated)</span></label>
-          <input type="text" id="adf-keywords" placeholder="e.g. algorithmic control, gig economy, wellbeing"/>
+          <input type="text" id="adf-keywords" aria-label="Article keywords" placeholder="e.g. algorithmic control, gig economy, wellbeing"/>
         </div>
         <div class="adf-field">
           <label>Your Research Context <span style="font-weight:400;text-transform:none;letter-spacing:0">(improves output)</span></label>
-          <textarea id="adf-context" rows="3" placeholder="e.g. Surveying 300 food-delivery workers in Jakarta, Jan–Mar 2025. Ages 18–35. Questionnaire-based."></textarea>
+          <textarea id="adf-context" aria-label="Study context" rows="3" placeholder="e.g. Surveying 300 food-delivery workers in Jakarta, Jan–Mar 2025. Ages 18–35. Questionnaire-based."></textarea>
         </div>
         <button class="adf-gen-btn" id="adf-gen-btn" onclick="generateArticleDraft()">
           <span id="adf-btn-text">Generate Full Draft →</span>
@@ -709,7 +709,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
       </div>
     </div>
     <div class="jl-launch-row">
-      <input list="jl-launch-list" id="jl-launch-input" class="jl-launch-input" placeholder="Journal name — e.g. Journal of Applied Psychology" autocomplete="off">
+      <input list="jl-launch-list" id="jl-launch-input" aria-label="Journal for Journal Studio" class="jl-launch-input" placeholder="Journal name — e.g. Journal of Applied Psychology" autocomplete="off">
       <datalist id="jl-launch-list"></datalist>
       <button class="jl-launch-btn" id="jl-launch-btn">Open Journal Studio →</button>
     </div>
@@ -797,12 +797,12 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
       <button class="fmt-link-btn" id="fmt-paste-toggle" type="button">paste your manuscript text</button>
     </div>
     <div id="fmt-paste-wrap" style="display:none;margin-bottom:10px;">
-      <textarea class="fmt-paste" id="fmt-paste" placeholder="Paste the full manuscript — title on the first line, then authors, Abstract, sections, and a References list. Markdown headings (#) and numbered headings both work."></textarea>
+      <textarea class="fmt-paste" id="fmt-paste" aria-label="Manuscript text" placeholder="Paste the full manuscript — title on the first line, then authors, Abstract, sections, and a References list. Markdown headings (#) and numbered headings both work."></textarea>
     </div>
     <div class="fmt-row">
-      <input list="fmt-journal-list" id="fmt-journal" class="fmt-input" placeholder="Target journal — e.g. Journal of Business Research" autocomplete="off">
+      <input list="fmt-journal-list" id="fmt-journal" aria-label="Target journal for formatting" class="fmt-input" placeholder="Target journal — e.g. Journal of Business Research" autocomplete="off">
       <datalist id="fmt-journal-list"></datalist>
-      <select class="fmt-select" id="fmt-style"><option value="auto">Style: auto from journal</option></select>
+      <select class="fmt-select" id="fmt-style" aria-label="Reference style"><option value="auto">Style: auto from journal</option></select>
       <label class="fmt-check"><input type="checkbox" id="fmt-blind"> Blind for review</label>
       <label class="fmt-check"><input type="checkbox" id="fmt-resolve" checked> Restyle references (Crossref)</label>
       <button class="fmt-btn" id="fmt-run">Format manuscript →</button>
@@ -813,11 +813,11 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
     <div class="fmt-results" id="fmt-results">
       <div class="fmt-chips" id="fmt-chips"></div>
       <div class="fmt-meta-grid">
-        <div class="fmt-field fmt-field-full"><label>Title</label><input id="fmt-title"></div>
-        <div class="fmt-field"><label>Authors (as they should appear)</label><input id="fmt-authors" placeholder="e.g. Syed A. Ahmed and Jane Q. Public"></div>
-        <div class="fmt-field"><label>Affiliations (one per line)</label><textarea id="fmt-affil" rows="2"></textarea></div>
-        <div class="fmt-field fmt-field-full"><label>Abstract</label><textarea id="fmt-abstract" rows="3"></textarea></div>
-        <div class="fmt-field fmt-field-full"><label>Keywords</label><input id="fmt-keywords" placeholder="comma-separated"></div>
+        <div class="fmt-field fmt-field-full"><label>Title</label><input id="fmt-title" aria-label="Manuscript title"></div>
+        <div class="fmt-field"><label>Authors (as they should appear)</label><input id="fmt-authors" aria-label="Authors" placeholder="e.g. Syed A. Ahmed and Jane Q. Public"></div>
+        <div class="fmt-field"><label>Affiliations (one per line)</label><textarea id="fmt-affil" aria-label="Affiliations" rows="2"></textarea></div>
+        <div class="fmt-field fmt-field-full"><label>Abstract</label><textarea id="fmt-abstract" aria-label="Abstract" rows="3"></textarea></div>
+        <div class="fmt-field fmt-field-full"><label>Keywords</label><input id="fmt-keywords" aria-label="Keywords" placeholder="comma-separated"></div>
       </div>
       <div class="fmt-refs-title">References — restyled where matched, verbatim where not</div>
       <div class="fmt-refs-list" id="fmt-refs-list"></div>
@@ -913,7 +913,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
       <button class="jstudio-close" id="jstudio-close" aria-label="Close">✕</button>
     </div>
     <div class="jstudio-topicrow">
-      <input id="jstudio-topic" class="jstudio-topic" placeholder="Your topic or working idea — e.g. burnout and AI adoption among nurses" />
+      <input id="jstudio-topic" aria-label="Journal Studio topic" class="jstudio-topic" placeholder="Your topic or working idea — e.g. burnout and AI adoption among nurses" />
       <span class="jstudio-topic-hint">used in steps 3–5</span>
     </div>
     <div style="padding:10px 24px 0;display:flex;align-items:center;gap:10px">
@@ -1753,9 +1753,7 @@ function buildWordDoc(paper, gap, targetJournal) {
   body{font-family:"Times New Roman",serif;font-size:12pt;line-height:2;margin:1in;color:#000}
   p{margin:0 0 12pt}
 </style></head>
-<body>${parts.join('\n')}<!-- SYED-PWA-SW -->
-<script>if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
-<!-- /SYED-PWA-SW -->
+<body>${parts.join('\n')}
 </body></html>`;
 }
 
@@ -3090,5 +3088,8 @@ var s=document.createElement('style');s.id='syed-juice';s.textContent=css;docume
 })();
 </script>
 <!-- /SYED-DYNAMIC -->
+<!-- SYED-PWA-SW -->
+<script>if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+<!-- /SYED-PWA-SW -->
 </body>
 </html>
