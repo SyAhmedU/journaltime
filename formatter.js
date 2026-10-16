@@ -246,7 +246,7 @@ async function resolveOneRef(ref) {
   // A DOI written in the reference is the author's own identification of the work: look it up directly and
   // never let a bibliographic search substitute a different record (it once swapped a JAP article for its
   // PsycTESTS dataset entry). If the DOI's record fails the gate, the reference stays verbatim.
-  const m = ref.raw.match(/(10\.\d{4,9}\/[^\s"<>]+?)[.,;)]*(?:\s|$)/);
+  const m = ref.raw.match(/b(10\.\d{4,9}\/[^\s"<>]+?)[.,;)]*(?:\s|$)/);
   const doi = m && m[1];
   try {
     if (doi) {
