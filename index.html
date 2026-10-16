@@ -399,7 +399,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
 <style id="syed-hero-motion">@media (prefers-reduced-motion:no-preference){.hero>*{opacity:0;animation:syedHeroRise .7s cubic-bezier(.22,1,.36,1) both}.hero>*:nth-child(1){animation-delay:.04s}.hero>*:nth-child(2){animation-delay:.13s}.hero>*:nth-child(3){animation-delay:.22s}.hero>*:nth-child(4){animation-delay:.31s}.hero>*:nth-child(5){animation-delay:.40s}.hero>*:nth-child(6){animation-delay:.49s}}@keyframes syedHeroRise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}</style>
 <style id="syed-wave3">@media (prefers-reduced-motion:no-preference){.hero-title span{background-size:220% 220%;animation:sydGradDrift 9s ease-in-out infinite alternate}@keyframes sydGradDrift{from{background-position:0% 50%}to{background-position:100% 50%}}}</style>
 <header class="hero" id="hero" tabindex="-1">
-  <div class="hero-eyebrow">🧭 Research Compass &middot; AI-Powered Gap Finder &middot; <span id="hero-count">1,959</span> Scopus Journals</div>
+  <div class="hero-eyebrow">🧭 Research Compass &middot; AI-Powered Gap Finder &middot; <span id="hero-count">1,805</span> Scopus Journals</div>
   <h1 class="hero-title">Find the <span>Gap.</span></h1>
   <p class="hero-sub">Type a topic. Map what's published, surface the open gaps, find the target journals and key authors — in seconds. The rest of the writing workspace is here when you need it.</p>
   <div class="hero-input-wrap">
@@ -505,7 +505,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
         var svg=host.querySelector('svg'), read=host.querySelector('.jr-read'), legend=host.querySelector('.jr-legend');
         // "you are here": one field lights its journals; mirrors the Compass field picker
         var fsel=host.querySelector('.jr-field select'), field='', nF={};
-        J.forEach(function(j){ if(typeof j.first_decision==='number'&&j.first_decision>0) nF[j.field]=(nF[j.field]||0)+1; });
+        J.forEach(function(j){ if(typeof j.first_decision==='number'&&j.first_decision>0) [j.field].concat(j.also||[]).forEach(function(f){ nF[f]=(nF[f]||0)+1; }); });
         Object.keys(nF).sort().forEach(function(f){ var o=document.createElement('option'); o.value=f; o.textContent=f+' · '+nF[f]; fsel.appendChild(o); });
         var dots=[], cols=[];
         function dark(){return document.documentElement.getAttribute('data-theme')==='dark'}
@@ -514,7 +514,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
         }
         function idle(){
           if(!field){ idleAll(); return; }
-          var L=J.filter(function(j){ return j.field===field&&typeof j.first_decision==='number'&&j.first_decision>0; });
+          var L=J.filter(function(j){ return (j.field===field||(j.also||[]).indexOf(field)>=0)&&typeof j.first_decision==='number'&&j.first_decision>0; });
           var v=L.map(function(j){return j.first_decision}).sort(function(a,b){return a-b}), med=v.length%2?v[(v.length-1)/2]:(v[v.length/2-1]+v[v.length/2])/2;
           var pub=L.filter(function(j){return j.source==='publisher'}), q1=pub.filter(function(j){return j.quartile==='Q1'}).sort(function(a,b){return a.first_decision-b.first_decision||a.name.localeCompare(b.name)});
           var est=L.filter(function(j){return j.source==='estimated'}).length;
@@ -522,7 +522,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
         }
         function setField(f){
           field=f||''; fsel.value=field;
-          svg.querySelectorAll('.jr-dot').forEach(function(n){ var p=dots[+n.dataset.i]; n.classList.toggle('out',!!field&&p&&p.j.field!==field); });
+          svg.querySelectorAll('.jr-dot').forEach(function(n){ var p=dots[+n.dataset.i]; n.classList.toggle('out',!!field&&p&&p.j.field!==field&&(p.j.also||[]).indexOf(field)<0); });
           if(!host._cur) idle();
         }
         fsel.addEventListener('change',function(){ setField(fsel.value); var cf=document.getElementById('compass-field'); if(cf&&[].some.call(cf.options,function(o){return o.value===fsel.value})) cf.value=fsel.value; });
@@ -878,7 +878,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
     <div class="jl-launch-note" id="jl-launch-note"></div>
     <div class="jl-launch-sub">Not sure where to submit? <a href="https://syahmedu.github.io/scholarscope/" target="_blank" rel="noopener">Find a journal by turnaround, quartile &amp; fit in ScholarScope ↗</a></div>
     <div id="jl-scatter-wrap" style="margin-top:16px;border-top:1px solid var(--border,#e5e7eb);padding-top:12px">
-      <div style="font-size:.78rem;color:var(--muted,#6b7280);margin-bottom:6px">The landscape: quartile × days to first decision, all 1,959 journals. <b>★</b> = your ScholarScope shortlist (shared on this device) — click a star to open its Studio. <b>◆</b> = estimated turnaround, never measured.</div>
+      <div style="font-size:.78rem;color:var(--muted,#6b7280);margin-bottom:6px">The landscape: quartile × days to first decision, all 1,805 journals. <b>★</b> = your ScholarScope shortlist (shared on this device) — click a star to open its Studio. <b>◆</b> = estimated turnaround, never measured.</div>
       <svg id="jl-scatter" style="width:100%;max-width:900px;display:block"></svg>
     </div>
   </div>
@@ -970,7 +970,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
       <button class="fmt-btn" id="fmt-run">Format manuscript →</button>
     </div>
     <div class="fmt-family-note" id="fmt-family-note"></div>
-    <div style="font-size:.72rem;color:var(--faint,#9ca3af);margin:-6px 0 10px">Journal list: 1,959 Scopus-indexed journals (snapshot; turnaround &amp; metrics age with it) — always confirm against the journal's own author guidelines ↗</div>
+    <div style="font-size:.72rem;color:var(--faint,#9ca3af);margin:-6px 0 10px">Journal list: 1,805 Scopus-indexed journals (snapshot; turnaround &amp; metrics age with it) — always confirm against the journal's own author guidelines ↗</div>
     <div class="fmt-status" id="fmt-status"></div>
     <div class="fmt-results" id="fmt-results">
       <div class="fmt-chips" id="fmt-chips"></div>
@@ -1087,7 +1087,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
 </div>
 </main>
 
-<script src="data.js"></script>
+<script src="data.js?v=20261017"></script>
 <script>
 (function(){
 const data = window.__JOURNAL_DATA__;
@@ -1586,7 +1586,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){const ov=do
     if(!q){ input.focus(); return; }
     const j = data.find(x=>x.name.toLowerCase()===q) || data.find(x=>x.name.toLowerCase().includes(q));
     if(j){ if(note) note.textContent=''; openJournalStudio(j); }
-    else if(note){ note.innerHTML='No journal matches that name. <a href="https://syahmedu.github.io/scholarscope/" target="_blank" rel="noopener" style="color:var(--blue);font-weight:600">Browse 1,959 journals in ScholarScope ↗</a>'; }
+    else if(note){ note.innerHTML='No journal matches that name. <a href="https://syahmedu.github.io/scholarscope/" target="_blank" rel="noopener" style="color:var(--blue);font-weight:600">Browse 1,805 journals in ScholarScope ↗</a>'; }
   }
   btn.addEventListener('click',launch);
   input.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); launch(); } });
@@ -2056,7 +2056,7 @@ function adFieldChanged() {
   list.innerHTML = '';
   if (field && window.__JOURNAL_DATA__) {
     window.__JOURNAL_DATA__
-      .filter(j => j.field === field)
+      .filter(j => j.field === field || (j.also || []).includes(field))
       .sort((a, b) => (b.impact_factor || 0) - (a.impact_factor || 0))
       .slice(0, 30)
       .forEach(j => {
