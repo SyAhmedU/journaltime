@@ -230,7 +230,9 @@ function crossrefGate(raw, item) {
 function cslFromItem(it) {
   const dp = it.issued && it.issued['date-parts'] && it.issued['date-parts'][0];
   return {
-    authors: (it.author || []).map(a => ({ family: a.family || '', given: a.given || '' })).filter(a => a.family),
+    // registry records occasionally list one person twice — drop exact repeats only
+    authors: (it.author || []).map(a => ({ family: a.family || '', given: a.given || '' })).filter(a => a.family)
+      .filter((a, i, all) => all.findIndex(b => b.family === a.family && b.given === a.given) === i),
     year: dp && dp[0] ? String(dp[0]) : '',
     title: (it.title && it.title[0]) || '',
     container: (it['container-title'] && it['container-title'][0]) || '',
@@ -240,10 +242,22 @@ function cslFromItem(it) {
 }
 
 async function resolveOneRef(ref) {
-  const url = 'https://api.crossref.org/works?rows=2&select=title,author,issued,container-title,volume,issue,page,DOI,type,publisher&query.bibliographic='
-    + encodeURIComponent(ref.raw.slice(0, 400)) + '&mailto=asrarsaa%40gmail.com';
+  const SEL = 'title,author,issued,container-title,volume,issue,page,DOI,type,publisher';
+  // A DOI written in the reference is the author's own identification of the work: look it up directly and
+  // never let a bibliographic search substitute a different record (it once swapped a JAP article for its
+  // PsycTESTS dataset entry). If the DOI's record fails the gate, the reference stays verbatim.
+  const m = ref.raw.match(/(10\.\d{4,9}\/[^\s"<>]+?)[.,;)]*(?:\s|$)/);
+  const doi = m && m[1];
   try {
-    const r = await fetch(url);
+    if (doi) {
+      const r = await fetch('https://api.crossref.org/works/' + encodeURIComponent(doi) + '?mailto=asrarsaa%40gmail.com');
+      if (!r.ok) return;
+      const it = (await r.json()).message;
+      if (it && crossrefGate(ref.raw, it)) { ref.resolved = cslFromItem(it); ref.status = 'resolved'; }
+      return;
+    }
+    const r = await fetch('https://api.crossref.org/works?rows=2&select=' + SEL + '&query.bibliographic='
+      + encodeURIComponent(ref.raw.slice(0, 400)) + '&mailto=asrarsaa%40gmail.com');
     if (!r.ok) return;
     const j = await r.json();
     const items = (j.message && j.message.items) || [];
